@@ -62,15 +62,18 @@ public class GameManager : MonoBehaviour
                 uiManager.ShowIntro();
                 break;
             case GamePhase.GuessClothing:
-                FetchRiddleAndShow("Clothing", State.TargetClothing, GameData.Clothing, GamePhase.GuessColor,
+                FetchRiddleAndShow("Clothing", State.TargetClothing,
+                    GameData.GetOptions(GameData.Clothing, State.TargetClothing), GamePhase.GuessColor,
                     CorrectClothingPraise[Random.Range(0, CorrectClothingPraise.Length)]);
                 break;
             case GamePhase.GuessColor:
-                FetchRiddleAndShow("Color", State.TargetColor, GameData.Colors, GamePhase.GuessMaterial,
+                FetchRiddleAndShow("Color", State.TargetColor,
+                    GameData.GetOptions(GameData.Colors, State.TargetColor), GamePhase.GuessMaterial,
                     CorrectColorPraise[Random.Range(0, CorrectColorPraise.Length)]);
                 break;
             case GamePhase.GuessMaterial:
-                FetchRiddleAndShow("Material", State.TargetMaterial, GameData.Materials, GamePhase.Reveal,
+                FetchRiddleAndShow("Material", State.TargetMaterial,
+                    GameData.GetOptions(GameData.Materials, State.TargetMaterial), GamePhase.Reveal,
                     CorrectMaterialPraise[Random.Range(0, CorrectMaterialPraise.Length)]);
                 break;
             case GamePhase.Reveal:
