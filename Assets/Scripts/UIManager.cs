@@ -172,7 +172,7 @@ public class UIManager : MonoBehaviour
     // ── INTRO — 3 animated tutorial slides ───────────────────────────────
 
     private static readonly string[] IntroSlides = {
-        "The King has dressed himself in the\n<b>finest outfit in all the land.</b>\n\n<i>...or so he believes.</i>",
+        "The King has dressed himself in the\n<b>finest outfit in all the land.</b>",
         "He will give you <b>three riddles.</b>\n\nFor each one, guess:\n• The <b>garment</b>\n• The <b>colour</b>\n• The <b>material</b>",
         "At the end, the truth will be revealed.\n\nChoose your words wisely.\n\n<b>Your head depends on it.</b>"
     };

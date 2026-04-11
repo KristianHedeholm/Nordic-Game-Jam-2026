@@ -147,8 +147,8 @@ public class SceneBuilder : MonoBehaviour
         tagPrefabGO.transform.SetParent(transform, false); tagPrefabGO.SetActive(false);
         tagPrefabGO.AddComponent<RectTransform>().sizeDelta = new Vector2(220, 70);
         var tImg = tagPrefabGO.AddComponent<Image>();
-        // Plain grey rounded-looking box — text is the content, no sprite needed
-        tImg.color = new Color(0.75f, 0.72f, 0.80f);
+        // Match the dark grey inner area of the holder sprite
+        tImg.color = new Color(0.55f, 0.55f, 0.58f);
         var tLblGO = new GameObject("Label"); tLblGO.transform.SetParent(tagPrefabGO.transform, false);
         var tLblRT = tLblGO.AddComponent<RectTransform>(); tLblRT.anchorMin = Vector2.zero; tLblRT.anchorMax = Vector2.one; tLblRT.sizeDelta = Vector2.zero;
         var tLblTMP = tLblGO.AddComponent<TextMeshProUGUI>();
