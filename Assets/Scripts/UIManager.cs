@@ -194,6 +194,8 @@ public class UIManager : MonoBehaviour
         ClearOptions();
         riddleText.text = "...";
         categoryLabel.text = "";
+        // Make sure bubble is visible for guessing phase
+        if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(true);
     }
 
     // ── GUESS PANEL — riddle first, buttons appear after ─────────────────
@@ -270,6 +272,9 @@ public class UIManager : MonoBehaviour
         bool allCorrect = state.GuessedClothing == state.TargetClothing &&
                           state.GuessedColor    == state.TargetColor    &&
                           state.GuessedMaterial == state.TargetMaterial;
+
+        // Hide speech bubble during drumroll — clean stage for the reveal
+        riddleText.transform.parent.gameObject.SetActive(false);
 
         // Phase 1: Drumroll → tadaaa → curtains open
         AudioManager.Instance?.PlayDrumrollThenReveal(() =>
