@@ -157,11 +157,8 @@ public class SceneBuilder : MonoBehaviour
         narratorTMP.color = new Color(0.95f, 0.9f, 1f);
         narratorTMP.enableWordWrapping = true;
 
-        // ── CATEGORY LABEL ────────────────────────────────────────────────────
-        var catGO = CreateRect(stagePanelGO, "CategoryLabel", new Vector2(200, 520), new Vector2(900, 70));
-        var catTMP = catGO.AddComponent<TextMeshProUGUI>();
-        catTMP.text = ""; catTMP.fontSize = 38; catTMP.fontStyle = FontStyles.Bold;
-        catTMP.alignment = TextAlignmentOptions.Center; catTMP.color = new Color(1f, 0.85f, 0.3f);
+        // Category label removed — not needed
+        TextMeshProUGUI catTMP = null;
 
         // ── SCATTER AREA (bottom centre) ──────────────────────────────────────
         var bottomPanel = CreateRect(canvasGO, "OptionsRow", new Vector2(200, -420), new Vector2(1400, 220));
@@ -300,8 +297,8 @@ public class SceneBuilder : MonoBehaviour
     SimplePanel BuildRevealPanel(GameObject parent)
     {
         var root = CreateFull(parent, "RevealPanel"); AddImage(root, new Color(0,0,0,0));
-        var bubble = CreateRect(root, "RevealBubble", new Vector2(380, 260), new Vector2(700, 200)); AddImage(bubble, new Color(0.97f, 0.95f, 0.88f));
-        AddImage(CreateRect(bubble, "Tail", new Vector2(-290,-75), new Vector2(55,55)), new Color(0.97f,0.95f,0.88f));
+        var bubble = CreateRect(root, "RevealBubble", new Vector2(380, 260), new Vector2(700, 200));
+        ApplySpeechBubbleSprite(bubble);
         var tGO = new GameObject("RevealText"); tGO.transform.SetParent(bubble.transform, false);
         var tRT = tGO.AddComponent<RectTransform>(); tRT.anchorMin = Vector2.zero; tRT.anchorMax = Vector2.one; tRT.offsetMin = new Vector2(30,20); tRT.offsetMax = new Vector2(-30,-20);
         var tmp = tGO.AddComponent<TextMeshProUGUI>(); tmp.text=""; tmp.fontSize=26; tmp.alignment=TextAlignmentOptions.Center; tmp.color=new Color(0.1f,0.05f,0.15f); tmp.enableWordWrapping=true;
@@ -312,8 +309,8 @@ public class SceneBuilder : MonoBehaviour
     JudgPanel BuildJudgmentPanel(GameObject parent)
     {
         var root = CreateFull(parent, "JudgmentPanel"); AddImage(root, new Color(0,0,0,0));
-        var bubble = CreateRect(root, "JudgBubble", new Vector2(380,260), new Vector2(700,200)); AddImage(bubble, new Color(0.97f,0.95f,0.88f));
-        AddImage(CreateRect(bubble, "Tail", new Vector2(-290,-75), new Vector2(55,55)), new Color(0.97f,0.95f,0.88f));
+        var bubble = CreateRect(root, "JudgBubble", new Vector2(380,260), new Vector2(700,200));
+        ApplySpeechBubbleSprite(bubble);
         var tGO = new GameObject("JudgText"); tGO.transform.SetParent(bubble.transform, false);
         var tRT = tGO.AddComponent<RectTransform>(); tRT.anchorMin=Vector2.zero; tRT.anchorMax=Vector2.one; tRT.offsetMin=new Vector2(30,20); tRT.offsetMax=new Vector2(-30,-20);
         var tmp = tGO.AddComponent<TextMeshProUGUI>(); tmp.text=""; tmp.fontSize=26; tmp.alignment=TextAlignmentOptions.Center; tmp.color=new Color(0.1f,0.05f,0.15f); tmp.enableWordWrapping=true;
@@ -355,6 +352,14 @@ public class SceneBuilder : MonoBehaviour
         var go = new GameObject(name); go.transform.SetParent(parent.transform, false);
         var rt = go.AddComponent<RectTransform>(); rt.anchoredPosition=pos; rt.sizeDelta=size;
         return go;
+    }
+
+    void ApplySpeechBubbleSprite(GameObject go)
+    {
+        var img = go.AddComponent<Image>();
+        var spr = Resources.Load<Sprite>("Art/Speech bubble");
+        if (spr != null) { img.sprite = spr; img.type = Image.Type.Simple; img.preserveAspect = false; img.color = Color.white; }
+        else img.color = new Color(0.97f, 0.95f, 0.88f);
     }
 
     Image AddImage(GameObject go, Color color)
