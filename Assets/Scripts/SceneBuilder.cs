@@ -148,11 +148,11 @@ public class SceneBuilder : MonoBehaviour
         var crown = MakeText(root, "Crown", "♛", 80, FontStyles.Normal, new Vector2(0, 380), new Vector2(200, 100));
         crown.color = new Color(1f, 0.85f, 0.3f);
 
-        var label  = MakeText(root, "CategoryLabel", "What is the King's clothing?", 38, FontStyles.Bold, new Vector2(0, 280), new Vector2(1000, 80));
+        var label  = MakeText(root, "CategoryLabel", "What is the King's clothing?", 38, FontStyles.Bold, new Vector2(0, 350), new Vector2(1000, 80));
         label.color = new Color(1f, 0.85f, 0.3f);
 
         // Riddle box
-        var riddleBox = MakeImage(root, "RiddleBox", new Color(0.15f, 0.08f, 0.22f, 0.9f), new Vector2(0, 100), new Vector2(1000, 200));
+        var riddleBox = MakeImage(root, "RiddleBox", new Color(0.15f, 0.08f, 0.22f, 0.9f), new Vector2(0, 170), new Vector2(1000, 200));
         var riddle = MakeText(riddleBox, "RiddleText", "\"...\"", 34, FontStyles.Italic, Vector2.zero, new Vector2(920, 180));
         riddle.alignment = TextAlignmentOptions.Center;
         riddle.color = new Color(0.95f, 0.9f, 1f);
@@ -161,8 +161,8 @@ public class SceneBuilder : MonoBehaviour
         var optionsGO = new GameObject("OptionsRow");
         optionsGO.transform.SetParent(root.transform, false);
         var rt = optionsGO.AddComponent<RectTransform>();
-        rt.anchoredPosition = new Vector2(0, -180);
-        rt.sizeDelta = new Vector2(1400, 100);
+        rt.anchoredPosition = new Vector2(0, -100);
+        rt.sizeDelta = new Vector2(1400, 120);
         var hlg = optionsGO.AddComponent<HorizontalLayoutGroup>();
         hlg.spacing = 20;
         hlg.childForceExpandWidth  = false;
