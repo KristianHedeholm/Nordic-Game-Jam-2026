@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
 /// <summary>
 /// Instantiates the GameUI prefab and wires up GameManager + AudioManager.
@@ -72,7 +74,37 @@ public class SceneBuilder : MonoBehaviour
         gm.uiManager       = ui;
         gm.riddleGenerator = rg;
 
+        // Apply button sprites at runtime (bypasses prefab bake issues)
+        ApplyButtonSprites(uiInstance);
+
         gm.StartGame();
+    }
+
+    void ApplyButtonSprites(GameObject uiRoot)
+    {
+        var startSprite = Resources.Load<Sprite>("Art/Button_Start");
+        var nextSprite  = Resources.Load<Sprite>("Art/Button_Next");
+
+        if (startSprite == null) { Debug.LogWarning("[SceneBuilder] Button_Start sprite not found in Resources/Art/"); return; }
+        if (nextSprite  == null) { Debug.LogWarning("[SceneBuilder] Button_Next sprite not found in Resources/Art/");  return; }
+
+        // Apply to intro start button
+        var startBtn = uiRoot.transform.Find("Canvas/IntroPanel/StartButton");
+        if (startBtn != null)
+        {
+            var img = startBtn.GetComponent<Image>();
+            if (img != null) { img.sprite = startSprite; img.color = Color.white; img.type = Image.Type.Sliced; }
+            var lbl = startBtn.GetComponentInChildren<TextMeshProUGUI>();
+            if (lbl != null) lbl.color = new Color(0.15f, 0.08f, 0.25f);
+        }
+
+        // Store next sprite on UIManager for runtime swap
+        var ui = uiRoot.GetComponentInChildren<UIManager>();
+        if (ui != null)
+        {
+            ui.buttonNextSprite  = nextSprite;
+            ui.buttonStartSprite = startSprite;
+        }
     }
 
     void SetupCamera()
