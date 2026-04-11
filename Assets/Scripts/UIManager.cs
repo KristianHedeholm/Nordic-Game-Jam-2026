@@ -425,6 +425,7 @@ public class UIManager : MonoBehaviour
                     ? "\"BEHOLD! Am I not the most magnificently dressed monarch you have ever seen?\"\n\n<size=20><i>...says the King, obviously wearing <b>absolutely nothing.</b></i></size>"
                     : "\"Feast your eyes upon the FINEST outfit ever crafted by mortal hands!\"\n\n<size=20><i>...says the King, obviously wearing <b>absolutely nothing.</b></i></size>";
 
+                AudioManager.Instance?.PlayKingTalk();
                 SetText(revealText, kingReaction, () =>
                 {
                     // Phase 3: After king speaks, show score then continue button
@@ -460,6 +461,7 @@ public class UIManager : MonoBehaviour
             ? $"<b>{score}/3</b> correct.\n\n\"...I expected more from you.\""
             : $"<b>{score}/3</b> correct.\n\n\"Hmm. Some potential, perhaps.\"";
 
+        AudioManager.Instance?.PlayKingTalk();
         SetText(revealText, scoreMsg, () =>
         {
             revealContinueButton.gameObject.SetActive(true);
