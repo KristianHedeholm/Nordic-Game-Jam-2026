@@ -461,16 +461,36 @@ public class UIManager : MonoBehaviour
     void RevealTrackerResult(TMP_Text label, string category, string guessed, string correct)
     {
         if (label == null) return;
-        if (guessed == correct)
+
+        bool isCorrect = guessed == correct;
+
+        // Colour the drop zone background green or red at full alpha
+        TagDropZone zone = category switch
         {
-            label.text  = $"<b>{category}: {guessed} ✓</b>";
-            label.color = new Color(0.3f, 1f, 0.4f);
+            "Garment"  => dropZoneClothing,
+            "Color"    => dropZoneColor,
+            "Material" => dropZoneMaterial,
+            _          => null
+        };
+        if (zone != null)
+        {
+            var img = zone.GetComponent<Image>();
+            if (img != null)
+                img.color = isCorrect
+                    ? new Color(0.15f, 0.75f, 0.25f, 1f)  // green, full alpha
+                    : new Color(0.85f, 0.15f, 0.15f, 1f); // red, full alpha
+        }
+
+        if (isCorrect)
+        {
+            label.text  = $"<b>{guessed} ✓</b>";
+            label.color = Color.white;
             AudioManager.Instance?.PlayCorrect();
         }
         else
         {
-            label.text  = $"<b>{category}: {guessed} ✗</b>\n<size=18>({correct})</size>";
-            label.color = new Color(1f, 0.3f, 0.3f);
+            label.text  = $"<b>{guessed} ✗</b>\n<size=18>→ {correct}</size>";
+            label.color = Color.white;
             AudioManager.Instance?.PlayWrong();
         }
     }
