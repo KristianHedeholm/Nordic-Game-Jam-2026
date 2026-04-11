@@ -145,7 +145,7 @@ public class SceneBuilder : MonoBehaviour
         var root  = MakePanel(parent, "GuessPanel", new Color(0.08f, 0.05f, 0.12f, 0.97f));
 
         // Decorative crown label
-        var crown = MakeText(root, "Crown", "♛", 80, FontStyles.Normal, new Vector2(0, 380), new Vector2(200, 100));
+        var crown = MakeText(root, "Crown", "~ THE KING ~", 28, FontStyles.Italic, new Vector2(0, 430), new Vector2(600, 60));
         crown.color = new Color(1f, 0.85f, 0.3f);
 
         var label  = MakeText(root, "CategoryLabel", "What is the King's clothing?", 38, FontStyles.Bold, new Vector2(0, 350), new Vector2(1000, 80));
@@ -161,7 +161,7 @@ public class SceneBuilder : MonoBehaviour
         var optionsGO = new GameObject("OptionsRow");
         optionsGO.transform.SetParent(root.transform, false);
         var rt = optionsGO.AddComponent<RectTransform>();
-        rt.anchoredPosition = new Vector2(0, -100);
+        rt.anchoredPosition = new Vector2(0, 30);
         rt.sizeDelta = new Vector2(1400, 120);
         var hlg = optionsGO.AddComponent<HorizontalLayoutGroup>();
         hlg.spacing = 20;
@@ -190,7 +190,7 @@ public class SceneBuilder : MonoBehaviour
     JudgPanel BuildJudgmentPanel(GameObject parent)
     {
         var root = MakePanel(parent, "JudgmentPanel", new Color(0.12f, 0.04f, 0.04f, 0.98f));
-        var crown = MakeText(root, "Crown", "♛", 80, FontStyles.Normal, new Vector2(0, 350), new Vector2(200, 100));
+        var crown = MakeText(root, "Crown", "~ THE KING DEMANDS ~", 28, FontStyles.Italic, new Vector2(0, 350), new Vector2(700, 60));
         crown.color = new Color(1f, 0.3f, 0.3f);
         var text = MakeText(root, "JudgText", "", 36, FontStyles.Normal, new Vector2(0, 80), new Vector2(1100, 400));
         text.alignment = TextAlignmentOptions.Center;
