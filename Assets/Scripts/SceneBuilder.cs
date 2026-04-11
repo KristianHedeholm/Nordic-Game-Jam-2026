@@ -60,52 +60,82 @@ public class SceneBuilder : MonoBehaviour
         var floorLine = CreateRect(stagePanelGO, "FloorLine", new Vector2(0, -245), new Vector2(1920, 12));
         AddImage(floorLine, new Color(0.55f, 0.38f, 0.10f));
 
-        // ── KING AREA (centered on stage) ────────────────────────────────
-        // Body (skin colored blob)
-        var body = CreateRect(stagePanelGO, "KingBody", new Vector2(0, -60), new Vector2(180, 320));
-        AddImage(body, new Color(0.95f, 0.75f, 0.55f));
+        // ── STOOL (king stands on it to appear taller) ───────────────────
+        var stool = CreateRect(stagePanelGO, "Stool", new Vector2(0, -270), new Vector2(160, 60));
+        AddImage(stool, new Color(0.35f, 0.2f, 0.05f));
+        var stoolTop = CreateRect(stagePanelGO, "StoolTop", new Vector2(0, -245), new Vector2(180, 18));
+        AddImage(stoolTop, new Color(0.5f, 0.3f, 0.08f));
 
-        // Head
-        var head = CreateRect(stagePanelGO, "KingHead", new Vector2(0, 140), new Vector2(160, 160));
-        AddImage(head, new Color(0.95f, 0.75f, 0.55f));
+        // ── KING BODY (short & fat) ───────────────────────────────────────
+        var skin = new Color(0.95f, 0.75f, 0.55f);
 
-        // Crown (3 yellow rectangles)
-        var crownBase = CreateRect(stagePanelGO, "CrownBase", new Vector2(0, 235), new Vector2(160, 30));
-        AddImage(crownBase, new Color(1f, 0.85f, 0.1f));
-        var crownL = CreateRect(stagePanelGO, "CrownL", new Vector2(-55, 260), new Vector2(35, 50));
-        AddImage(crownL, new Color(1f, 0.85f, 0.1f));
-        var crownC = CreateRect(stagePanelGO, "CrownC", new Vector2(0, 270), new Vector2(35, 60));
-        AddImage(crownC, new Color(1f, 0.85f, 0.1f));
-        var crownR = CreateRect(stagePanelGO, "CrownR", new Vector2(55, 260), new Vector2(35, 50));
-        AddImage(crownR, new Color(1f, 0.85f, 0.1f));
+        // Chubby body
+        var body = CreateRect(stagePanelGO, "KingBody", new Vector2(0, -110), new Vector2(220, 200));
+        AddImage(body, skin);
 
-        // Eyes
-        var eyeL = CreateRect(stagePanelGO, "EyeL", new Vector2(-35, 150), new Vector2(30, 30));
+        // Big fat belly highlight
+        var belly = CreateRect(stagePanelGO, "Belly", new Vector2(0, -130), new Vector2(200, 160));
+        AddImage(belly, new Color(1f, 0.8f, 0.62f));
+
+        // Short stubby legs
+        var legL = CreateRect(stagePanelGO, "LegL", new Vector2(-55, -248), new Vector2(80, 60));
+        AddImage(legL, skin);
+        var legR = CreateRect(stagePanelGO, "LegR", new Vector2(55, -248), new Vector2(80, 60));
+        AddImage(legR, skin);
+
+        // Wide arms (posed proudly)
+        var armL = CreateRect(stagePanelGO, "ArmL", new Vector2(-165, -80), new Vector2(110, 80));
+        AddImage(armL, skin);
+        var armR = CreateRect(stagePanelGO, "ArmR", new Vector2(165, -80), new Vector2(110, 80));
+        AddImage(armR, skin);
+
+        // Big round head
+        var head = CreateRect(stagePanelGO, "KingHead", new Vector2(0, 60), new Vector2(200, 190));
+        AddImage(head, skin);
+
+        // Eyes (beady and smug)
+        var eyeL = CreateRect(stagePanelGO, "EyeL", new Vector2(-45, 70), new Vector2(35, 35));
         AddImage(eyeL, new Color(0.1f, 0.1f, 0.3f));
-        var eyeR = CreateRect(stagePanelGO, "EyeR", new Vector2(35, 150), new Vector2(30, 30));
+        var eyeR = CreateRect(stagePanelGO, "EyeR", new Vector2(45, 70), new Vector2(35, 35));
         AddImage(eyeR, new Color(0.1f, 0.1f, 0.3f));
 
-        // Blush
-        var blushL = CreateRect(stagePanelGO, "BlushL", new Vector2(-55, 125), new Vector2(35, 20));
-        AddImage(blushL, new Color(1f, 0.5f, 0.5f, 0.6f));
-        var blushR = CreateRect(stagePanelGO, "BlushR", new Vector2(55, 125), new Vector2(35, 20));
-        AddImage(blushR, new Color(1f, 0.5f, 0.5f, 0.6f));
+        // Eye shine
+        var shineL = CreateRect(eyeL, "ShineL", new Vector2(8, 8), new Vector2(10, 10));
+        AddImage(shineL, Color.white);
+        var shineR = CreateRect(eyeR, "ShineR", new Vector2(8, 8), new Vector2(10, 10));
+        AddImage(shineR, Color.white);
 
-        // Arms
-        var armL = CreateRect(stagePanelGO, "ArmL", new Vector2(-130, -30), new Vector2(80, 200));
-        AddImage(armL, new Color(0.95f, 0.75f, 0.55f));
-        var armR = CreateRect(stagePanelGO, "ArmR", new Vector2(130, -30), new Vector2(80, 200));
-        AddImage(armR, new Color(0.95f, 0.75f, 0.55f));
+        // Smug smile
+        var smile = CreateRect(stagePanelGO, "Smile", new Vector2(0, 15), new Vector2(80, 18));
+        AddImage(smile, new Color(0.6f, 0.25f, 0.15f));
 
-        // Covering hands (strategically placed rectangles 😂)
-        var cover = CreateRect(stagePanelGO, "CoverHands", new Vector2(0, -100), new Vector2(140, 120));
-        AddImage(cover, new Color(0.95f, 0.75f, 0.55f));
+        // Moustache
+        var moustache = CreateRect(stagePanelGO, "Moustache", new Vector2(0, 35), new Vector2(100, 20));
+        AddImage(moustache, new Color(0.3f, 0.15f, 0.05f));
 
-        // Legs
-        var legL = CreateRect(stagePanelGO, "LegL", new Vector2(-45, -320), new Vector2(75, 160));
-        AddImage(legL, new Color(0.95f, 0.75f, 0.55f));
-        var legR = CreateRect(stagePanelGO, "LegR", new Vector2(45, -320), new Vector2(75, 160));
-        AddImage(legR, new Color(0.95f, 0.75f, 0.55f));
+        // Blush cheeks
+        var blushL = CreateRect(stagePanelGO, "BlushL", new Vector2(-70, 40), new Vector2(45, 25));
+        AddImage(blushL, new Color(1f, 0.5f, 0.5f, 0.55f));
+        var blushR = CreateRect(stagePanelGO, "BlushR", new Vector2(70, 40), new Vector2(45, 25));
+        AddImage(blushR, new Color(1f, 0.5f, 0.5f, 0.55f));
+
+        // ── CROWN — above the curtains so always visible ──────────────────
+        // Crown base (above curtain top)
+        var crownBase = CreateRect(stagePanelGO, "CrownBase", new Vector2(0, 180), new Vector2(200, 35));
+        AddImage(crownBase, new Color(1f, 0.85f, 0.1f));
+        var crownL = CreateRect(stagePanelGO, "CrownL", new Vector2(-65, 210), new Vector2(45, 60));
+        AddImage(crownL, new Color(1f, 0.85f, 0.1f));
+        var crownC = CreateRect(stagePanelGO, "CrownC", new Vector2(0, 225), new Vector2(45, 75));
+        AddImage(crownC, new Color(1f, 0.85f, 0.1f));
+        var crownR = CreateRect(stagePanelGO, "CrownR", new Vector2(65, 210), new Vector2(45, 60));
+        AddImage(crownR, new Color(1f, 0.85f, 0.1f));
+        // Jewels on crown
+        var jewel1 = CreateRect(crownL, "Jewel", Vector2.zero, new Vector2(20, 20));
+        AddImage(jewel1, new Color(0.8f, 0.1f, 0.1f));
+        var jewel2 = CreateRect(crownC, "Jewel", Vector2.zero, new Vector2(22, 22));
+        AddImage(jewel2, new Color(0.1f, 0.4f, 0.9f));
+        var jewel3 = CreateRect(crownR, "Jewel", Vector2.zero, new Vector2(20, 20));
+        AddImage(jewel3, new Color(0.1f, 0.8f, 0.2f));
 
         // ── CURTAINS (cover the king during guessing) ─────────────────────
         var curtainL = CreateRect(stagePanelGO, "CurtainLeft", new Vector2(-560, 0), new Vector2(1000, 900));
@@ -180,7 +210,8 @@ public class SceneBuilder : MonoBehaviour
         // ── OVERLAY PANELS ─────────────────────────────────────────────────
         var introPanel    = BuildIntroPanel(canvasGO);
         var loadingPanel  = BuildLoadingPanel(canvasGO);
-        var revealPanel   = BuildRevealPanel(canvasGO);    // shown after curtain drops
+        var reactionPanel = BuildReactionPanel(canvasGO);
+        var revealPanel   = BuildRevealPanel(canvasGO);
         var judgmentPanel = BuildJudgmentPanel(canvasGO);
         var winPanel      = BuildWinPanel(canvasGO);
         var deathPanel    = BuildDeathPanel(canvasGO);
@@ -193,6 +224,11 @@ public class SceneBuilder : MonoBehaviour
 
         rg.apiKey = "";
         rg.model  = "openai/gpt-4o-mini";
+
+        // Reaction panel
+        ui.reactionPanel = reactionPanel.root;
+        ui.reactionText  = reactionPanel.text;
+        ui.reactionBg    = reactionPanel.root.GetComponent<Image>();
 
         // Stage UI refs
         ui.stagePanel       = stagePanelGO;
@@ -228,6 +264,7 @@ public class SceneBuilder : MonoBehaviour
         // Hide overlays, show intro
         introPanel.root.SetActive(false);
         loadingPanel.root.SetActive(false);
+        reactionPanel.root.SetActive(false);
         revealPanel.root.SetActive(false);
         judgmentPanel.root.SetActive(false);
         winPanel.root.SetActive(false);
@@ -265,6 +302,18 @@ public class SceneBuilder : MonoBehaviour
         AddImage(root, new Color(0.06f, 0.03f, 0.10f, 0.85f));
         var txt = AddTMP(root, "LoadTxt", "The King is composing his riddle...", 38, FontStyles.Italic, Vector2.zero, new Vector2(900, 80));
         txt.color = new Color(0.9f, 0.8f, 1f);
+        return new SimplePanel { root = root, text = txt, btn = null };
+    }
+
+    SimplePanel BuildReactionPanel(GameObject parent)
+    {
+        var root = CreateRectFull(parent, "ReactionPanel");
+        AddImage(root, new Color(0.05f, 0.2f, 0.07f, 0.93f)); // will be overridden at runtime
+        var txt = AddTMP(root, "ReactionTxt", "", 48, FontStyles.Bold, Vector2.zero, new Vector2(1200, 500));
+        txt.alignment = TextAlignmentOptions.Center;
+        txt.color = Color.white;
+        txt.enableWordWrapping = true;
+        // No button — the whole panel is clickable (added at runtime by UIManager)
         return new SimplePanel { root = root, text = txt, btn = null };
     }
 

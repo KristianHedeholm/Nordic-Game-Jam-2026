@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -16,6 +17,11 @@ public class UIManager : MonoBehaviour
     public TMP_Text categoryLabel;
     public Transform optionsContainer;
     public Button optionButtonPrefab;
+
+    [Header("Reaction Overlay")]
+    public GameObject reactionPanel;
+    public TMP_Text reactionText;
+    public Image reactionBg;
 
     [Header("Overlay Panels")]
     public GameObject introPanel;
@@ -54,6 +60,7 @@ public class UIManager : MonoBehaviour
         finalJudgmentPanel?.SetActive(false);
         winPanel?.SetActive(false);
         deathPanel?.SetActive(false);
+        reactionPanel?.SetActive(false);
     }
 
     void ClearOptions()
@@ -106,6 +113,39 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    // ── REACTION SCREENS ──────────────────────────────────────────────────
+
+    public void ShowCorrectAnswerReaction(string kingQuote, Action onContinue)
+    {
+        HideAllOverlays();
+        stagePanel?.SetActive(true);
+        reactionPanel.SetActive(true);
+        reactionBg.color = new Color(0.05f, 0.25f, 0.08f, 0.92f);
+        reactionText.text = "<size=60><b>CORRECT!</b></size>\n\n" + kingQuote + "\n\n<size=24><i>~ tap to continue ~</i></size>";
+        reactionText.color = Color.white;
+
+        // Click anywhere on reaction panel to continue
+        var btn = reactionPanel.GetComponent<Button>() ?? reactionPanel.AddComponent<Button>();
+        btn.onClick.RemoveAllListeners();
+        btn.onClick.AddListener(() => { reactionPanel.SetActive(false); onContinue?.Invoke(); });
+    }
+
+    public void ShowWrongAnswerReaction(string kingInsult, Action onContinue)
+    {
+        HideAllOverlays();
+        stagePanel?.SetActive(true);
+        reactionPanel.SetActive(true);
+        reactionBg.color = new Color(0.3f, 0.04f, 0.04f, 0.92f);
+        reactionText.text = "<size=60><b>WRONG!</b></size>\n\n" + kingInsult + "\n\n<size=24><i>~ tap to face your fate ~</i></size>";
+        reactionText.color = Color.white;
+
+        var btn = reactionPanel.GetComponent<Button>() ?? reactionPanel.AddComponent<Button>();
+        btn.onClick.RemoveAllListeners();
+        btn.onClick.AddListener(() => { reactionPanel.SetActive(false); onContinue?.Invoke(); });
+    }
+
+    // ── REVEAL ────────────────────────────────────────────────────────────
+
     public void ShowReveal(string color, string clothing, string material)
     {
         HideAllOverlays();
@@ -114,15 +154,14 @@ public class UIManager : MonoBehaviour
         categoryLabel.text = "";
         riddleText.text = "...";
 
-        // Animate curtains open, then show reveal text
         curtainAnimator?.OpenCurtains(() =>
         {
             revealPanel.SetActive(true);
             revealText.text =
                 $"*The King claps enthusiastically!*\n\n" +
-                $"\"MAGNIFICENT! A <b>{color} {material} {clothing}</b>! You truly have the finest eyes in the land!\"\n\n" +
-                $"\"I would like you to be my personal <b>Fashion Guru</b>!\"\n\n" +
-                $"He steps forward to reveal his glorious outfit...\n\n" +
+                $"\"MAGNIFICENT! A <b>{color} {material} {clothing}</b>!\"\n\n" +
+                $"\"You shall be my personal <b>Fashion Guru</b>!\"\n\n" +
+                $"He steps forward proudly...\n\n" +
                 $"<i>He is wearing absolutely nothing at all.</i>";
             revealContinueButton.onClick.RemoveAllListeners();
             revealContinueButton.onClick.AddListener(() => GameManager.Instance.GoToPhase(GamePhase.FinalJudgment));
@@ -165,22 +204,24 @@ public class UIManager : MonoBehaviour
         HideAllOverlays();
         stagePanel?.SetActive(false);
         deathPanel.SetActive(true);
+
         var state = GameManager.Instance.State;
-        string wrongGuess = "";
+        string reason = "";
         if (state.GuessedClothing != null && state.GuessedClothing != state.TargetClothing)
-            wrongGuess = $"A <b>{state.GuessedClothing}</b>?! The King wears a <b>{state.TargetClothing}</b>!";
+            reason = $"A <b>{state.GuessedClothing}</b>?! The King wears a magnificent <b>{state.TargetClothing}</b>!";
         else if (state.GuessedColor != null && state.GuessedColor != state.TargetColor)
-            wrongGuess = $"<b>{state.GuessedColor}</b>?! The King's colour is <b>{state.TargetColor}</b>!";
+            reason = $"<b>{state.GuessedColor}</b>?! The colour is <b>{state.TargetColor}</b>, you blind fool!";
         else if (state.GuessedMaterial != null && state.GuessedMaterial != state.TargetMaterial)
-            wrongGuess = $"<b>{state.GuessedMaterial}</b>?! The King's fabric is <b>{state.TargetMaterial}</b>!";
+            reason = $"<b>{state.GuessedMaterial}</b>?! It is obviously <b>{state.TargetMaterial}</b>!";
         else
-            wrongGuess = "You dared to speak the truth!";
+            reason = "You dared to speak the truth to the King!";
 
         deathText.text =
             "The King's eyes narrow.\n\n" +
-            $"\"{wrongGuess}\"\n\n" +
+            $"\"{reason}\"\n\n" +
             "\"GUARDS! OFF WITH THEIR HEAD!\"\n\n" +
             "<i>You should have lied.</i>";
+
         deathPlayAgainButton.onClick.RemoveAllListeners();
         deathPlayAgainButton.onClick.AddListener(() => GameManager.Instance.OnPlayAgain());
     }

@@ -13,6 +13,32 @@ public class GameManager : MonoBehaviour
 
     public GameState State { get; private set; } = new GameState();
 
+    // King's praise lines after a correct answer
+    private static readonly string[] CorrectClothingPraise = {
+        "\"EXQUISITE! You recognised my garment instantly! Most impressive!\"",
+        "\"*gasps* YES! How did you know?! You must have magnificent taste!\"",
+        "\"Extraordinary! The fabric spoke to you, didn't it? I knew it would!\""
+    };
+    private static readonly string[] CorrectColorPraise = {
+        "\"*fans himself* The colour! You got the colour! I'm genuinely moved!\"",
+        "\"YES! That is PRECISELY the shade! You have the eye of a true aesthete!\"",
+        "\"BRAVO! Not everyone can perceive such a refined hue. You are special!\""
+    };
+    private static readonly string[] CorrectMaterialPraise = {
+        "\"*claps frantically* The material! You felt it through the air, didn't you?!\"",
+        "\"MAGNIFICENT! You can practically feel its texture from there! A true gift!\"",
+        "\"*tears up* No one has ever... no one has EVER gotten the material right before!\""
+    };
+
+    // King's degrading lines before death
+    private static readonly string[] WrongInsults = {
+        "\"WHAT?! Are you blind?! Or merely STUPID?!\"",
+        "\"That is the most OFFENSIVE guess I have ever heard in my royal life!\"",
+        "\"*recoils in horror* Did you just... did you even LOOK?!\"",
+        "\"Guards, make note — we have a FOOL in the court today.\"",
+        "\"I have seen peasants with better taste than you. PEASANTS.\""
+    };
+
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -35,38 +61,34 @@ public class GameManager : MonoBehaviour
             case GamePhase.Intro:
                 uiManager.ShowIntro();
                 break;
-
             case GamePhase.GuessClothing:
-                FetchRiddleAndShow("Clothing", State.TargetClothing, GameData.Clothing, GamePhase.GuessColor);
+                FetchRiddleAndShow("Clothing", State.TargetClothing, GameData.Clothing, GamePhase.GuessColor,
+                    CorrectClothingPraise[Random.Range(0, CorrectClothingPraise.Length)]);
                 break;
-
             case GamePhase.GuessColor:
-                FetchRiddleAndShow("Color", State.TargetColor, GameData.Colors, GamePhase.GuessMaterial);
+                FetchRiddleAndShow("Color", State.TargetColor, GameData.Colors, GamePhase.GuessMaterial,
+                    CorrectColorPraise[Random.Range(0, CorrectColorPraise.Length)]);
                 break;
-
             case GamePhase.GuessMaterial:
-                FetchRiddleAndShow("Material", State.TargetMaterial, GameData.Materials, GamePhase.Reveal);
+                FetchRiddleAndShow("Material", State.TargetMaterial, GameData.Materials, GamePhase.Reveal,
+                    CorrectMaterialPraise[Random.Range(0, CorrectMaterialPraise.Length)]);
                 break;
-
             case GamePhase.Reveal:
                 uiManager.ShowReveal(State.GuessedColor, State.GuessedClothing, State.GuessedMaterial);
                 break;
-
             case GamePhase.FinalJudgment:
                 uiManager.ShowFinalJudgment();
                 break;
-
             case GamePhase.WinScreen:
                 uiManager.ShowWin();
                 break;
-
             case GamePhase.DeathScreen:
                 uiManager.ShowDeath();
                 break;
         }
     }
 
-    private void FetchRiddleAndShow(string category, string target, System.Collections.Generic.List<string> options, GamePhase nextPhase)
+    private void FetchRiddleAndShow(string category, string target, System.Collections.Generic.List<string> options, GamePhase nextPhase, string praiseLine)
     {
         uiManager.ShowLoading();
         riddleGenerator.GetRiddle(target, category, riddle =>
@@ -74,7 +96,6 @@ public class GameManager : MonoBehaviour
             State.CurrentRiddle = riddle;
             uiManager.ShowGuessPanel(category, riddle, options, chosen =>
             {
-                // Store the player's guess
                 switch (category)
                 {
                     case "Clothing": State.GuessedClothing = chosen; break;
@@ -82,21 +103,19 @@ public class GameManager : MonoBehaviour
                     case "Material": State.GuessedMaterial = chosen; break;
                 }
 
-                // Check if the guess is correct
                 if (chosen != target)
                 {
-                    // Wrong answer — instant death
-                    GoToPhase(GamePhase.DeathScreen);
+                    string insult = WrongInsults[Random.Range(0, WrongInsults.Length)];
+                    uiManager.ShowWrongAnswerReaction(insult, () => GoToPhase(GamePhase.DeathScreen));
                 }
                 else
                 {
-                    GoToPhase(nextPhase);
+                    uiManager.ShowCorrectAnswerReaction(praiseLine, () => GoToPhase(nextPhase));
                 }
             });
         });
     }
 
-    // Called from FinalJudgment UI
     public void OnPlayerFlatters()  => GoToPhase(GamePhase.WinScreen);
     public void OnPlayerTruth()     => GoToPhase(GamePhase.DeathScreen);
     public void OnPlayAgain()       => StartGame();
