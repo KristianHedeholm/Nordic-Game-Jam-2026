@@ -7,18 +7,6 @@ namespace RawPowerLabs.DynamicAI
     using System;
     using System.Collections.Generic;
     
-	public enum Type
-	{
-		Pants = 0,
-		Mankini = 1,
-		Armor = 2,
-		MaidSDress = 3,
-		Cape = 4,
-		Crocs = 5,
-		Bathrobe = 6,
-		FingerlessGloves = 7,
-	}
-
 	public enum Color
 	{
 		Blue = 0,
@@ -49,21 +37,20 @@ namespace RawPowerLabs.DynamicAI
 		FauxFur = 9,
 	}
 
+	public enum Type
+	{
+		Pants = 0,
+		Armor = 1,
+		Cape = 2,
+		Bathrobe = 3,
+		Mankini = 4,
+		MaidSDress = 5,
+		Crocs = 6,
+		FingerlessGloves = 7,
+	}
+
     public static class CategoricalInputCollection
     {
-		public static IReadOnlyDictionary<Enum, string> TypeStringValues =
-		new Dictionary<Enum, string>()
-		{
-			{ Type.Pants, "Pants" },
-			{ Type.Mankini, "Mankini" },
-			{ Type.Armor, "Armor" },
-			{ Type.MaidSDress, "Maid's Dress" },
-			{ Type.Cape, "Cape" },
-			{ Type.Crocs, "Crocs" },
-			{ Type.Bathrobe, "Bathrobe" },
-			{ Type.FingerlessGloves, "Fingerless Gloves" },
-		};
-
 		public static IReadOnlyDictionary<Enum, string> ColorStringValues =
 		new Dictionary<Enum, string>()
 		{
@@ -96,21 +83,34 @@ namespace RawPowerLabs.DynamicAI
 			{ Material.FauxFur, "Faux Fur" },
 		};
 
+		public static IReadOnlyDictionary<Enum, string> TypeStringValues =
+		new Dictionary<Enum, string>()
+		{
+			{ Type.Pants, "Pants" },
+			{ Type.Armor, "Armor" },
+			{ Type.Cape, "Cape" },
+			{ Type.Bathrobe, "Bathrobe" },
+			{ Type.Mankini, "Mankini" },
+			{ Type.MaidSDress, "Maid's Dress" },
+			{ Type.Crocs, "Crocs" },
+			{ Type.FingerlessGloves, "Fingerless Gloves" },
+		};
+
 
         public static IReadOnlyDictionary<System.Type, IReadOnlyDictionary<Enum, string>> AllCollections =
         new Dictionary<System.Type, IReadOnlyDictionary<Enum, string>>()
         {
-			{ typeof(Type), TypeStringValues },
 			{ typeof(Color), ColorStringValues },
 			{ typeof(Material), MaterialStringValues },
+			{ typeof(Type), TypeStringValues },
         };
         
         public static IReadOnlyDictionary<System.Type, string> TypeNames =
         new Dictionary<System.Type, string>()
         {
-			{ typeof(Type), "Type" },
 			{ typeof(Color), "Color" },
 			{ typeof(Material), "Material" },
+			{ typeof(Type), "Type" },
         };
     }
 }
