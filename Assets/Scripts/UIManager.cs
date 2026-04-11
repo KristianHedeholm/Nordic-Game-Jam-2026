@@ -18,6 +18,9 @@ public class UIManager : MonoBehaviour
     public Transform optionsContainer;   // scatter area for draggable tags
     public Button optionButtonPrefab;    // kept for fallback
 
+    [Header("Narrator")]
+    public TMP_Text narratorLabel;
+
     [Header("Drag & Drop")]
     public TagDropZone dropZoneClothing;
     public TagDropZone dropZoneColor;
@@ -184,6 +187,7 @@ public class UIManager : MonoBehaviour
         HideAllOverlays();
         ResetTracker();
         kingPoseProud?.Invoke(false);
+        if (narratorLabel != null) narratorLabel.text = "";
         stagePanel?.SetActive(false);
         curtainAnimator?.CloseCurtains();
         AudioManager.Instance?.PlayIntroFanfare();
@@ -380,6 +384,10 @@ public class UIManager : MonoBehaviour
             {
                 AudioManager.Instance?.PlayKingLaugh();
                 kingPoseProud?.Invoke(true);
+
+                // Narrator text under speech bubble
+                if (narratorLabel != null)
+                    narratorLabel.text = "Says the King, obviously wearing... <b>NOTHING.</b>";
 
                 // Phase 2: Reveal panel shows — king says something short
                 revealPanel.SetActive(true);

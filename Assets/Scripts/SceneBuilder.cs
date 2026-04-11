@@ -133,6 +133,16 @@ public class SceneBuilder : MonoBehaviour
         riddleTMP.text = "..."; riddleTMP.fontSize = 26; riddleTMP.fontStyle = FontStyles.Italic;
         riddleTMP.color = new Color(0.1f, 0.05f, 0.15f); riddleTMP.alignment = TextAlignmentOptions.Center; riddleTMP.enableWordWrapping = true;
 
+        // ── NARRATOR LABEL (shown during reveal) ─────────────────────────────
+        var narratorGO = CreateRect(stagePanelGO, "NarratorLabel", new Vector2(200, 195), new Vector2(900, 50));
+        var narratorTMP = narratorGO.AddComponent<TextMeshProUGUI>();
+        narratorTMP.text = "";
+        narratorTMP.fontSize = 22;
+        narratorTMP.fontStyle = FontStyles.Italic;
+        narratorTMP.alignment = TextAlignmentOptions.Center;
+        narratorTMP.color = new Color(0.8f, 0.75f, 0.9f, 0.85f);
+        narratorTMP.enableWordWrapping = true;
+
         // ── CATEGORY LABEL ────────────────────────────────────────────────────
         var catGO = CreateRect(stagePanelGO, "CategoryLabel", new Vector2(200, 520), new Vector2(900, 70));
         var catTMP = catGO.AddComponent<TextMeshProUGUI>();
@@ -184,6 +194,9 @@ public class SceneBuilder : MonoBehaviour
         ui.optionsContainer = bottomPanel.transform;
         ui.optionButtonPrefab = null; // unused — drag/drop only
         ui.draggableTagPrefab = tagPrefabGO;
+
+        // Narrator
+        ui.narratorLabel = narratorTMP;
 
         // Drop zones
         ui.dropZoneClothing = dropZones[0];
