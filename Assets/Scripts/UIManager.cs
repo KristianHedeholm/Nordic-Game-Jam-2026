@@ -15,8 +15,14 @@ public class UIManager : MonoBehaviour
     public CurtainAnimator curtainAnimator;
     public TMP_Text riddleText;
     public TMP_Text categoryLabel;
-    public Transform optionsContainer;
-    public Button optionButtonPrefab;
+    public Transform optionsContainer;   // scatter area for draggable tags
+    public Button optionButtonPrefab;    // kept for fallback
+
+    [Header("Drag & Drop")]
+    public TagDropZone dropZoneClothing;
+    public TagDropZone dropZoneColor;
+    public TagDropZone dropZoneMaterial;
+    public GameObject draggableTagPrefab; // spawned at runtime by SceneBuilder
 
     [Header("Answer Tracker")]
     public TMP_Text trackerClothing;
@@ -204,33 +210,78 @@ public class UIManager : MonoBehaviour
     {
         HideAllOverlays();
         stagePanel?.SetActive(true);
+        if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(true);
         categoryLabel.text = $"What is the King's <b>{category}</b>?";
 
-        // Spawn buttons hidden
+        // Activate the correct drop zone, dim the others
+        ActivateDropZone(category, onChosen);
+
+        // Clear old tags
         ClearOptions();
-        foreach (var option in options)
+
+        // Scatter draggable tags — hidden until riddle finishes
+        var tags = new List<GameObject>();
+        if (draggableTagPrefab != null)
         {
-            var btn = Instantiate(optionButtonPrefab, optionsContainer);
-            btn.gameObject.SetActive(false); // hidden until riddle done
-            btn.GetComponentInChildren<TMP_Text>().text = option;
-            string captured = option;
-            btn.onClick.RemoveAllListeners();
-            btn.onClick.AddListener(() =>
+            float areaW = 1600f;
+            float areaH = 260f;
+            float startX = -areaW / 2f + 150f;
+            float spacing = areaW / (options.Count + 1);
+
+            for (int idx = 0; idx < options.Count; idx++)
             {
-                AudioManager.Instance?.PlayButtonClick();
-                if (UnityEngine.Random.value > 0.5f) AudioManager.Instance?.PlayCrowdCheerGood();
-                else AudioManager.Instance?.PlayCrowdCheerBad();
-                onChosen(captured);
-            });
+                var tagGO = Instantiate(draggableTagPrefab, optionsContainer);
+                tagGO.SetActive(false);
+                var rt = tagGO.GetComponent<RectTransform>();
+                // Scatter randomly along the bottom, slight vertical variation
+                float x = startX + spacing * (idx + 1) + UnityEngine.Random.Range(-40f, 40f);
+                float y = UnityEngine.Random.Range(-80f, 80f);
+                rt.anchoredPosition = new Vector2(x, y);
+
+                var drag = tagGO.GetComponent<DraggableTag>();
+                drag.value = options[idx];
+                tagGO.GetComponentInChildren<TMP_Text>().text = options[idx];
+                tags.Add(tagGO);
+            }
         }
 
-        // Type riddle, then reveal buttons
+        // Type riddle, then reveal tags
         AudioManager.Instance?.PlayKingTalk();
         SetText(riddleText, riddle, () =>
         {
-            // Riddle fully typed — show buttons
-            SetOptionsVisible(true);
+            foreach (var t in tags) t.SetActive(true);
         });
+    }
+
+    void ActivateDropZone(string category, Action<string> onChosen)
+    {
+        // Dim all, activate current
+        dropZoneClothing?.SetActive(category == "Clothing");
+        dropZoneColor?.SetActive(category == "Color");
+        dropZoneMaterial?.SetActive(category == "Material");
+
+        TagDropZone zone = category switch
+        {
+            "Clothing" => dropZoneClothing,
+            "Color"    => dropZoneColor,
+            "Material" => dropZoneMaterial,
+            _          => null
+        };
+
+        if (zone != null)
+        {
+            zone.onAnswered = (chosen) =>
+            {
+                UpdateAnswerTracker(category, chosen, false);
+                switch (category)
+                {
+                    case "Clothing": if (trackerClothing) trackerClothing.text = $"Garment: {chosen}"; break;
+                    case "Color":    if (trackerColor)    trackerColor.text    = $"Color: {chosen}";    break;
+                    case "Material": if (trackerMaterial) trackerMaterial.text = $"Material: {chosen}"; break;
+                }
+                onChosen(chosen);
+            };
+        }
     }
 
     // ── REACTION SCREENS ──────────────────────────────────────────────────
