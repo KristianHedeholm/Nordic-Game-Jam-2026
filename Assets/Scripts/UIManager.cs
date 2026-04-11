@@ -133,14 +133,14 @@ public class UIManager : MonoBehaviour
         loadingPanel.SetActive(true);
         ClearOptions();
         SetText(riddleText, "...");
-        SetText(categoryLabel, "");
+        categoryLabel.text = "";
     }
 
     public void ShowGuessPanel(string category, string riddle, List<string> options, Action<string> onChosen)
     {
         HideAllOverlays();
         stagePanel?.SetActive(true);
-        SetText(categoryLabel, $"What is the King's <b>{category}</b>?");
+        categoryLabel.text = $"What is the King's <b>{category}</b>?";
         SetText(riddleText, riddle);
         AudioManager.Instance?.PlayKingTalk();
 
@@ -204,7 +204,7 @@ public class UIManager : MonoBehaviour
         HideAllOverlays();
         stagePanel?.SetActive(true);
         ClearOptions();
-        SetText(categoryLabel, "");
+        categoryLabel.text = "";
         SetText(riddleText, "...");
 
         bool allCorrect = state.GuessedClothing == state.TargetClothing &&
