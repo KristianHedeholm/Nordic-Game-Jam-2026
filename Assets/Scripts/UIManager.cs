@@ -119,10 +119,11 @@ public class UIManager : MonoBehaviour
         {
             revealPanel.SetActive(true);
             revealText.text =
-                $"You guessed: a <b>{color} {material} {clothing}</b>.\n\n" +
-                $"The curtain falls...\n\n" +
-                $"The King stands before you.\n\n" +
-                $"He is wearing... <b>absolutely nothing at all.</b>";
+                $"*The King claps enthusiastically!*\n\n" +
+                $"\"MAGNIFICENT! A <b>{color} {material} {clothing}</b>! You truly have the finest eyes in the land!\"\n\n" +
+                $"\"I would like you to be my personal <b>Fashion Guru</b>!\"\n\n" +
+                $"He steps forward to reveal his glorious outfit...\n\n" +
+                $"<i>He is wearing absolutely nothing at all.</i>";
             revealContinueButton.onClick.RemoveAllListeners();
             revealContinueButton.onClick.AddListener(() => GameManager.Instance.GoToPhase(GamePhase.FinalJudgment));
         });
@@ -164,12 +165,22 @@ public class UIManager : MonoBehaviour
         HideAllOverlays();
         stagePanel?.SetActive(false);
         deathPanel.SetActive(true);
+        var state = GameManager.Instance.State;
+        string wrongGuess = "";
+        if (state.GuessedClothing != null && state.GuessedClothing != state.TargetClothing)
+            wrongGuess = $"A <b>{state.GuessedClothing}</b>?! The King wears a <b>{state.TargetClothing}</b>!";
+        else if (state.GuessedColor != null && state.GuessedColor != state.TargetColor)
+            wrongGuess = $"<b>{state.GuessedColor}</b>?! The King's colour is <b>{state.TargetColor}</b>!";
+        else if (state.GuessedMaterial != null && state.GuessedMaterial != state.TargetMaterial)
+            wrongGuess = $"<b>{state.GuessedMaterial}</b>?! The King's fabric is <b>{state.TargetMaterial}</b>!";
+        else
+            wrongGuess = "You dared to speak the truth!";
+
         deathText.text =
             "The King's eyes narrow.\n\n" +
-            "\"NAKED?!\"\n\n" +
+            $"\"{wrongGuess}\"\n\n" +
             "\"GUARDS! OFF WITH THEIR HEAD!\"\n\n" +
-            "You told the truth.\nIt didn't matter.\n\n" +
-            "<i>It never does.</i>";
+            "<i>You should have lied.</i>";
         deathPlayAgainButton.onClick.RemoveAllListeners();
         deathPlayAgainButton.onClick.AddListener(() => GameManager.Instance.OnPlayAgain());
     }

@@ -81,7 +81,17 @@ public class GameManager : MonoBehaviour
                     case "Color":    State.GuessedColor    = chosen; break;
                     case "Material": State.GuessedMaterial = chosen; break;
                 }
-                GoToPhase(nextPhase);
+
+                // Check if the guess is correct
+                if (chosen != target)
+                {
+                    // Wrong answer — instant death
+                    GoToPhase(GamePhase.DeathScreen);
+                }
+                else
+                {
+                    GoToPhase(nextPhase);
+                }
             });
         });
     }
