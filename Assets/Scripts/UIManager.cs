@@ -385,9 +385,9 @@ public class UIManager : MonoBehaviour
                 AudioManager.Instance?.PlayKingLaugh();
                 kingPoseProud?.Invoke(true);
 
-                // Narrator text under speech bubble
+                // Narrator text — shown as part of reveal bubble text after king speech
                 if (narratorLabel != null)
-                    narratorLabel.text = "Says the King, obviously wearing... <b>NOTHING.</b>";
+                    narratorLabel.text = "<i>...says the King.\nObviously wearing <b>absolutely nothing.</b></i>";
 
                 // Phase 2: Reveal panel shows — king says something short
                 revealPanel.SetActive(true);

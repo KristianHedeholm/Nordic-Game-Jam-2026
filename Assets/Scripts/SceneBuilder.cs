@@ -133,14 +133,14 @@ public class SceneBuilder : MonoBehaviour
         riddleTMP.text = "..."; riddleTMP.fontSize = 26; riddleTMP.fontStyle = FontStyles.Italic;
         riddleTMP.color = new Color(0.1f, 0.05f, 0.15f); riddleTMP.alignment = TextAlignmentOptions.Center; riddleTMP.enableWordWrapping = true;
 
-        // ── NARRATOR LABEL (shown during reveal) ─────────────────────────────
-        var narratorGO = CreateRect(stagePanelGO, "NarratorLabel", new Vector2(200, 195), new Vector2(900, 50));
+        // ── NARRATOR LABEL — sits below the speech bubble, visible on reveal ──
+        var narratorGO = CreateRect(stagePanelGO, "NarratorLabel", new Vector2(200, 195), new Vector2(800, 70));
         var narratorTMP = narratorGO.AddComponent<TextMeshProUGUI>();
         narratorTMP.text = "";
-        narratorTMP.fontSize = 22;
+        narratorTMP.fontSize = 24;
         narratorTMP.fontStyle = FontStyles.Italic;
         narratorTMP.alignment = TextAlignmentOptions.Center;
-        narratorTMP.color = new Color(0.8f, 0.75f, 0.9f, 0.85f);
+        narratorTMP.color = new Color(0.95f, 0.9f, 1f);
         narratorTMP.enableWordWrapping = true;
 
         // ── CATEGORY LABEL ────────────────────────────────────────────────────
