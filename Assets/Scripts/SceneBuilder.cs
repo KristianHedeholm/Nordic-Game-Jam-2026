@@ -164,6 +164,35 @@ public class SceneBuilder : MonoBehaviour
         curtainAnim.curtainLeft  = curtainL.GetComponent<RectTransform>();
         curtainAnim.curtainRight = curtainR.GetComponent<RectTransform>();
 
+        // ── ANSWER TRACKER (left side panel) ─────────────────────────────
+        var trackerBg = CreateRect(stagePanelGO, "TrackerBg", new Vector2(-780, 200), new Vector2(280, 220));
+        AddImage(trackerBg, new Color(0.08f, 0.05f, 0.15f, 0.9f));
+
+        // Tracker title
+        var trackerTitle = CreateRect(trackerBg, "TrackerTitle", new Vector2(0, 78), new Vector2(260, 40));
+        var ttmp = trackerTitle.AddComponent<TextMeshProUGUI>();
+        ttmp.text = "YOUR GUESSES";
+        ttmp.fontSize = 18;
+        ttmp.fontStyle = FontStyles.Bold;
+        ttmp.alignment = TextAlignmentOptions.Center;
+        ttmp.color = new Color(1f, 0.85f, 0.3f);
+
+        // Tracker rows
+        var tClothing = CreateRect(trackerBg, "TrackerClothing", new Vector2(0, 30), new Vector2(250, 40));
+        var tcTmp = tClothing.AddComponent<TextMeshProUGUI>();
+        tcTmp.text = "Garment: ?"; tcTmp.fontSize = 22; tcTmp.color = Color.white;
+        tcTmp.alignment = TextAlignmentOptions.Center;
+
+        var tColor = CreateRect(trackerBg, "TrackerColor", new Vector2(0, -15), new Vector2(250, 40));
+        var tcoTmp = tColor.AddComponent<TextMeshProUGUI>();
+        tcoTmp.text = "Color: ?"; tcoTmp.fontSize = 22; tcoTmp.color = Color.white;
+        tcoTmp.alignment = TextAlignmentOptions.Center;
+
+        var tMaterial = CreateRect(trackerBg, "TrackerMaterial", new Vector2(0, -60), new Vector2(250, 40));
+        var tmTmp = tMaterial.AddComponent<TextMeshProUGUI>();
+        tmTmp.text = "Material: ?"; tmTmp.fontSize = 22; tmTmp.color = Color.white;
+        tmTmp.alignment = TextAlignmentOptions.Center;
+
         // ── SPEECH BUBBLE ─────────────────────────────────────────────────
         var bubblePanel = CreateRect(stagePanelGO, "SpeechBubble", new Vector2(420, 240), new Vector2(680, 220));
         AddImage(bubblePanel, new Color(0.97f, 0.95f, 0.88f));
@@ -229,6 +258,11 @@ public class SceneBuilder : MonoBehaviour
         ui.reactionPanel = reactionPanel.root;
         ui.reactionText  = reactionPanel.text;
         ui.reactionBg    = reactionPanel.root.GetComponent<Image>();
+
+        // Tracker
+        ui.trackerClothing = tcTmp;
+        ui.trackerColor    = tcoTmp;
+        ui.trackerMaterial = tmTmp;
 
         // Stage UI refs
         ui.stagePanel       = stagePanelGO;

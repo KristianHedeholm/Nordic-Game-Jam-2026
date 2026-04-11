@@ -18,6 +18,11 @@ public class UIManager : MonoBehaviour
     public Transform optionsContainer;
     public Button optionButtonPrefab;
 
+    [Header("Answer Tracker")]
+    public TMP_Text trackerClothing;
+    public TMP_Text trackerColor;
+    public TMP_Text trackerMaterial;
+
     [Header("Reaction Overlay")]
     public GameObject reactionPanel;
     public TMP_Text reactionText;
@@ -69,9 +74,34 @@ public class UIManager : MonoBehaviour
             Destroy(child.gameObject);
     }
 
+    public void ResetTracker()
+    {
+        if (trackerClothing)  trackerClothing.text  = "Garment: ?";
+        if (trackerColor)     trackerColor.text     = "Color: ?";
+        if (trackerMaterial)  trackerMaterial.text  = "Material: ?";
+        if (trackerClothing)  trackerClothing.color  = Color.white;
+        if (trackerColor)     trackerColor.color     = Color.white;
+        if (trackerMaterial)  trackerMaterial.color  = Color.white;
+    }
+
+    public void UpdateAnswerTracker(string category, string answer, bool correct)
+    {
+        TMP_Text target = category switch
+        {
+            "Clothing" => trackerClothing,
+            "Color"    => trackerColor,
+            "Material" => trackerMaterial,
+            _          => null
+        };
+        if (target == null) return;
+        target.text  = $"{category}: {answer}";
+        target.color = Color.white; // grey until reveal
+    }
+
     public void ShowIntro()
     {
         HideAllOverlays();
+        ResetTracker();
         stagePanel?.SetActive(false);
         curtainAnimator?.CloseCurtains();
         introPanel.SetActive(true);
@@ -146,7 +176,7 @@ public class UIManager : MonoBehaviour
 
     // ── REVEAL ────────────────────────────────────────────────────────────
 
-    public void ShowReveal(string color, string clothing, string material)
+    public void ShowReveal(GameState state)
     {
         HideAllOverlays();
         stagePanel?.SetActive(true);
@@ -154,18 +184,61 @@ public class UIManager : MonoBehaviour
         categoryLabel.text = "";
         riddleText.text = "...";
 
+        // Colour the tracker entries green/red
+        RevealTrackerResult(trackerClothing,  "Garment",  state.GuessedClothing,  state.TargetClothing);
+        RevealTrackerResult(trackerColor,     "Color",    state.GuessedColor,     state.TargetColor);
+        RevealTrackerResult(trackerMaterial,  "Material", state.GuessedMaterial,  state.TargetMaterial);
+
+        bool allCorrect = state.GuessedClothing == state.TargetClothing &&
+                          state.GuessedColor    == state.TargetColor    &&
+                          state.GuessedMaterial == state.TargetMaterial;
+
         curtainAnimator?.OpenCurtains(() =>
         {
             revealPanel.SetActive(true);
-            revealText.text =
-                $"*The King claps enthusiastically!*\n\n" +
-                $"\"MAGNIFICENT! A <b>{color} {material} {clothing}</b>!\"\n\n" +
-                $"\"You shall be my personal <b>Fashion Guru</b>!\"\n\n" +
-                $"He steps forward proudly...\n\n" +
-                $"<i>He is wearing absolutely nothing at all.</i>";
+
+            if (allCorrect)
+            {
+                revealText.text =
+                    $"*The King claps enthusiastically!*\n\n" +
+                    $"\"MAGNIFICENT! A <b>{state.TargetColor} {state.TargetMaterial} {state.TargetClothing}</b>!\"\n\n" +
+                    $"\"You shall be my personal <b>Fashion Guru</b>!\"\n\n" +
+                    $"He steps forward proudly...\n\n" +
+                    $"<i>He is wearing absolutely nothing at all.</i>";
+            }
+            else
+            {
+                revealText.text =
+                    $"The King peers at your answers...\n\n" +
+                    $"Some were right. Some were... not.\n\n" +
+                    $"He steps forward to show you his outfit...\n\n" +
+                    $"<i>He is wearing absolutely nothing at all.</i>";
+            }
+
             revealContinueButton.onClick.RemoveAllListeners();
-            revealContinueButton.onClick.AddListener(() => GameManager.Instance.GoToPhase(GamePhase.FinalJudgment));
+            revealContinueButton.onClick.AddListener(() =>
+            {
+                if (allCorrect)
+                    GameManager.Instance.GoToPhase(GamePhase.FinalJudgment);
+                else
+                    GameManager.Instance.GoToPhase(GamePhase.DeathScreen);
+            });
         });
+    }
+
+    void RevealTrackerResult(TMP_Text label, string category, string guessed, string correct)
+    {
+        if (label == null) return;
+        if (guessed == correct)
+        {
+            label.text  = $"<b>{category}: {guessed} ✓</b>";
+            label.color = new Color(0.3f, 1f, 0.4f);
+        }
+        else
+        {
+            label.text  = $"<b>{category}: {guessed} ✗</b>\n<size=18>({correct})</size>";
+            label.color = new Color(1f, 0.3f, 0.3f);
+        }
     }
 
     public void ShowFinalJudgment()

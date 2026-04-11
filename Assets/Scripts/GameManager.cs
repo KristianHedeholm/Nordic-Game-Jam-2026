@@ -74,7 +74,7 @@ public class GameManager : MonoBehaviour
                     CorrectMaterialPraise[Random.Range(0, CorrectMaterialPraise.Length)]);
                 break;
             case GamePhase.Reveal:
-                uiManager.ShowReveal(State.GuessedColor, State.GuessedClothing, State.GuessedMaterial);
+                uiManager.ShowReveal(State);
                 break;
             case GamePhase.FinalJudgment:
                 uiManager.ShowFinalJudgment();
@@ -103,15 +103,9 @@ public class GameManager : MonoBehaviour
                     case "Material": State.GuessedMaterial = chosen; break;
                 }
 
-                if (chosen != target)
-                {
-                    string insult = WrongInsults[Random.Range(0, WrongInsults.Length)];
-                    uiManager.ShowWrongAnswerReaction(insult, () => GoToPhase(GamePhase.DeathScreen));
-                }
-                else
-                {
-                    uiManager.ShowCorrectAnswerReaction(praiseLine, () => GoToPhase(nextPhase));
-                }
+                // Always continue — result revealed at the end
+                uiManager.UpdateAnswerTracker(category, chosen, chosen == target);
+                GoToPhase(nextPhase);
             });
         });
     }
