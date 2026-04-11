@@ -89,7 +89,7 @@ public class SceneBuilder : MonoBehaviour
         gm.uiManager       = ui;
         gm.riddleGenerator = rg;
 
-        // Deactivate all panels — UIManager.Start() will show intro
+        // Hide all panels first, then GameManager.Start() will show intro
         introPanel.root.SetActive(false);
         loadingPanel.root.SetActive(false);
         guessPanel.root.SetActive(false);
@@ -97,6 +97,9 @@ public class SceneBuilder : MonoBehaviour
         judgmentPanel.root.SetActive(false);
         winPanel.root.SetActive(false);
         deathPanel.root.SetActive(false);
+
+        // Manually kick off the game now that everything is wired
+        gm.StartGame();
     }
 
     // ─────────────────────────────────────────────────────────────────────────

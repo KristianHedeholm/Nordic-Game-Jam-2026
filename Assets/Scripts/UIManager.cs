@@ -45,11 +45,6 @@ public class UIManager : MonoBehaviour
     public TMP_Text deathText;
     public Button deathPlayAgainButton;
 
-    void Start()
-    {
-        HideAll();
-    }
-
     void HideAll()
     {
         introPanel?.SetActive(false);
