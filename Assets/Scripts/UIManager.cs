@@ -202,7 +202,7 @@ public class UIManager : MonoBehaviour
                     $"*The King claps with wild enthusiasm!*\n\n" +
                     $"\"SPECTACULAR! A <b>{state.TargetColor} {state.TargetMaterial} {state.TargetClothing}</b>! You are a <b>genius</b>!\"\n\n" +
                     $"\"I have SO many other magnificent outfits...\"\n\n" +
-                    $"<i>He stands before you. Gloriously naked.</i>";
+                    $"<i>He stands before you. Gloriously wearing nothing at all.</i>";
             }
             else
             {
@@ -210,7 +210,7 @@ public class UIManager : MonoBehaviour
                     $"The King narrows his eyes at your answers.\n\n" +
                     $"\"Hmm. <i>Disappointing.</i> But I am a <b>generous</b> King.\"\n\n" +
                     $"\"Perhaps you simply need more practice...\"\n\n" +
-                    $"<i>He stands before you. Gloriously naked.</i>";
+                    $"<i>He stands before you. Gloriously wearing nothing at all.</i>";
             }
 
             revealContinueButton.onClick.RemoveAllListeners();
@@ -245,9 +245,9 @@ public class UIManager : MonoBehaviour
             finalText.text =
                 "The King beams at you with absolute pride.\n\n" +
                 "\"You have <b>magnificent</b> taste! Would you like to guess\nanother one of my spectacular outfits?\"\n\n" +
-                "<i>He is, of course, still naked.</i>";
+                "<i>He is, of course, still wearing nothing at all.</i>";
             flatterButton.GetComponentInChildren<TMP_Text>().text = "\"Yes Your Majesty, it would be an honour!\"";
-            truthButton.GetComponentInChildren<TMP_Text>().text   = "\"...Why are you naked?\"";
+            truthButton.GetComponentInChildren<TMP_Text>().text   = "\"...Why are you wearing nothing?\"";
         }
         else
         {
@@ -255,9 +255,9 @@ public class UIManager : MonoBehaviour
                 "The King sighs dramatically.\n\n" +
                 "\"You clearly need more practice appreciating\nmy <b>extraordinary</b> fashion sense.\"\n\n" +
                 "\"Would you like to try again and improve yourself?\"\n\n" +
-                "<i>He is, of course, still naked.</i>";
+                "<i>He is, of course, still wearing nothing at all.</i>";
             flatterButton.GetComponentInChildren<TMP_Text>().text = "\"Yes Your Majesty, please give me another chance!\"";
-            truthButton.GetComponentInChildren<TMP_Text>().text   = "\"...Why are you naked?\"";
+            truthButton.GetComponentInChildren<TMP_Text>().text   = "\"...Why are you wearing nothing?\"";
         }
 
         flatterButton.onClick.RemoveAllListeners();
@@ -281,7 +281,7 @@ public class UIManager : MonoBehaviour
             "The King claps with delight!\n\n" +
             "\"YES! You truly have the finest eyes in all the kingdom!\"\n\n" +
             "You survive. The King is happy.\nThe kingdom is at peace.\n\n" +
-            "<i>(He is still naked.)</i>";
+            "<i>(He is still wearing nothing at all.)</i>";
         winPlayAgainButton.onClick.RemoveAllListeners();
         winPlayAgainButton.onClick.AddListener(() => GameManager.Instance.OnPlayAgain());
     }

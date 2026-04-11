@@ -403,7 +403,7 @@ public class SceneBuilder : MonoBehaviour
 
         // Two small buttons at bottom
         var flatterBtn = BuildButton(root, "FlatterBtn", "\"Yes Your Majesty!\"",  new Vector2(-320, -460), new Vector2(520, 65), new Color(0.1f, 0.45f, 0.18f));
-        var truthBtn   = BuildButton(root, "TruthBtn",   "\"...Why are you naked?\"", new Vector2(280, -460), new Vector2(400, 65), new Color(0.5f, 0.08f, 0.08f));
+        var truthBtn   = BuildButton(root, "TruthBtn",   "\"...Why are you wearing nothing?\"", new Vector2(280, -460), new Vector2(400, 65), new Color(0.5f, 0.08f, 0.08f));
         return new JudgPanel { root = root, text = tmp, flatterBtn = flatterBtn, truthBtn = truthBtn };
     }
 
