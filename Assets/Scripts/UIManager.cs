@@ -228,12 +228,13 @@ public class UIManager : MonoBehaviour
     {
         HideAllOverlays();
         stagePanel?.SetActive(true);
-        loadingPanel.SetActive(true);
         ClearOptions();
-        riddleText.text = "...";
         categoryLabel.text = "";
-        // Make sure bubble is visible for guessing phase
-        if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(true);
+        if (riddleText != null)
+        {
+            riddleText.transform.parent.gameObject.SetActive(true);
+            riddleText.text = "...";
+        }
     }
 
     // ── GUESS PANEL — riddle first, buttons appear after ─────────────────
@@ -241,6 +242,8 @@ public class UIManager : MonoBehaviour
     public void ShowGuessPanel(string category, string riddle, List<string> options, Action<string> onChosen)
     {
         HideAllOverlays();
+        // Force hide loading panel explicitly
+        loadingPanel?.SetActive(false);
         stagePanel?.SetActive(true);
         if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(true);
         categoryLabel.text = $"What is the King's <b>{category}</b>?";
