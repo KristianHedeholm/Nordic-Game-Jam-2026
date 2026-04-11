@@ -13,6 +13,12 @@ namespace RawPowerLabs.DynamicAI.Editor.Utility
 			var diamondFolderPath = Path.Combine(Application.streamingAssetsPath, DiamondUtility.DiamondPath);
 			return Directory.Exists(diamondFolderPath);
 		}
+		
+		private static bool DoesDiamondFolderWithNameExist(string diamondName)
+		{
+			var diamondFolderPath = Path.Combine(Application.streamingAssetsPath, DiamondUtility.DiamondPath, diamondName);
+			return Directory.Exists(diamondFolderPath);
+		}
 
 		[MenuItem("Raw Power Labs/Dynamic AI/Create Streaming Assets Diamond Folder", false)]
 		public static void CreateDiamondFolder()
@@ -40,6 +46,23 @@ namespace RawPowerLabs.DynamicAI.Editor.Utility
 		public static bool CheckIfDiamondFolderExist()
 		{
 			return !DoesFolderWithDiamondsExist();
+		}
+		
+		public static bool ValidateDiamondName(string diamondName)
+		{
+			if (string.IsNullOrEmpty(diamondName))
+			{
+				UnityEngine.Debug.LogError($"diamondName is null or empty");
+				return false;
+			}
+	
+			if (!DoesDiamondFolderWithNameExist(diamondName))
+			{
+				UnityEngine.Debug.LogError($"the folder for {diamondName} doesn't exist");
+				return false;
+			}
+
+			return true;
 		}
 	}
 }

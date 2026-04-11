@@ -5,6 +5,7 @@ using RawPowerLabs.DynamicAI.Utility;
 
 public class Diamond : MonoBehaviour
 {
+	[HideInInspector]
     [SerializeField]
     private string _diamondName;
     
