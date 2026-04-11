@@ -254,12 +254,15 @@ public class UIManager : MonoBehaviour
         // Clear old tags
         ClearOptions();
 
-        // Scatter draggable tags — hidden until riddle finishes
+        // Scatter draggable tags
         var tags = new List<GameObject>();
-        if (draggableTagPrefab != null)
+        if (draggableTagPrefab == null)
         {
-            float areaW = 1600f;
-            float areaH = 260f;
+            Debug.LogError("[UIManager] draggableTagPrefab is null! Tags cannot be spawned.");
+        }
+        else
+        {
+            float areaW = 1400f;
             float startX = -areaW / 2f + 150f;
             float spacing = areaW / (options.Count + 1);
 
@@ -268,24 +271,31 @@ public class UIManager : MonoBehaviour
                 var tagGO = Instantiate(draggableTagPrefab, optionsContainer);
                 tagGO.SetActive(false);
                 var rt = tagGO.GetComponent<RectTransform>();
-                // Scatter randomly along the bottom, slight vertical variation
-                float x = startX + spacing * (idx + 1) + UnityEngine.Random.Range(-40f, 40f);
-                float y = UnityEngine.Random.Range(-80f, 80f);
+                float x = startX + spacing * (idx + 1) + UnityEngine.Random.Range(-30f, 30f);
+                float y = UnityEngine.Random.Range(-60f, 60f);
                 rt.anchoredPosition = new Vector2(x, y);
 
                 var drag = tagGO.GetComponent<DraggableTag>();
-                drag.value = options[idx];
-                tagGO.GetComponentInChildren<TMP_Text>().text = options[idx];
+                if (drag != null) drag.value = options[idx];
+                var lbl = tagGO.GetComponentInChildren<TMP_Text>();
+                if (lbl != null) lbl.text = options[idx];
                 tags.Add(tagGO);
             }
         }
 
-        // Type riddle, then reveal tags
+        // Type riddle, reveal tags after — if typewriter fails, show after 3s fallback
         AudioManager.Instance?.PlayKingTalk();
-        SetText(riddleText, riddle, () =>
-        {
-            foreach (var t in tags) t.SetActive(true);
-        });
+        bool tagsShown = false;
+        void ShowTags() { if (tagsShown) return; tagsShown = true; foreach (var t in tags) t?.SetActive(true); }
+
+        SetText(riddleText, riddle, () => ShowTags());
+        StartCoroutine(FallbackShowTags(3f, () => ShowTags()));
+    }
+
+    IEnumerator FallbackShowTags(float delay, Action show)
+    {
+        yield return new UnityEngine.WaitForSeconds(delay);
+        show?.Invoke();
     }
 
     void ActivateDropZone(string category, Action<string> onChosen)
