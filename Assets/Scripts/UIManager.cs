@@ -152,15 +152,19 @@ public class UIManager : MonoBehaviour
 
     void ShowSlide(int index)
     {
-        SetText(introText, IntroSlides[index], () =>
-        {
-            // Typewriter done — update button label
-            bool isLast = index >= IntroSlides.Length - 1;
-            introStartButton.GetComponentInChildren<TMP_Text>().text = isLast ? "ENTER THE ROYAL COURT" : "Next →";
-        });
-
         bool isLast = index >= IntroSlides.Length - 1;
+
+        // Swap button sprite: Next vs Start
+        var btnImg = introStartButton.GetComponent<Image>();
+        if (btnImg != null)
+        {
+            var sprite = Resources.Load<Sprite>(isLast ? "Art/Button_Start" : "Art/Button_Next");
+            if (sprite != null) btnImg.sprite = sprite;
+        }
         introStartButton.GetComponentInChildren<TMP_Text>().text = isLast ? "ENTER THE ROYAL COURT" : "Next →";
+
+        SetText(introText, IntroSlides[index]);
+
         introStartButton.onClick.RemoveAllListeners();
         introStartButton.onClick.AddListener(() =>
         {

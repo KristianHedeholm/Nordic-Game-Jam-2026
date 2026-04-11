@@ -150,7 +150,7 @@ public static class GameUIBuilder
         introTitle.color = new Color(1f, 0.85f, 0.3f);
         var introBody = AddTMP(introPanel, "Body", "", 30, FontStyles.Normal, new Vector2(0, -80), new Vector2(1000, 350));
         introBody.alignment = TextAlignmentOptions.Center; introBody.color = new Color(0.9f, 0.85f, 1f);
-        var introBtn = CreateButton(introPanel, "StartButton", "ENTER THE ROYAL COURT", new Vector2(0, -340), new Vector2(560, 90), new Color(0.45f, 0.22f, 0.65f));
+        var introBtn = CreateSpriteButton(introPanel, "StartButton", "ENTER THE ROYAL COURT", new Vector2(0, -340), new Vector2(642, 125), "Art/Button_Start");
 
         // Loading
         var loadPanel = CreateFull(canvasGO, "LoadingPanel");
@@ -354,6 +354,44 @@ public static class GameUIBuilder
         var cb = btn.colors;
         cb.highlightedColor = color * 1.3f; cb.pressedColor = color * 0.7f;
         btn.colors = cb;
+    }
+
+    /// <summary>Creates a button using a sprite from Resources/ as its background.</summary>
+    static Button CreateSpriteButton(GameObject parent, string name, string label, Vector2 pos, Vector2 size, string spritePath)
+    {
+        var go = CreateRect(parent, name, pos, size);
+        var img = go.AddComponent<Image>();
+        img.color = Color.white;
+
+        // Load sprite from Resources at editor time
+        var sprite = UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>($"Assets/Resources/{spritePath}.png");
+        if (sprite != null)
+        {
+            img.sprite = sprite;
+            img.type   = Image.Type.Sliced;
+        }
+        else
+        {
+            img.color = new Color(0.45f, 0.22f, 0.65f);
+            Debug.LogWarning($"[GameUIBuilder] Sprite not found at Assets/Resources/{spritePath}.png");
+        }
+
+        var btn = go.AddComponent<Button>();
+        var cb  = btn.colors;
+        cb.highlightedColor = new Color(0.9f, 0.9f, 0.9f);
+        cb.pressedColor     = new Color(0.6f, 0.6f, 0.6f);
+        btn.colors = cb;
+
+        var lGO = new GameObject("Label");
+        lGO.transform.SetParent(go.transform, false);
+        var lRT = lGO.AddComponent<RectTransform>();
+        lRT.anchorMin = Vector2.zero; lRT.anchorMax = Vector2.one; lRT.sizeDelta = Vector2.zero;
+        var tmp = lGO.AddComponent<TextMeshProUGUI>();
+        tmp.text = label; tmp.fontSize = 26; tmp.fontStyle = FontStyles.Bold;
+        tmp.alignment = TextAlignmentOptions.Center;
+        tmp.color = new Color(0.15f, 0.08f, 0.25f); // dark text on light sprite
+        tmp.enableWordWrapping = false;
+        return btn;
     }
 #endif
 }

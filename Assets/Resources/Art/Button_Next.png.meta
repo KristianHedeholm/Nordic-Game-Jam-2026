@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 788e8186142d47e9a1e0f274e3b99ff1
+TextureImporter:
+  serializedVersion: 12
+  mipmaps:
+    enableMipMap: 0
+  spriteMode: 1
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 20, y: 20, z: 20, w: 20}
+  alphaIsTransparency: 1
+  textureType: Sprite
+  textureShape: 1
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
