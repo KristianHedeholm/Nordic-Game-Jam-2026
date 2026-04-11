@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 /// <summary>
 /// Typewriter effect for TextMeshPro text.
@@ -52,8 +53,9 @@ public class TypewriterEffect : MonoBehaviour
 
     void Update()
     {
-        // Click or any key to skip
-        if (isTyping && (Input.GetMouseButtonDown(0) || Input.anyKeyDown))
+        // Click or any key to skip (new Input System)
+        if (isTyping && (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame ||
+                         Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame))
             Skip();
     }
 
