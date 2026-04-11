@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using TMPro;
 
 /// <summary>
@@ -23,7 +24,7 @@ public class SceneBuilder : MonoBehaviour
         {
             var esGO = new GameObject("EventSystem");
             esGO.AddComponent<EventSystem>();
-            esGO.AddComponent<StandaloneInputModule>();
+            esGO.AddComponent<InputSystemUIInputModule>();
         }
 
         // ── CAMERA SETUP ─────────────────────────────────────────────────────
