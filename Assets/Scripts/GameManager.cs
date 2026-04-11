@@ -94,22 +94,37 @@ public class GameManager : MonoBehaviour
     private void FetchRiddleAndShow(string category, string target, System.Collections.Generic.List<string> options, GamePhase nextPhase, string praiseLine)
     {
         uiManager.ShowLoading();
-        riddleGenerator.GetRiddle(target, category, riddle =>
-        {
-            State.CurrentRiddle = riddle;
-            uiManager.ShowGuessPanel(category, riddle, options, chosen =>
-            {
-                switch (category)
-                {
-                    case "Clothing": State.GuessedClothing = chosen; break;
-                    case "Color":    State.GuessedColor    = chosen; break;
-                    case "Material": State.GuessedMaterial = chosen; break;
-                }
+        StartCoroutine(DoFetch(category, target, options, nextPhase));
+    }
 
-                // Always continue — result revealed at the end
-                uiManager.UpdateAnswerTracker(category, chosen, chosen == target);
-                GoToPhase(nextPhase);
-            });
+    private System.Collections.IEnumerator DoFetch(string category, string target, System.Collections.Generic.List<string> options, GamePhase nextPhase)
+    {
+        string riddle = null;
+        bool done = false;
+
+        if (riddleGenerator != null)
+            riddleGenerator.GetRiddle(target, category, r => { riddle = r; done = true; });
+        else
+            done = true;
+
+        // Wait max 5 seconds for riddle
+        float t = 0f;
+        while (!done && t < 5f) { yield return null; t += Time.deltaTime; }
+
+        if (string.IsNullOrEmpty(riddle))
+            riddle = "I am the finest of its kind,\nCan you guess what fills the King's mind?";
+
+        State.CurrentRiddle = riddle;
+        uiManager.ShowGuessPanel(category, riddle, options, chosen =>
+        {
+            switch (category)
+            {
+                case "Clothing": State.GuessedClothing = chosen; break;
+                case "Color":    State.GuessedColor    = chosen; break;
+                case "Material": State.GuessedMaterial = chosen; break;
+            }
+            uiManager.UpdateAnswerTracker(category, chosen, chosen == target);
+            GoToPhase(nextPhase);
         });
     }
 
