@@ -110,6 +110,12 @@ public class GameManager : MonoBehaviour
         });
     }
 
+    public void GoToFinalQuestion(bool allCorrect)
+    {
+        State.AllCorrect = allCorrect;
+        uiManager.ShowFinalQuestion(allCorrect);
+    }
+
     public void OnPlayerFlatters()  => GoToPhase(GamePhase.WinScreen);
     public void OnPlayerTruth()     => GoToPhase(GamePhase.DeathScreen);
     public void OnPlayAgain()       => StartGame();

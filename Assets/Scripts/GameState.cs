@@ -33,6 +33,9 @@ public class GameState
     // Current riddle text (set by RiddleGenerator)
     public string CurrentRiddle;
 
+    // Whether player got all 3 correct
+    public bool AllCorrect;
+
     public void NewGame()
     {
         Phase = GamePhase.Intro;

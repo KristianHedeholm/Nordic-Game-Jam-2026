@@ -184,10 +184,9 @@ public class UIManager : MonoBehaviour
         categoryLabel.text = "";
         riddleText.text = "...";
 
-        // Colour the tracker entries green/red
-        RevealTrackerResult(trackerClothing,  "Garment",  state.GuessedClothing,  state.TargetClothing);
-        RevealTrackerResult(trackerColor,     "Color",    state.GuessedColor,     state.TargetColor);
-        RevealTrackerResult(trackerMaterial,  "Material", state.GuessedMaterial,  state.TargetMaterial);
+        RevealTrackerResult(trackerClothing, "Garment",  state.GuessedClothing, state.TargetClothing);
+        RevealTrackerResult(trackerColor,    "Color",    state.GuessedColor,    state.TargetColor);
+        RevealTrackerResult(trackerMaterial, "Material", state.GuessedMaterial, state.TargetMaterial);
 
         bool allCorrect = state.GuessedClothing == state.TargetClothing &&
                           state.GuessedColor    == state.TargetColor    &&
@@ -200,29 +199,23 @@ public class UIManager : MonoBehaviour
             if (allCorrect)
             {
                 revealText.text =
-                    $"*The King claps enthusiastically!*\n\n" +
-                    $"\"MAGNIFICENT! A <b>{state.TargetColor} {state.TargetMaterial} {state.TargetClothing}</b>!\"\n\n" +
-                    $"\"You shall be my personal <b>Fashion Guru</b>!\"\n\n" +
-                    $"He steps forward proudly...\n\n" +
-                    $"<i>He is wearing absolutely nothing at all.</i>";
+                    $"*The King claps with wild enthusiasm!*\n\n" +
+                    $"\"SPECTACULAR! A <b>{state.TargetColor} {state.TargetMaterial} {state.TargetClothing}</b>! You are a <b>genius</b>!\"\n\n" +
+                    $"\"I have SO many other magnificent outfits...\"\n\n" +
+                    $"<i>He stands before you. Gloriously naked.</i>";
             }
             else
             {
                 revealText.text =
-                    $"The King peers at your answers...\n\n" +
-                    $"Some were right. Some were... not.\n\n" +
-                    $"He steps forward to show you his outfit...\n\n" +
-                    $"<i>He is wearing absolutely nothing at all.</i>";
+                    $"The King narrows his eyes at your answers.\n\n" +
+                    $"\"Hmm. <i>Disappointing.</i> But I am a <b>generous</b> King.\"\n\n" +
+                    $"\"Perhaps you simply need more practice...\"\n\n" +
+                    $"<i>He stands before you. Gloriously naked.</i>";
             }
 
             revealContinueButton.onClick.RemoveAllListeners();
             revealContinueButton.onClick.AddListener(() =>
-            {
-                if (allCorrect)
-                    GameManager.Instance.GoToPhase(GamePhase.FinalJudgment);
-                else
-                    GameManager.Instance.GoToPhase(GamePhase.DeathScreen);
-            });
+                GameManager.Instance.GoToFinalQuestion(allCorrect));
         });
     }
 
@@ -241,21 +234,42 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    public void ShowFinalJudgment()
+    public void ShowFinalQuestion(bool allCorrect)
     {
         HideAllOverlays();
         stagePanel?.SetActive(true);
         finalJudgmentPanel.SetActive(true);
-        finalText.text =
-            "The King beams at you with absolute confidence.\n\n" +
-            "\"Well?\" he says. \"What do you think of my magnificent outfit?\"\n\n" +
-            "<i>Choose your words very, very carefully.</i>";
-        flatterButton.GetComponentInChildren<TMP_Text>().text = "\"Your Majesty, you look absolutely divine!\"";
-        truthButton.GetComponentInChildren<TMP_Text>().text   = "\"...You're naked.\"";
+
+        if (allCorrect)
+        {
+            finalText.text =
+                "The King beams at you with absolute pride.\n\n" +
+                "\"You have <b>magnificent</b> taste! Would you like to guess\nanother one of my spectacular outfits?\"\n\n" +
+                "<i>He is, of course, still naked.</i>";
+            flatterButton.GetComponentInChildren<TMP_Text>().text = "\"Yes Your Majesty, it would be an honour!\"";
+            truthButton.GetComponentInChildren<TMP_Text>().text   = "\"...Why are you naked?\"";
+        }
+        else
+        {
+            finalText.text =
+                "The King sighs dramatically.\n\n" +
+                "\"You clearly need more practice appreciating\nmy <b>extraordinary</b> fashion sense.\"\n\n" +
+                "\"Would you like to try again and improve yourself?\"\n\n" +
+                "<i>He is, of course, still naked.</i>";
+            flatterButton.GetComponentInChildren<TMP_Text>().text = "\"Yes Your Majesty, please give me another chance!\"";
+            truthButton.GetComponentInChildren<TMP_Text>().text   = "\"...Why are you naked?\"";
+        }
+
         flatterButton.onClick.RemoveAllListeners();
         truthButton.onClick.RemoveAllListeners();
-        flatterButton.onClick.AddListener(() => GameManager.Instance.OnPlayerFlatters());
+        flatterButton.onClick.AddListener(() => GameManager.Instance.OnPlayAgain());
         truthButton.onClick.AddListener(() => GameManager.Instance.OnPlayerTruth());
+    }
+
+    public void ShowFinalJudgment()
+    {
+        // Legacy — kept for compatibility, routes to ShowFinalQuestion
+        ShowFinalQuestion(true);
     }
 
     public void ShowWin()
@@ -279,21 +293,42 @@ public class UIManager : MonoBehaviour
         deathPanel.SetActive(true);
 
         var state = GameManager.Instance.State;
-        string reason = "";
-        if (state.GuessedClothing != null && state.GuessedClothing != state.TargetClothing)
-            reason = $"A <b>{state.GuessedClothing}</b>?! The King wears a magnificent <b>{state.TargetClothing}</b>!";
-        else if (state.GuessedColor != null && state.GuessedColor != state.TargetColor)
-            reason = $"<b>{state.GuessedColor}</b>?! The colour is <b>{state.TargetColor}</b>, you blind fool!";
-        else if (state.GuessedMaterial != null && state.GuessedMaterial != state.TargetMaterial)
-            reason = $"<b>{state.GuessedMaterial}</b>?! It is obviously <b>{state.TargetMaterial}</b>!";
-        else
-            reason = "You dared to speak the truth to the King!";
 
-        deathText.text =
-            "The King's eyes narrow.\n\n" +
-            $"\"{reason}\"\n\n" +
-            "\"GUARDS! OFF WITH THEIR HEAD!\"\n\n" +
-            "<i>You should have lied.</i>";
+        // Check if death was from asking why he's naked (all guesses already stored)
+        bool askedAboutNakedness = state.Phase == GamePhase.FinalJudgment ||
+                                   state.Phase == GamePhase.WinScreen ||
+                                   (state.GuessedClothing != null && state.GuessedColor != null && state.GuessedMaterial != null &&
+                                    state.GuessedClothing == state.TargetClothing &&
+                                    state.GuessedColor    == state.TargetColor    &&
+                                    state.GuessedMaterial == state.TargetMaterial);
+
+        if (askedAboutNakedness)
+        {
+            deathText.text =
+                "The King's face turns purple with rage.\n\n" +
+                "\"NAKED?! How DARE you!\"\n\n" +
+                "\"I am wearing the FINEST outfit ever created!\"\n\n" +
+                "\"GUARDS! OFF WITH THEIR HEAD!\"\n\n" +
+                "<i>Truth is a crime in this kingdom.</i>";
+        }
+        else
+        {
+            string reason = "";
+            if (state.GuessedClothing != null && state.GuessedClothing != state.TargetClothing)
+                reason = $"A <b>{state.GuessedClothing}</b>?! The King wears a magnificent <b>{state.TargetClothing}</b>!";
+            else if (state.GuessedColor != null && state.GuessedColor != state.TargetColor)
+                reason = $"<b>{state.GuessedColor}</b>?! The colour is <b>{state.TargetColor}</b>, you blind fool!";
+            else if (state.GuessedMaterial != null && state.GuessedMaterial != state.TargetMaterial)
+                reason = $"<b>{state.GuessedMaterial}</b>?! It is obviously <b>{state.TargetMaterial}</b>!";
+            else
+                reason = "Your taste is an insult to the crown!";
+
+            deathText.text =
+                "The King's eyes narrow.\n\n" +
+                $"\"{reason}\"\n\n" +
+                "\"GUARDS! OFF WITH THEIR HEAD!\"\n\n" +
+                "<i>You should have lied.</i>";
+        }
 
         deathPlayAgainButton.onClick.RemoveAllListeners();
         deathPlayAgainButton.onClick.AddListener(() => GameManager.Instance.OnPlayAgain());
