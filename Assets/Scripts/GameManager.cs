@@ -118,5 +118,18 @@ public class GameManager : MonoBehaviour
 
     public void OnPlayerFlatters()  => GoToPhase(GamePhase.WinScreen);
     public void OnPlayerTruth()     => GoToPhase(GamePhase.DeathScreen);
-    public void OnPlayAgain()       => StartGame();
+
+    /// <summary>Full restart including intro.</summary>
+    public void OnPlayAgain() => StartGame();
+
+    /// <summary>Skip intro — close curtains and start a new round of guessing.</summary>
+    public void OnPlayAgainSkipIntro()
+    {
+        State.NewGame();
+        Debug.Log($"[Game] New round (skip intro) — King imagines: {State.TargetColor} {State.TargetMaterial} {State.TargetClothing}");
+        uiManager.ResetTracker();
+        uiManager.kingPoseProud?.Invoke(false);
+        uiManager.curtainAnimator?.CloseCurtains();
+        GoToPhase(GamePhase.GuessClothing);
+    }
 }

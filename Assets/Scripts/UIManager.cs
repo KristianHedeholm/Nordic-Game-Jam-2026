@@ -434,7 +434,7 @@ public class UIManager : MonoBehaviour
 
         flatterButton.onClick.RemoveAllListeners();
         truthButton.onClick.RemoveAllListeners();
-        flatterButton.onClick.AddListener(() => GameManager.Instance.OnPlayAgain());
+        flatterButton.onClick.AddListener(() => GameManager.Instance.OnPlayAgainSkipIntro());
         truthButton.onClick.AddListener(() => GameManager.Instance.OnPlayerTruth());
     }
 
