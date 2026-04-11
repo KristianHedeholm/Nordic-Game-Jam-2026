@@ -212,10 +212,7 @@ public class UIManager : MonoBehaviour
             btnImg.sprite = sprite;
             btnImg.color  = Color.white;
             btnImg.type   = Image.Type.Simple;
-            btnImg.preserveAspect = true;
-            // Resize button rect to match sprite native size exactly
-            var btnRT = introStartButton.GetComponent<RectTransform>();
-            if (btnRT != null) btnRT.sizeDelta = new Vector2(sprite.texture.width * 0.75f, sprite.texture.height * 0.75f);
+            btnImg.SetNativeSize(); // resize rect to exact sprite pixel size
         }
         }
         // Hide TMP label — SVG already has text baked in
@@ -401,8 +398,8 @@ public class UIManager : MonoBehaviour
                 // Phase 2: Reveal panel shows — king says something short
                 revealPanel.SetActive(true);
                 string kingReaction = allCorrect
-                    ? "\"BEHOLD! Am I not the most magnificently dressed monarch you have ever seen?\""
-                    : "\"Feast your eyes upon the FINEST outfit ever crafted by mortal hands!\"";
+                    ? "\"BEHOLD! Am I not the most magnificently dressed monarch you have ever seen?\"\n\n<size=20><i>...says the King, obviously wearing <b>absolutely nothing.</b></i></size>"
+                    : "\"Feast your eyes upon the FINEST outfit ever crafted by mortal hands!\"\n\n<size=20><i>...says the King, obviously wearing <b>absolutely nothing.</b></i></size>";
 
                 SetText(revealText, kingReaction, () =>
                 {
