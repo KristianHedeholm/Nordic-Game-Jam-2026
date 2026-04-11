@@ -17,6 +17,15 @@ public class SceneBuilder : MonoBehaviour
 
     void BuildScene()
     {
+        // ── CAMERA SETUP ─────────────────────────────────────────────────────
+        var cam = Camera.main;
+        if (cam != null)
+        {
+            cam.clearFlags = CameraClearFlags.SolidColor;
+            cam.backgroundColor = new Color(0.06f, 0.04f, 0.10f);
+            cam.orthographic = true;
+        }
+
         // ── ROOT CANVAS ──────────────────────────────────────────────────────
         var canvasGO = new GameObject("Canvas");
         var canvas = canvasGO.AddComponent<Canvas>();
