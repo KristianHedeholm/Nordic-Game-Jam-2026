@@ -250,6 +250,7 @@ public class SceneBuilder : MonoBehaviour
         var gm = mgrGO.AddComponent<GameManager>();
         var rg = mgrGO.AddComponent<RiddleGenerator>();
         var ui = mgrGO.AddComponent<UIManager>();
+        mgrGO.AddComponent<AudioManager>();
 
         rg.apiKey = "";
         rg.model  = "openai/gpt-4o-mini";
@@ -475,6 +476,7 @@ public class SceneBuilder : MonoBehaviour
         var go = CreateRect(parent, name, pos, size);
         AddImage(go, color);
         var btn = go.AddComponent<Button>();
+        btn.onClick.AddListener(() => AudioManager.Instance?.PlayButtonClick());
         var cb = btn.colors;
         cb.highlightedColor = color * 1.3f; cb.pressedColor = color * 0.7f;
         btn.colors = cb;

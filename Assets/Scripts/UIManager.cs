@@ -104,6 +104,7 @@ public class UIManager : MonoBehaviour
         ResetTracker();
         stagePanel?.SetActive(false);
         curtainAnimator?.CloseCurtains();
+        AudioManager.Instance?.PlayIntroFanfare();
         introPanel.SetActive(true);
         introText.text =
             "The King demands your presence!\n\n" +
@@ -139,12 +140,13 @@ public class UIManager : MonoBehaviour
             btn.GetComponentInChildren<TMP_Text>().text = option;
             string captured = option;
             btn.onClick.RemoveAllListeners();
-            btn.onClick.AddListener(() => onChosen(captured));
+            btn.onClick.AddListener(() => { AudioManager.Instance?.PlayButtonClick(); onChosen(captured); });
         }
     }
 
     // ── REACTION SCREENS ──────────────────────────────────────────────────
 
+    // Legacy stub — kept for compatibility
     public void ShowCorrectAnswerReaction(string kingQuote, Action onContinue)
     {
         HideAllOverlays();
@@ -184,6 +186,7 @@ public class UIManager : MonoBehaviour
         categoryLabel.text = "";
         riddleText.text = "...";
 
+        AudioManager.Instance?.PlayCurtainOpen();
         RevealTrackerResult(trackerClothing, "Garment",  state.GuessedClothing, state.TargetClothing);
         RevealTrackerResult(trackerColor,    "Color",    state.GuessedColor,    state.TargetColor);
         RevealTrackerResult(trackerMaterial, "Material", state.GuessedMaterial, state.TargetMaterial);
@@ -194,6 +197,7 @@ public class UIManager : MonoBehaviour
 
         curtainAnimator?.OpenCurtains(() =>
         {
+            AudioManager.Instance?.PlayKingLaugh();
             revealPanel.SetActive(true);
 
             if (allCorrect)
@@ -226,11 +230,13 @@ public class UIManager : MonoBehaviour
         {
             label.text  = $"<b>{category}: {guessed} ✓</b>";
             label.color = new Color(0.3f, 1f, 0.4f);
+            AudioManager.Instance?.PlayCorrect();
         }
         else
         {
             label.text  = $"<b>{category}: {guessed} ✗</b>\n<size=18>({correct})</size>";
             label.color = new Color(1f, 0.3f, 0.3f);
+            AudioManager.Instance?.PlayWrong();
         }
     }
 
@@ -277,6 +283,7 @@ public class UIManager : MonoBehaviour
         HideAllOverlays();
         stagePanel?.SetActive(false);
         winPanel.SetActive(true);
+        AudioManager.Instance?.PlayWin();
         winText.text =
             "The King claps with delight!\n\n" +
             "\"YES! You truly have the finest eyes in all the kingdom!\"\n\n" +
@@ -291,6 +298,7 @@ public class UIManager : MonoBehaviour
         HideAllOverlays();
         stagePanel?.SetActive(false);
         deathPanel.SetActive(true);
+        AudioManager.Instance?.PlayDeath();
 
         var state = GameManager.Instance.State;
 
