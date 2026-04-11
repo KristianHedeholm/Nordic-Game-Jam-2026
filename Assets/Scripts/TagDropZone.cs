@@ -43,10 +43,12 @@ public class TagDropZone : MonoBehaviour, IDropHandler
         // Snap tag into this zone and resize to fill it
         tag.transform.SetParent(transform, false);
         var tagRT = tag.GetComponent<RectTransform>();
-        tagRT.anchorMin = Vector2.zero;
-        tagRT.anchorMax = Vector2.one;
-        tagRT.offsetMin = new Vector2(28, 28);
-        tagRT.offsetMax = new Vector2(-28, -28);
+        // Fill only the dark grey inner area — leave yellow banner + border fully visible
+        // Top ~35% is the yellow label, sides/bottom have ~28px border
+        tagRT.anchorMin = new Vector2(0, 0);
+        tagRT.anchorMax = new Vector2(1, 0.58f); // stop below the yellow banner
+        tagRT.offsetMin = new Vector2(32, 28);
+        tagRT.offsetMax = new Vector2(-32, 0);
 
         // Show answer text
         if (answerLabel != null)
