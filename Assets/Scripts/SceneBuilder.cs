@@ -57,6 +57,9 @@ public class SceneBuilder : MonoBehaviour
             }
         };
 
+        // ESC to quit
+        gameObject.AddComponent<AppQuit>();
+
         // Create GameManager + AudioManager
         var mgrGO = new GameObject("GameManager");
         var gm = mgrGO.AddComponent<GameManager>();

@@ -179,8 +179,9 @@ public static class GameUIBuilder
         SetImage(CreateRect(judgBubble, "Tail", new Vector2(-290, -75), new Vector2(55, 55)), new Color(0.97f, 0.95f, 0.88f));
         var judgTxt = CreateTMPFull(judgBubble, "JudgText", "", 26, FontStyles.Normal);
         judgTxt.color = new Color(0.1f, 0.05f, 0.15f);
-        var flatterBtn = CreateButton(judgPanel, "FlatterButton", "\"Yes Your Majesty!\"",        new Vector2(-320, -460), new Vector2(520, 65), new Color(0.1f, 0.45f, 0.18f));
-        var truthBtn   = CreateButton(judgPanel, "TruthButton",   "\"...Why are you wearing nothing?\"", new Vector2(280, -460),  new Vector2(460, 65), new Color(0.5f, 0.08f, 0.08f));
+        var neutralBtn = new Color(0.35f, 0.18f, 0.55f); // same purple for both
+        var flatterBtn = CreateButton(judgPanel, "FlatterButton", "\"Yes Your Majesty!\"",              new Vector2(-320, -460), new Vector2(520, 65), neutralBtn);
+        var truthBtn   = CreateButton(judgPanel, "TruthButton",   "\"...Why are you wearing nothing?\"", new Vector2(280, -460),  new Vector2(460, 65), neutralBtn);
 
         // Win
         var winPanel = CreateFull(canvasGO, "WinPanel");
@@ -322,7 +323,7 @@ public static class GameUIBuilder
         go.transform.SetParent(parent.transform, false);
         var rt = go.AddComponent<RectTransform>();
         rt.anchorMin = Vector2.zero; rt.anchorMax = Vector2.one;
-        rt.offsetMin = new Vector2(15, 10); rt.offsetMax = new Vector2(-15, -10);
+        rt.offsetMin = new Vector2(30, 20); rt.offsetMax = new Vector2(-30, -20);
         var tmp = go.AddComponent<TextMeshProUGUI>();
         tmp.text = text; tmp.fontSize = size; tmp.fontStyle = style;
         tmp.alignment = TextAlignmentOptions.Center; tmp.color = Color.white; tmp.enableWordWrapping = true;
