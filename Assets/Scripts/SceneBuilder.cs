@@ -63,7 +63,8 @@ public class SceneBuilder : MonoBehaviour
         var ui    = mgrGO.AddComponent<UIManager>();
 
         // Wire API key
-        rg.apiKey = "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";
+        // API key set via Inspector or left empty to use built-in fallback riddles
+        rg.apiKey = "";
         rg.model  = "openai/gpt-4o-mini";
 
         // Wire UIManager panels
