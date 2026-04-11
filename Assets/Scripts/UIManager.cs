@@ -247,7 +247,7 @@ public class UIManager : MonoBehaviour
         HideAllOverlays();
         stagePanel?.SetActive(true);
         ClearOptions();
-        categoryLabel.text = "";
+        if (categoryLabel != null) categoryLabel.text = "";
         if (riddleText != null)
         {
             riddleText.transform.parent.gameObject.SetActive(true);
@@ -264,7 +264,7 @@ public class UIManager : MonoBehaviour
         loadingPanel?.SetActive(false);
         stagePanel?.SetActive(true);
         if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(true);
-        categoryLabel.text = $"What is the King's <b>{category}</b>?";
+        if (categoryLabel != null) categoryLabel.text = $"What is the King's <b>{category}</b>?";
 
         // Activate the correct drop zone, dim the others
         ActivateDropZone(category, onChosen);
@@ -396,7 +396,7 @@ public class UIManager : MonoBehaviour
         HideAllOverlays();
         stagePanel?.SetActive(true);
         ClearOptions();
-        categoryLabel.text = "";
+        if (categoryLabel != null) categoryLabel.text = "";
         riddleText.text = "...";
 
         bool allCorrect = state.GuessedClothing == state.TargetClothing &&
