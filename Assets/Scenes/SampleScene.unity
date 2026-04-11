@@ -423,14 +423,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1660057539 &9223372036854775807
-SceneRoots:
-  m_ObjectHideFlags: 0
-  m_Roots:
-  - {fileID: 100000002}
-  - {fileID: 330585546}
-  - {fileID: 410087041}
-  - {fileID: 832575519}
 --- !u!1 &100000001
 GameObject:
   m_ObjectHideFlags: 0
@@ -475,3 +467,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f34344b057c45b7ad59b31ff71b845e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!1660057539 &9223372036854775807
+SceneRoots:
+  m_ObjectHideFlags: 0
+  m_Roots:
+  - {fileID: 100000002}
+  - {fileID: 330585546}
+  - {fileID: 410087041}
+  - {fileID: 832575519}
