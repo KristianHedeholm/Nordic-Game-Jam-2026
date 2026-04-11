@@ -136,8 +136,11 @@ public class SceneBuilder : MonoBehaviour
 
         // ── SPEECH BUBBLE — top center ────────────────────────────────────────
         var bubblePanel = CreateRect(stagePanelGO, "SpeechBubble", new Vector2(200, 400), new Vector2(800, 200));
-        AddImage(bubblePanel, new Color(0.97f, 0.95f, 0.88f));
-        AddImage(CreateRect(bubblePanel, "Tail", new Vector2(-50, -85), new Vector2(55, 55)), new Color(0.97f, 0.95f, 0.88f));
+        var bubbleImg = bubblePanel.AddComponent<Image>();
+        var speechBubbleSprite = Resources.Load<Sprite>("Art/Speech bubble");
+        if (speechBubbleSprite != null) { bubbleImg.sprite = speechBubbleSprite; bubbleImg.type = Image.Type.Simple; bubbleImg.preserveAspect = false; bubbleImg.color = Color.white; }
+        else bubbleImg.color = new Color(0.97f, 0.95f, 0.88f);
+        // No separate tail — speech bubble sprite includes it
         var riddleGO = new GameObject("RiddleText"); riddleGO.transform.SetParent(bubblePanel.transform, false);
         var riddleRT = riddleGO.AddComponent<RectTransform>(); riddleRT.anchorMin = Vector2.zero; riddleRT.anchorMax = Vector2.one; riddleRT.offsetMin = new Vector2(25,20); riddleRT.offsetMax = new Vector2(-25,-20);
         var riddleTMP = riddleGO.AddComponent<TextMeshProUGUI>();
