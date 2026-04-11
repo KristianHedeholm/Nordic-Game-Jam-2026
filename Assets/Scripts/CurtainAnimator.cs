@@ -10,8 +10,8 @@ public class CurtainAnimator : MonoBehaviour
     public RectTransform curtainLeft;
     public RectTransform curtainRight;
 
-    // How far each curtain slides out from centre (half the curtain width)
-    public float openOffset = 480f;
+    // How far each curtain slides — enough to fully reveal the centre
+    public float openOffset = 1100f;
     public float duration   = 1.4f;
 
     private Vector2 leftClosed;
@@ -23,12 +23,16 @@ public class CurtainAnimator : MonoBehaviour
     {
         if (curtainLeft)
         {
-            leftClosed = curtainLeft.anchoredPosition;
+            // Left curtain: right edge sits at x=0 (centre), slides left
+            var rt = curtainLeft;
+            leftClosed = rt.anchoredPosition;
             leftOpen   = leftClosed + new Vector2(-openOffset, 0);
         }
         if (curtainRight)
         {
-            rightClosed = curtainRight.anchoredPosition;
+            // Right curtain: left edge sits at x=0 (centre), slides right
+            var rt = curtainRight;
+            rightClosed = rt.anchoredPosition;
             rightOpen   = rightClosed + new Vector2(openOffset, 0);
         }
     }

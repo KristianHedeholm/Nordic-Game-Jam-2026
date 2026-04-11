@@ -300,7 +300,14 @@ public class UIManager : MonoBehaviour
                 var drag = tagGO.GetComponent<DraggableTag>();
                 if (drag != null) drag.value = options[idx];
                 var lbl = tagGO.GetComponentInChildren<TMP_Text>();
-                if (lbl != null) lbl.text = options[idx];
+                if (lbl != null)
+                {
+                    lbl.text = options[idx];
+                    lbl.enableWordWrapping = false;
+                    lbl.enableAutoSizing   = true;
+                    lbl.fontSizeMin = 12;
+                    lbl.fontSizeMax = 22;
+                }
                 tags.Add(tagGO);
             }
         }
