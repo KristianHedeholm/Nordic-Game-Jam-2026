@@ -41,7 +41,7 @@ public class AudioManager : MonoBehaviour
     {
         PlayClip(GenerateFanfare(), 0.7f);
         // Fade in ambient music after fanfare ends (~1.2s)
-        StartCoroutine(FadeInMusic(1.4f, 0.12f)); // delay, target volume
+        StartCoroutine(FadeInMusic(1.4f, 0.07f)); // delay, target volume
     }
     public void PlayCorrect()       => PlayClip(GenerateCorrect(), 0.8f);
     public void PlayWrong()         => PlayClip(GenerateWrong(), 0.7f);
@@ -52,7 +52,7 @@ public class AudioManager : MonoBehaviour
     public void PlayKingLaugh()     => PlayClip(GenerateLaugh(), 0.6f);
     public void PlayKingTalk()
     {
-        if (kingSpeechClip != null) PlayClip(kingSpeechClip, 0.8f);
+        if (kingSpeechClip != null) PlayClip(kingSpeechClip, 1.0f);
         else PlayClip(GenerateOnionKingTalk(), 0.7f);
     }
 
