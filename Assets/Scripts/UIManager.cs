@@ -291,13 +291,11 @@ public class UIManager : MonoBehaviour
 
                 // Apply Theme_Tag sprite to background image
                 var img = tagGO.GetComponent<Image>();
-                if (img != null && tagSprite != null)
-                {
-                    img.sprite = tagSprite;
-                    img.type   = Image.Type.Simple;
-                    img.preserveAspect = false;
-                    img.color  = Color.white;
-                }
+                if (img == null) img = tagGO.AddComponent<Image>();
+                img.sprite = tagSprite;
+                img.type   = Image.Type.Simple;
+                img.preserveAspect = false;
+                img.color  = Color.white;
 
                 var drag = tagGO.GetComponent<DraggableTag>();
                 if (drag != null) drag.value = options[idx];
