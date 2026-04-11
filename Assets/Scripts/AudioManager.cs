@@ -14,6 +14,7 @@ public class AudioManager : MonoBehaviour
     private AudioSource musicSource;
 
     private AudioClip kingSpeechClip;
+    private AudioClip ambientMusicClip;
 
     void Awake()
     {
@@ -23,19 +24,25 @@ public class AudioManager : MonoBehaviour
         sfxSource   = gameObject.AddComponent<AudioSource>();
         musicSource = gameObject.AddComponent<AudioSource>();
         musicSource.loop   = true;
-        musicSource.volume = 0.25f;
+        musicSource.volume = 0f; // start silent, fade in after fanfare
 
-        // Load king speech audio clip from Resources
-        kingSpeechClip = Resources.Load<AudioClip>("Audio/Kings_Speech_");
+        // Load audio clips
+        kingSpeechClip  = Resources.Load<AudioClip>("Audio/Kings_Speech_");
+        ambientMusicClip = Resources.Load<AudioClip>("Audio/fashion_royal_melodic_loop");
 
-        // Start ambient royal music
-        musicSource.clip = GenerateAmbientMusic();
+        // Use real music if available, fallback to procedural
+        musicSource.clip = ambientMusicClip != null ? ambientMusicClip : GenerateAmbientMusic();
         musicSource.Play();
     }
 
     // ── PUBLIC SOUND TRIGGERS ─────────────────────────────────────────────
 
-    public void PlayIntroFanfare()  => PlayClip(GenerateFanfare(), 0.7f);
+    public void PlayIntroFanfare()
+    {
+        PlayClip(GenerateFanfare(), 0.7f);
+        // Fade in ambient music after fanfare ends (~1.2s)
+        StartCoroutine(FadeInMusic(1.4f, 0.12f)); // delay, target volume
+    }
     public void PlayCorrect()       => PlayClip(GenerateCorrect(), 0.8f);
     public void PlayWrong()         => PlayClip(GenerateWrong(), 0.7f);
     public void PlayCurtainOpen()   => PlayClip(GenerateCurtainWhoosh(), 0.6f);
@@ -53,6 +60,20 @@ public class AudioManager : MonoBehaviour
     {
         // Fade out sfxSource quickly if king speech is playing
         StartCoroutine(FadeOutSFX(0.2f));
+    }
+
+    IEnumerator FadeInMusic(float delay, float targetVolume)
+    {
+        yield return new WaitForSeconds(delay);
+        float elapsed = 0f;
+        float fadeDur = 2f;
+        while (elapsed < fadeDur)
+        {
+            elapsed += Time.deltaTime;
+            musicSource.volume = Mathf.Lerp(0f, targetVolume, elapsed / fadeDur);
+            yield return null;
+        }
+        musicSource.volume = targetVolume;
     }
 
     IEnumerator FadeOutSFX(float duration)
