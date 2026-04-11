@@ -275,6 +275,7 @@ public class UIManager : MonoBehaviour
         }
         else
         {
+            var tagSprite = Resources.Load<Sprite>("Art/Theme_Tag");
             float areaW = 1400f;
             float startX = -areaW / 2f + 150f;
             float spacing = areaW / (options.Count + 1);
@@ -287,6 +288,16 @@ public class UIManager : MonoBehaviour
                 float x = startX + spacing * (idx + 1) + UnityEngine.Random.Range(-30f, 30f);
                 float y = UnityEngine.Random.Range(-60f, 60f);
                 rt.anchoredPosition = new Vector2(x, y);
+
+                // Apply Theme_Tag sprite to background image
+                var img = tagGO.GetComponent<Image>();
+                if (img != null && tagSprite != null)
+                {
+                    img.sprite = tagSprite;
+                    img.type   = Image.Type.Simple;
+                    img.preserveAspect = false;
+                    img.color  = Color.white;
+                }
 
                 var drag = tagGO.GetComponent<DraggableTag>();
                 if (drag != null) drag.value = options[idx];
