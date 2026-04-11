@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Networking;
 
 /// <summary>
 /// Procedurally generates all game sounds — no audio files needed.
@@ -12,6 +13,8 @@ public class AudioManager : MonoBehaviour
     private AudioSource sfxSource;
     private AudioSource musicSource;
 
+    private AudioClip kingSpeechClip;
+
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -21,6 +24,9 @@ public class AudioManager : MonoBehaviour
         musicSource = gameObject.AddComponent<AudioSource>();
         musicSource.loop   = true;
         musicSource.volume = 0.25f;
+
+        // Load king speech audio clip from Resources
+        kingSpeechClip = Resources.Load<AudioClip>("Audio/Kings_Speech_");
 
         // Start ambient royal music
         musicSource.clip = GenerateAmbientMusic();
@@ -37,7 +43,11 @@ public class AudioManager : MonoBehaviour
     public void PlayWin()           => PlayClip(GenerateWin(), 0.8f);
     public void PlayButtonClick()   => PlayClip(GenerateClick(), 0.4f);
     public void PlayKingLaugh()     => PlayClip(GenerateLaugh(), 0.6f);
-    public void PlayKingTalk()      => PlayClip(GenerateOnionKingTalk(), 0.7f);
+    public void PlayKingTalk()
+    {
+        if (kingSpeechClip != null) PlayClip(kingSpeechClip, 0.8f);
+        else PlayClip(GenerateOnionKingTalk(), 0.7f);
+    }
     public void PlayTadaaa()        => PlayClip(GenerateTadaaa(), 0.9f);
     public void PlayCrowdCheerGood()  => PlayClip(GenerateCrowdCheer(true), 0.6f);
     public void PlayCrowdCheerBad()   => PlayClip(GenerateCrowdCheer(false), 0.6f);
