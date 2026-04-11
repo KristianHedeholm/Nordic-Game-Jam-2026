@@ -45,8 +45,8 @@ public class TagDropZone : MonoBehaviour, IDropHandler
         var tagRT = tag.GetComponent<RectTransform>();
         tagRT.anchorMin = Vector2.zero;
         tagRT.anchorMax = Vector2.one;
-        tagRT.offsetMin = new Vector2(10, 10);
-        tagRT.offsetMax = new Vector2(-10, -10);
+        tagRT.offsetMin = new Vector2(28, 28);
+        tagRT.offsetMax = new Vector2(-28, -28);
 
         // Show answer text
         if (answerLabel != null)
