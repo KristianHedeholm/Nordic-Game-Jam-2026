@@ -102,7 +102,8 @@ public class RiddleGenerator : MonoBehaviour
         }},
 
         // ── MATERIALS ─────────────────────────────────────────────────────
-        { "Gold", new[] {
+        // Note: Gold color key is "Gold", Gold material key is "Gold (material)"
+        { "Gold (material)", new[] {
             "Mined from earth by sweating hands,\nI glitter bright across all lands.",
             "Coins and crowns are made from me,\nThe heaviest fabric you will see."
         }},
@@ -157,12 +158,14 @@ public class RiddleGenerator : MonoBehaviour
         if (!string.IsNullOrEmpty(apiKey))
             StartCoroutine(FetchRiddle(item, category, onComplete));
         else
-            onComplete(GetFallback(item));
+            onComplete(GetFallback(item, category));
     }
 
-    private string GetFallback(string item)
+    private string GetFallback(string item, string category = "")
     {
-        if (FallbackRiddles.TryGetValue(item, out var riddles))
+        // Handle Gold disambiguation: same word appears in Colors and Materials
+        string key = (item == "Gold" && category == "Material") ? "Gold (material)" : item;
+        if (FallbackRiddles.TryGetValue(key, out var riddles))
             return riddles[UnityEngine.Random.Range(0, riddles.Length)];
         return "I am the finest of its kind,\nCan you guess what fills the King's mind?";
     }
