@@ -240,7 +240,7 @@ public class SceneBuilder : MonoBehaviour
     SimplePanel BuildIntroPanel(GameObject parent)
     {
         var root = CreateFull(parent, "IntroPanel"); AddImage(root, new Color(0.06f, 0.03f, 0.10f, 0.97f));
-        var title = AddTMP(root, "Title", "FASHION ROYAL", 90, FontStyles.Bold, new Vector2(0, 180), new Vector2(1400, 200));
+        var title = AddTMP(root, "Title", "FASHION ROYAL", 90, FontStyles.Bold, new Vector2(0, 200), new Vector2(1800, 200));
         title.color = new Color(1f, 0.85f, 0.3f);
         var body = AddTMP(root, "Body", "", 30, FontStyles.Normal, new Vector2(0, -40), new Vector2(1000, 350));
         body.alignment = TextAlignmentOptions.Center; body.color = new Color(0.9f, 0.85f, 1f);
