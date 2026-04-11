@@ -353,23 +353,58 @@ public class SceneBuilder : MonoBehaviour
 
     SimplePanel BuildRevealPanel(GameObject parent)
     {
+        // Transparent overlay — king stays visible behind it
         var root = CreateRectFull(parent, "RevealPanel");
-        AddImage(root, new Color(0.04f, 0.02f, 0.07f, 0.92f));
-        var text = AddTMP(root, "RevealTxt", "", 34, FontStyles.Normal, new Vector2(0, 80), new Vector2(1100, 350));
-        text.alignment = TextAlignmentOptions.Center;
-        var btn = BuildButton(root, "ContinueBtn", "Face the King →", new Vector2(0, -250), new Vector2(400, 80), new Color(0.4f, 0.2f, 0.6f));
-        return new SimplePanel { root = root, text = text, btn = btn };
+        AddImage(root, new Color(0f, 0f, 0f, 0f)); // fully transparent
+
+        // Speech bubble top-right (king talking)
+        var bubble = CreateRect(root, "RevealBubble", new Vector2(380, 260), new Vector2(700, 200));
+        AddImage(bubble, new Color(0.97f, 0.95f, 0.88f));
+        // bubble tail
+        var tail = CreateRect(bubble, "Tail", new Vector2(-290, -75), new Vector2(55, 55));
+        AddImage(tail, new Color(0.97f, 0.95f, 0.88f));
+
+        var text = CreateRect(bubble, "RevealTxt", Vector2.zero, new Vector2(650, 170));
+        var tmp = text.AddComponent<TextMeshProUGUI>();
+        tmp.text = ""; tmp.fontSize = 26; tmp.fontStyle = FontStyles.Normal;
+        tmp.alignment = TextAlignmentOptions.Center;
+        tmp.color = new Color(0.1f, 0.05f, 0.15f);
+        tmp.enableWordWrapping = true;
+        var tRT = text.GetComponent<RectTransform>();
+        tRT.anchorMin = Vector2.zero; tRT.anchorMax = Vector2.one;
+        tRT.offsetMin = new Vector2(15, 10); tRT.offsetMax = new Vector2(-15, -10);
+
+        // Small continue button at bottom — not covering king
+        var btn = BuildButton(root, "ContinueBtn", "Continue →", new Vector2(0, -460), new Vector2(320, 65), new Color(0.4f, 0.2f, 0.6f));
+        return new SimplePanel { root = root, text = tmp, btn = btn };
     }
 
     JudgPanel BuildJudgmentPanel(GameObject parent)
     {
+        // Transparent — king stays visible
         var root = CreateRectFull(parent, "JudgmentPanel");
-        AddImage(root, new Color(0.12f, 0.03f, 0.03f, 0.95f));
-        var text = AddTMP(root, "JudgTxt", "", 36, FontStyles.Normal, new Vector2(0, 100), new Vector2(1100, 380));
-        text.alignment = TextAlignmentOptions.Center;
-        var flatterBtn = BuildButton(root, "FlatterBtn", "\"Your Majesty, you look absolutely divine!\"", new Vector2(-310, -300), new Vector2(560, 90), new Color(0.1f, 0.45f, 0.18f));
-        var truthBtn   = BuildButton(root, "TruthBtn",   "\"...You're naked.\"",                          new Vector2(310, -300),  new Vector2(380, 90), new Color(0.5f, 0.08f, 0.08f));
-        return new JudgPanel { root = root, text = text, flatterBtn = flatterBtn, truthBtn = truthBtn };
+        AddImage(root, new Color(0f, 0f, 0f, 0f));
+
+        // Speech bubble from king
+        var bubble = CreateRect(root, "JudgBubble", new Vector2(380, 260), new Vector2(700, 200));
+        AddImage(bubble, new Color(0.97f, 0.95f, 0.88f));
+        var tail = CreateRect(bubble, "Tail", new Vector2(-290, -75), new Vector2(55, 55));
+        AddImage(tail, new Color(0.97f, 0.95f, 0.88f));
+
+        var textGO = CreateRect(bubble, "JudgTxt", Vector2.zero, new Vector2(650, 170));
+        var tmp = textGO.AddComponent<TextMeshProUGUI>();
+        tmp.text = ""; tmp.fontSize = 26;
+        tmp.alignment = TextAlignmentOptions.Center;
+        tmp.color = new Color(0.1f, 0.05f, 0.15f);
+        tmp.enableWordWrapping = true;
+        var tRT = textGO.GetComponent<RectTransform>();
+        tRT.anchorMin = Vector2.zero; tRT.anchorMax = Vector2.one;
+        tRT.offsetMin = new Vector2(15, 10); tRT.offsetMax = new Vector2(-15, -10);
+
+        // Two small buttons at bottom
+        var flatterBtn = BuildButton(root, "FlatterBtn", "\"Yes Your Majesty!\"",  new Vector2(-320, -460), new Vector2(520, 65), new Color(0.1f, 0.45f, 0.18f));
+        var truthBtn   = BuildButton(root, "TruthBtn",   "\"...Why are you naked?\"", new Vector2(280, -460), new Vector2(400, 65), new Color(0.5f, 0.08f, 0.08f));
+        return new JudgPanel { root = root, text = tmp, flatterBtn = flatterBtn, truthBtn = truthBtn };
     }
 
     SimplePanel BuildWinPanel(GameObject parent)
