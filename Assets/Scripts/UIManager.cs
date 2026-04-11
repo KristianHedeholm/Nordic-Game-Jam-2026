@@ -57,6 +57,16 @@ public class UIManager : MonoBehaviour
     public TMP_Text deathText;
     public Button deathPlayAgainButton;
 
+    // ── TYPEWRITER HELPER ─────────────────────────────────────────────────
+
+    void SetText(TMP_Text label, string text, Action onDone = null)
+    {
+        if (label == null) return;
+        var tw = label.GetComponent<TypewriterEffect>() ?? label.gameObject.AddComponent<TypewriterEffect>();
+        tw.charsPerSecond = 45f;
+        tw.TypeWrite(text, onDone);
+    }
+
     void HideAllOverlays()
     {
         introPanel?.SetActive(false);
@@ -122,16 +132,16 @@ public class UIManager : MonoBehaviour
         stagePanel?.SetActive(true);
         loadingPanel.SetActive(true);
         ClearOptions();
-        riddleText.text = "...";
-        categoryLabel.text = "";
+        SetText(riddleText, "...");
+        SetText(categoryLabel, "");
     }
 
     public void ShowGuessPanel(string category, string riddle, List<string> options, Action<string> onChosen)
     {
         HideAllOverlays();
         stagePanel?.SetActive(true);
-        categoryLabel.text = $"What is the King's <b>{category}</b>?";
-        riddleText.text = riddle;
+        SetText(categoryLabel, $"What is the King's <b>{category}</b>?");
+        SetText(riddleText, riddle);
         AudioManager.Instance?.PlayKingTalk();
 
         ClearOptions();
@@ -161,7 +171,7 @@ public class UIManager : MonoBehaviour
         stagePanel?.SetActive(true);
         reactionPanel.SetActive(true);
         reactionBg.color = new Color(0.05f, 0.25f, 0.08f, 0.92f);
-        reactionText.text = "<size=60><b>CORRECT!</b></size>\n\n" + kingQuote + "\n\n<size=24><i>~ tap to continue ~</i></size>";
+        SetText(reactionText, "<size=60><b>CORRECT!</b></size>\n\n" + kingQuote + "\n\n<size=24><i>~ tap to continue ~</i></size>");
         reactionText.color = Color.white;
 
         // Click anywhere on reaction panel to continue
@@ -176,7 +186,7 @@ public class UIManager : MonoBehaviour
         stagePanel?.SetActive(true);
         reactionPanel.SetActive(true);
         reactionBg.color = new Color(0.3f, 0.04f, 0.04f, 0.92f);
-        reactionText.text = "<size=60><b>WRONG!</b></size>\n\n" + kingInsult + "\n\n<size=24><i>~ tap to face your fate ~</i></size>";
+        SetText(reactionText, "<size=60><b>WRONG!</b></size>\n\n" + kingInsult + "\n\n<size=24><i>~ tap to face your fate ~</i></size>");
         reactionText.color = Color.white;
 
         var btn = reactionPanel.GetComponent<Button>() ?? reactionPanel.AddComponent<Button>();
@@ -194,8 +204,8 @@ public class UIManager : MonoBehaviour
         HideAllOverlays();
         stagePanel?.SetActive(true);
         ClearOptions();
-        categoryLabel.text = "";
-        riddleText.text = "...";
+        SetText(categoryLabel, "");
+        SetText(riddleText, "...");
 
         bool allCorrect = state.GuessedClothing == state.TargetClothing &&
                           state.GuessedColor    == state.TargetColor    &&
@@ -215,9 +225,10 @@ public class UIManager : MonoBehaviour
                 kingPoseProud?.Invoke(true); // switch king to proud pose
 
                 revealPanel.SetActive(true);
-                revealText.text = allCorrect
+                string revealMsg = allCorrect
                     ? $"*The King claps with wild enthusiasm!*\n\n\"SPECTACULAR! A <b>{state.TargetColor} {state.TargetMaterial} {state.TargetClothing}</b>! You are a <b>genius</b>!\"\n\n\"I have SO many other magnificent outfits...\"\n\n<i>He stands before you. Gloriously wearing nothing at all.</i>"
                     : $"The King narrows his eyes at your answers.\n\n\"Hmm. <i>Disappointing.</i> But I am a <b>generous</b> King.\"\n\n\"Perhaps you simply need more practice...\"\n\n<i>He stands before you. Gloriously wearing nothing at all.</i>";
+                SetText(revealText, revealMsg);
 
                 revealContinueButton.onClick.RemoveAllListeners();
                 revealContinueButton.onClick.AddListener(() =>
