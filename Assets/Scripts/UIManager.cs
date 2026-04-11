@@ -421,14 +421,19 @@ public class UIManager : MonoBehaviour
 
                 // Phase 2: Reveal panel shows — king says something short
                 revealPanel.SetActive(true);
-                string kingReaction = allCorrect
-                    ? "\"BEHOLD! Am I not the most magnificently dressed monarch you have ever seen?\"\n\n<size=20><i>...says the King, obviously wearing <b>absolutely nothing.</b></i></size>"
-                    : "\"Feast your eyes upon the FINEST outfit ever crafted by mortal hands!\"\n\n<size=20><i>...says the King, obviously wearing <b>absolutely nothing.</b></i></size>";
+
+                // King speaks the quote — speech stops when quote ends, then narrator line appends silently
+                string kingQuote = allCorrect
+                    ? "\"BEHOLD! Am I not the most magnificently dressed monarch you have ever seen?\""
+                    : "\"Feast your eyes upon the FINEST outfit ever crafted by mortal hands!\"";
+                string narratorLine = "\n\n<size=20><i>...says the King, obviously wearing <b>absolutely nothing.</b></i></size>";
 
                 AudioManager.Instance?.PlayKingTalk();
-                SetText(revealText, kingReaction, () =>
+                SetText(revealText, kingQuote, () =>
                 {
-                    // Phase 3: After king speaks, show score then continue button
+                    // King speech stops — now silently append narrator text
+                    revealText.text += narratorLine;
+                    revealText.maxVisibleCharacters = int.MaxValue;
                     StartCoroutine(ShowScoreThenJudgment(state, allCorrect));
                 });
             });
