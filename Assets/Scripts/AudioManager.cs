@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Networking;
 
 /// <summary>
 /// Procedurally generates all game sounds — no audio files needed.
@@ -12,6 +13,9 @@ public class AudioManager : MonoBehaviour
     private AudioSource sfxSource;
     private AudioSource musicSource;
 
+    private AudioClip kingSpeechClip;
+    private AudioClip ambientMusicClip;
+
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
@@ -20,16 +24,25 @@ public class AudioManager : MonoBehaviour
         sfxSource   = gameObject.AddComponent<AudioSource>();
         musicSource = gameObject.AddComponent<AudioSource>();
         musicSource.loop   = true;
-        musicSource.volume = 0.25f;
+        musicSource.volume = 0f; // start silent, fade in after fanfare
 
-        // Start ambient royal music
-        musicSource.clip = GenerateAmbientMusic();
+        // Load audio clips
+        kingSpeechClip  = Resources.Load<AudioClip>("Audio/Kings_Speech_");
+        ambientMusicClip = Resources.Load<AudioClip>("Audio/fashion_royal_melodic_loop");
+
+        // Use real music if available, fallback to procedural
+        musicSource.clip = ambientMusicClip != null ? ambientMusicClip : GenerateAmbientMusic();
         musicSource.Play();
     }
 
     // ── PUBLIC SOUND TRIGGERS ─────────────────────────────────────────────
 
-    public void PlayIntroFanfare()  => PlayClip(GenerateFanfare(), 0.7f);
+    public void PlayIntroFanfare()
+    {
+        PlayClip(GenerateFanfare(), 0.7f);
+        // Fade in ambient music after fanfare ends (~1.2s)
+        StartCoroutine(FadeInMusic(1.4f, 0.07f)); // delay, target volume
+    }
     public void PlayCorrect()       => PlayClip(GenerateCorrect(), 0.8f);
     public void PlayWrong()         => PlayClip(GenerateWrong(), 0.7f);
     public void PlayCurtainOpen()   => PlayClip(GenerateCurtainWhoosh(), 0.6f);
@@ -37,7 +50,45 @@ public class AudioManager : MonoBehaviour
     public void PlayWin()           => PlayClip(GenerateWin(), 0.8f);
     public void PlayButtonClick()   => PlayClip(GenerateClick(), 0.4f);
     public void PlayKingLaugh()     => PlayClip(GenerateLaugh(), 0.6f);
-    public void PlayKingTalk()      => PlayClip(GenerateOnionKingTalk(), 0.7f);
+    public void PlayKingTalk()
+    {
+        if (kingSpeechClip != null) PlayClip(kingSpeechClip, 1.0f);
+        else PlayClip(GenerateOnionKingTalk(), 0.7f);
+    }
+
+    public void StopKingTalk()
+    {
+        // Fade out sfxSource quickly if king speech is playing
+        StartCoroutine(FadeOutSFX(0.2f));
+    }
+
+    IEnumerator FadeInMusic(float delay, float targetVolume)
+    {
+        yield return new WaitForSeconds(delay);
+        float elapsed = 0f;
+        float fadeDur = 2f;
+        while (elapsed < fadeDur)
+        {
+            elapsed += Time.deltaTime;
+            musicSource.volume = Mathf.Lerp(0f, targetVolume, elapsed / fadeDur);
+            yield return null;
+        }
+        musicSource.volume = targetVolume;
+    }
+
+    IEnumerator FadeOutSFX(float duration)
+    {
+        float startVol = sfxSource.volume;
+        float elapsed  = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            sfxSource.volume = Mathf.Lerp(startVol, 0f, elapsed / duration);
+            yield return null;
+        }
+        sfxSource.Stop();
+        sfxSource.volume = startVol;
+    }
     public void PlayTadaaa()        => PlayClip(GenerateTadaaa(), 0.9f);
     public void PlayCrowdCheerGood()  => PlayClip(GenerateCrowdCheer(true), 0.6f);
     public void PlayCrowdCheerBad()   => PlayClip(GenerateCrowdCheer(false), 0.6f);

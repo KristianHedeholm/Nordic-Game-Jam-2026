@@ -62,15 +62,18 @@ public class GameManager : MonoBehaviour
                 uiManager.ShowIntro();
                 break;
             case GamePhase.GuessClothing:
-                FetchRiddleAndShow("Clothing", State.TargetClothing, GameData.Clothing, GamePhase.GuessColor,
+                FetchRiddleAndShow("Clothing", State.TargetClothing,
+                    GameData.GetOptions(GameData.Clothing, State.TargetClothing), GamePhase.GuessColor,
                     CorrectClothingPraise[Random.Range(0, CorrectClothingPraise.Length)]);
                 break;
             case GamePhase.GuessColor:
-                FetchRiddleAndShow("Color", State.TargetColor, GameData.Colors, GamePhase.GuessMaterial,
+                FetchRiddleAndShow("Color", State.TargetColor,
+                    GameData.GetOptions(GameData.Colors, State.TargetColor), GamePhase.GuessMaterial,
                     CorrectColorPraise[Random.Range(0, CorrectColorPraise.Length)]);
                 break;
             case GamePhase.GuessMaterial:
-                FetchRiddleAndShow("Material", State.TargetMaterial, GameData.Materials, GamePhase.Reveal,
+                FetchRiddleAndShow("Material", State.TargetMaterial,
+                    GameData.GetOptions(GameData.Materials, State.TargetMaterial), GamePhase.Reveal,
                     CorrectMaterialPraise[Random.Range(0, CorrectMaterialPraise.Length)]);
                 break;
             case GamePhase.Reveal:
@@ -91,22 +94,37 @@ public class GameManager : MonoBehaviour
     private void FetchRiddleAndShow(string category, string target, System.Collections.Generic.List<string> options, GamePhase nextPhase, string praiseLine)
     {
         uiManager.ShowLoading();
-        riddleGenerator.GetRiddle(target, category, riddle =>
-        {
-            State.CurrentRiddle = riddle;
-            uiManager.ShowGuessPanel(category, riddle, options, chosen =>
-            {
-                switch (category)
-                {
-                    case "Clothing": State.GuessedClothing = chosen; break;
-                    case "Color":    State.GuessedColor    = chosen; break;
-                    case "Material": State.GuessedMaterial = chosen; break;
-                }
+        StartCoroutine(DoFetch(category, target, options, nextPhase));
+    }
 
-                // Always continue — result revealed at the end
-                uiManager.UpdateAnswerTracker(category, chosen, chosen == target);
-                GoToPhase(nextPhase);
-            });
+    private System.Collections.IEnumerator DoFetch(string category, string target, System.Collections.Generic.List<string> options, GamePhase nextPhase)
+    {
+        string riddle = null;
+        bool done = false;
+
+        if (riddleGenerator != null)
+            riddleGenerator.GetRiddle(target, category, r => { riddle = r; done = true; });
+        else
+            done = true;
+
+        // Wait max 5 seconds for riddle
+        float t = 0f;
+        while (!done && t < 5f) { yield return null; t += Time.deltaTime; }
+
+        if (string.IsNullOrEmpty(riddle))
+            riddle = "I am the finest of its kind,\nCan you guess what fills the King's mind?";
+
+        State.CurrentRiddle = riddle;
+        uiManager.ShowGuessPanel(category, riddle, options, chosen =>
+        {
+            switch (category)
+            {
+                case "Clothing": State.GuessedClothing = chosen; break;
+                case "Color":    State.GuessedColor    = chosen; break;
+                case "Material": State.GuessedMaterial = chosen; break;
+            }
+            uiManager.UpdateAnswerTracker(category, chosen, chosen == target);
+            GoToPhase(nextPhase);
         });
     }
 
@@ -118,5 +136,19 @@ public class GameManager : MonoBehaviour
 
     public void OnPlayerFlatters()  => GoToPhase(GamePhase.WinScreen);
     public void OnPlayerTruth()     => GoToPhase(GamePhase.DeathScreen);
-    public void OnPlayAgain()       => StartGame();
+
+    /// <summary>Full restart including intro.</summary>
+    public void OnPlayAgain() => StartGame();
+
+    /// <summary>Skip intro — close curtains and start a new round of guessing.</summary>
+    public void OnPlayAgainSkipIntro()
+    {
+        State.NewGame();
+        Debug.Log($"[Game] New round (skip intro) — King imagines: {State.TargetColor} {State.TargetMaterial} {State.TargetClothing}");
+        uiManager.ResetTracker();
+        uiManager.kingPoseProud?.Invoke(false);
+        if (uiManager.narratorLabel != null) uiManager.narratorLabel.text = "";
+        uiManager.curtainAnimator?.CloseCurtains();
+        GoToPhase(GamePhase.GuessClothing);
+    }
 }
