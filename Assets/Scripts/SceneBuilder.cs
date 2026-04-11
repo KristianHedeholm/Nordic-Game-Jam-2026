@@ -147,14 +147,13 @@ public class SceneBuilder : MonoBehaviour
         tagPrefabGO.transform.SetParent(transform, false); tagPrefabGO.SetActive(false);
         tagPrefabGO.AddComponent<RectTransform>().sizeDelta = new Vector2(220, 70);
         var tImg = tagPrefabGO.AddComponent<Image>();
-        var tSpr = Resources.Load<Sprite>("Art/Theme_Tag");
-        if (tSpr != null) { tImg.sprite = tSpr; tImg.type = Image.Type.Simple; tImg.preserveAspect = true; tImg.color = Color.white; }
-        else tImg.color = new Color(0.35f, 0.18f, 0.55f);
+        // Plain grey rounded-looking box — text is the content, no sprite needed
+        tImg.color = new Color(0.75f, 0.72f, 0.80f);
         var tLblGO = new GameObject("Label"); tLblGO.transform.SetParent(tagPrefabGO.transform, false);
         var tLblRT = tLblGO.AddComponent<RectTransform>(); tLblRT.anchorMin = Vector2.zero; tLblRT.anchorMax = Vector2.one; tLblRT.sizeDelta = Vector2.zero;
         var tLblTMP = tLblGO.AddComponent<TextMeshProUGUI>();
         tLblTMP.text = ""; tLblTMP.fontSize = 22; tLblTMP.fontStyle = FontStyles.Bold;
-        tLblTMP.alignment = TextAlignmentOptions.Center; tLblTMP.color = new Color(0.1f, 0.05f, 0.2f); tLblTMP.enableWordWrapping = false;
+        tLblTMP.alignment = TextAlignmentOptions.Center; tLblTMP.color = new Color(0.12f, 0.08f, 0.18f); tLblTMP.enableWordWrapping = false;
         tagPrefabGO.AddComponent<DraggableTag>();
         tagPrefabGO.AddComponent<CanvasGroup>().blocksRaycasts = true;
 
