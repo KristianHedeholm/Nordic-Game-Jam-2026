@@ -66,7 +66,7 @@ public class UIManager : MonoBehaviour
     {
         if (label == null) return;
         var tw = label.GetComponent<TypewriterEffect>() ?? label.gameObject.AddComponent<TypewriterEffect>();
-        tw.charsPerSecond = 45f;
+        tw.charsPerSecond = 22f;
         tw.TypeWrite(text, onDone);
     }
 

@@ -143,7 +143,10 @@ public static class GameUIBuilder
         // Intro
         var introPanel = CreateFull(canvasGO, "IntroPanel");
         SetImage(introPanel, new Color(0.06f, 0.03f, 0.10f, 0.97f));
-        var introTitle = AddTMP(introPanel, "Title", "THE KING'S\nNEW CLOTHES", 80, FontStyles.Bold, new Vector2(0, 150), new Vector2(1400, 250));
+        var introTitle = AddTMP(introPanel, "Title", "FASHION ROYAL", 90, FontStyles.Bold, new Vector2(0, 150), new Vector2(1400, 200));
+        // Team name at the bottom
+        var teamLabel = AddTMP(introPanel, "TeamName", "by Invisible Tailors", 24, FontStyles.Italic, new Vector2(0, -470), new Vector2(800, 50));
+        teamLabel.color = new Color(0.7f, 0.6f, 0.9f);
         introTitle.color = new Color(1f, 0.85f, 0.3f);
         var introBody = AddTMP(introPanel, "Body", "", 30, FontStyles.Normal, new Vector2(0, -80), new Vector2(1000, 350));
         introBody.alignment = TextAlignmentOptions.Center; introBody.color = new Color(0.9f, 0.85f, 1f);
