@@ -117,9 +117,42 @@ public class UIManager : MonoBehaviour
 
     public void ResetTracker()
     {
-        if (trackerClothing)  { trackerClothing.text  = "Garment: ?";  trackerClothing.color  = Color.white; }
-        if (trackerColor)     { trackerColor.text     = "Color: ?";    trackerColor.color     = Color.white; }
-        if (trackerMaterial)  { trackerMaterial.text  = "Material: ?"; trackerMaterial.color  = Color.white; }
+        if (trackerClothing)  { trackerClothing.text  = "";  trackerClothing.color  = Color.white; }
+        if (trackerColor)     { trackerColor.text     = "";  trackerColor.color     = Color.white; }
+        if (trackerMaterial)  { trackerMaterial.text  = "";  trackerMaterial.color  = Color.white; }
+
+        // Clear any locked tags still sitting in drop zones
+        ResetDropZone(dropZoneClothing);
+        ResetDropZone(dropZoneColor);
+        ResetDropZone(dropZoneMaterial);
+    }
+
+    void ResetDropZone(TagDropZone zone)
+    {
+        if (zone == null) return;
+        // Destroy any draggable tag children
+        foreach (Transform child in zone.transform)
+        {
+            if (child.GetComponent<DraggableTag>() != null)
+                Destroy(child.gameObject);
+        }
+        // Reset the drop zone state via reflection-free approach
+        var dz = zone.GetComponent<TagDropZone>();
+        // Re-add component trick: destroy and re-add to reset state
+        var cat = dz.category;
+        var lbl = dz.answerLabel;
+        Destroy(dz);
+        var newDz = zone.gameObject.AddComponent<TagDropZone>();
+        newDz.category = cat;
+        newDz.answerLabel = lbl;
+        if (lbl != null) lbl.text = "";
+
+        // Re-wire in the correct slot
+        if (cat == "Clothing") dropZoneClothing = newDz;
+        else if (cat == "Color") dropZoneColor = newDz;
+        else if (cat == "Material") dropZoneMaterial = newDz;
+
+        newDz.SetActive(false);
     }
 
     public void UpdateAnswerTracker(string category, string answer, bool correct)
