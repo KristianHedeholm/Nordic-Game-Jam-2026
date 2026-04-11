@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using TMPro;
 
 /// <summary>
@@ -17,6 +18,14 @@ public class SceneBuilder : MonoBehaviour
 
     void BuildScene()
     {
+        // ── EVENT SYSTEM (required for button clicks) ────────────────────────
+        if (FindFirstObjectByType<EventSystem>() == null)
+        {
+            var esGO = new GameObject("EventSystem");
+            esGO.AddComponent<EventSystem>();
+            esGO.AddComponent<StandaloneInputModule>();
+        }
+
         // ── CAMERA SETUP ─────────────────────────────────────────────────────
         var cam = Camera.main;
         if (cam != null)
