@@ -163,6 +163,9 @@ public class SceneBuilder : MonoBehaviour
         var tLblRT = tLblGO.AddComponent<RectTransform>(); tLblRT.anchorMin = Vector2.zero; tLblRT.anchorMax = Vector2.one; tLblRT.sizeDelta = Vector2.zero;
         var tLblTMP = tLblGO.AddComponent<TextMeshProUGUI>();
         tLblTMP.text = ""; tLblTMP.fontSize = 22; tLblTMP.fontStyle = FontStyles.Bold;
+        tLblTMP.enableAutoSizing = true;
+        tLblTMP.fontSizeMax = 19;
+        tLblTMP.fontSizeMin = 18;
         tLblTMP.alignment = TextAlignmentOptions.Center; tLblTMP.color = new Color(1f, 1f, 1f); tLblTMP.enableWordWrapping = false;
         tagPrefabGO.AddComponent<DraggableTag>();
         tagPrefabGO.AddComponent<CanvasGroup>().blocksRaycasts = true;
