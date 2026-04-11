@@ -207,7 +207,16 @@ public class UIManager : MonoBehaviour
         {
             var sprite = isLast ? buttonStartSprite : buttonNextSprite;
             if (sprite == null) sprite = Resources.Load<Sprite>(isLast ? "Art/Button_Start" : "Art/Button_Next");
-            if (sprite != null) { btnImg.sprite = sprite; btnImg.color = Color.white; btnImg.type = Image.Type.Simple; btnImg.preserveAspect = true; }
+            if (sprite != null)
+        {
+            btnImg.sprite = sprite;
+            btnImg.color  = Color.white;
+            btnImg.type   = Image.Type.Simple;
+            btnImg.preserveAspect = true;
+            // Resize button rect to match sprite native size exactly
+            var btnRT = introStartButton.GetComponent<RectTransform>();
+            if (btnRT != null) btnRT.sizeDelta = new Vector2(sprite.texture.width * 0.75f, sprite.texture.height * 0.75f);
+        }
         }
         // Hide TMP label — SVG already has text baked in
         var lbl = introStartButton.GetComponentInChildren<TMP_Text>();

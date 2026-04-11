@@ -259,7 +259,8 @@ public class SceneBuilder : MonoBehaviour
         body.alignment = TextAlignmentOptions.Center; body.color = new Color(0.9f, 0.85f, 1f);
         var team = AddTMP(root, "TeamName", "by Invisible Tailors", 24, FontStyles.Italic, new Vector2(0, -440), new Vector2(800, 50));
         team.color = new Color(0.7f, 0.6f, 0.9f);
-        var btn = BuildButton(root, "StartButton", "ENTER THE ROYAL COURT", new Vector2(0, -310), new Vector2(642, 125), new Color(0.45f, 0.22f, 0.65f));
+        // Button size matches SVG natural ratio (321x125 → 2x = 642x250, but display at 480x188 to avoid stretch)
+        var btn = BuildButton(root, "StartButton", "ENTER THE ROYAL COURT", new Vector2(0, -310), new Vector2(480, 188), new Color(0.45f, 0.22f, 0.65f));
         return new SimplePanel { root = root, text = body, btn = btn };
     }
 
