@@ -109,7 +109,7 @@ public class SceneBuilder : MonoBehaviour
             var holder = CreateRect(stagePanelGO, $"DropZone_{holderCats[i]}", new Vector2(-750, 180 - i * 220), new Vector2(260, 200));
             var hImg   = holder.AddComponent<Image>();
             var hSpr   = Resources.Load<Sprite>($"Art/{holderSprites[i]}");
-            if (hSpr != null) { hImg.sprite = hSpr; hImg.type = Image.Type.Sliced; hImg.color = Color.white; }
+            if (hSpr != null) { hImg.sprite = hSpr; hImg.type = Image.Type.Simple; hImg.preserveAspect = true; hImg.color = Color.white; }
             else hImg.color = new Color(0.2f, 0.12f, 0.3f);
 
             var aGO = new GameObject("AnswerLabel"); aGO.transform.SetParent(holder.transform, false);
@@ -148,7 +148,7 @@ public class SceneBuilder : MonoBehaviour
         tagPrefabGO.AddComponent<RectTransform>().sizeDelta = new Vector2(220, 70);
         var tImg = tagPrefabGO.AddComponent<Image>();
         var tSpr = Resources.Load<Sprite>("Art/Theme_Tag");
-        if (tSpr != null) { tImg.sprite = tSpr; tImg.type = Image.Type.Sliced; tImg.color = Color.white; }
+        if (tSpr != null) { tImg.sprite = tSpr; tImg.type = Image.Type.Simple; tImg.preserveAspect = true; tImg.color = Color.white; }
         else tImg.color = new Color(0.35f, 0.18f, 0.55f);
         var tLblGO = new GameObject("Label"); tLblGO.transform.SetParent(tagPrefabGO.transform, false);
         var tLblRT = tLblGO.AddComponent<RectTransform>(); tLblRT.anchorMin = Vector2.zero; tLblRT.anchorMax = Vector2.one; tLblRT.sizeDelta = Vector2.zero;

@@ -40,11 +40,11 @@ public class TagDropZone : MonoBehaviour, IDropHandler
         filled = true;
         tag.Lock();
 
-        // Snap tag into this zone
+        // Snap tag into this zone — keep its original size, just center it
         tag.transform.SetParent(transform, false);
         var tagRT = tag.GetComponent<RectTransform>();
         tagRT.anchoredPosition = Vector2.zero;
-        tagRT.sizeDelta = GetComponent<RectTransform>().sizeDelta;
+        // Do NOT resize — preserve original tag scale
 
         // Show answer text
         if (answerLabel != null)

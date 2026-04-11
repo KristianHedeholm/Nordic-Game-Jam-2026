@@ -171,7 +171,7 @@ public class UIManager : MonoBehaviour
             var sprite = isLast ? buttonStartSprite : buttonNextSprite;
             // Fallback to Resources if not wired yet
             if (sprite == null) sprite = Resources.Load<Sprite>(isLast ? "Art/Button_Start" : "Art/Button_Next");
-            if (sprite != null) { btnImg.sprite = sprite; btnImg.color = Color.white; btnImg.type = Image.Type.Sliced; }
+            if (sprite != null) { btnImg.sprite = sprite; btnImg.color = Color.white; btnImg.type = Image.Type.Simple; btnImg.preserveAspect = true; }
             var lbl = introStartButton.GetComponentInChildren<TMP_Text>();
             if (lbl != null) lbl.color = new Color(0.15f, 0.08f, 0.25f);
         }
