@@ -329,41 +329,62 @@ public class AudioManager : MonoBehaviour
         return MakeClip("kingtalk", data, sr);
     }
 
-    // Crowd reaction — can be cheering or booing (randomly mixed regardless of correct/wrong for deception)
+    // Crowd reaction — many overlapping voices
     AudioClip GenerateCrowdCheer(bool cheer)
     {
         int sr = 44100;
-        float dur = 1.2f;
+        float dur = 1.6f;
         var data = new float[(int)(sr * dur)];
-        // Base noise layer
-        for (int i = 0; i < data.Length; i++)
+
+        // Simulate ~30 individual voices
+        int voices = 30;
+        for (int v = 0; v < voices; v++)
         {
-            float t = (float)i / sr;
-            float env = Mathf.Clamp01(t * 5f) * Mathf.Clamp01((dur - t) * 2.5f);
-            data[i] = (UnityEngine.Random.value - 0.5f) * env * 0.3f;
-        }
-        if (cheer)
-        {
-            // Rising pitch sweep for cheer
-            for (int i = 0; i < data.Length; i++)
+            float baseFreq = cheer
+                ? 300f + UnityEngine.Random.value * 400f   // higher excited voices for cheer
+                : 120f + UnityEngine.Random.value * 150f;  // lower grumbling voices for boo
+
+            float vibRate  = 4f + UnityEngine.Random.value * 6f;
+            float vibDepth = 0.05f + UnityEngine.Random.value * 0.15f;
+            float delay    = UnityEngine.Random.value * 0.15f; // stagger entry
+            float vol      = 0.025f + UnityEngine.Random.value * 0.02f;
+
+            int startSample = (int)(delay * sr);
+            for (int i = startSample; i < data.Length; i++)
             {
-                float t = (float)i / sr;
-                float env = Mathf.Clamp01(t * 4f) * Mathf.Clamp01((dur - t) * 2f);
-                float freq = Mathf.Lerp(300f, 800f, t / dur);
-                data[i] += Mathf.Sin(2 * Mathf.PI * freq * t) * env * 0.15f;
+                float t   = (float)(i - startSample) / sr;
+                float tNorm = t / (dur - delay);
+
+                float env;
+                if (cheer)
+                    // Cheer: quick attack, sustained, fast decay
+                    env = Mathf.Clamp01(t * 12f) * Mathf.Clamp01((dur - delay - t) * 3f);
+                else
+                    // Boo: slower build, long hold, gradual fade
+                    env = Mathf.Clamp01(t * 5f) * Mathf.Clamp01((dur - delay - t) * 2f);
+
+                float vib  = 1f + vibDepth * Mathf.Sin(2 * Mathf.PI * vibRate * t);
+                float freq = baseFreq * vib;
+
+                // Voice: fundamental + harmonics (gives vowel-like quality)
+                float sample  = Mathf.Sin(2 * Mathf.PI * freq * t) * 0.5f;
+                sample       += Mathf.Sin(2 * Mathf.PI * freq * 2f * t) * 0.25f;
+                sample       += Mathf.Sin(2 * Mathf.PI * freq * 3f * t) * 0.12f;
+                sample       += Mathf.Sin(2 * Mathf.PI * freq * 4f * t) * 0.06f;
+
+                // Add a little breathiness
+                sample += (UnityEngine.Random.value - 0.5f) * 0.08f;
+
+                data[i] += sample * env * vol;
             }
         }
-        else
-        {
-            // Falling pitch for boo
-            for (int i = 0; i < data.Length; i++)
-            {
-                float t = (float)i / sr;
-                float env = Mathf.Clamp01(t * 4f) * Mathf.Clamp01((dur - t) * 2f);
-                float freq = Mathf.Lerp(600f, 150f, t / dur);
-                data[i] += Mathf.Sin(2 * Mathf.PI * freq * t) * env * 0.12f;
-            }
-        }
+
+        // Normalise to prevent clipping
+        float peak = 0f;
+        foreach (float s in data) peak = Mathf.Max(peak, Mathf.Abs(s));
+        if (peak > 0.9f)
+            for (int i = 0; i < data.Length; i++) data[i] /= peak / 0.9f;
+
         return MakeClip(cheer ? "cheer" : "boo", data, sr);
     }
 
