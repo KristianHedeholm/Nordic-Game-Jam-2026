@@ -90,9 +90,20 @@ public class SceneBuilder : MonoBehaviour
         var curtainL = CreateRect(stagePanelGO, "CurtainLeft",  new Vector2(-560, 0), new Vector2(1000, 900)); AddImage(curtainL, new Color(0.55f, 0.05f, 0.08f));
         for (int i = 0; i < 4; i++) AddImage(CreateRect(curtainL, $"Fold{i}", new Vector2(-350 + i*120, 0), new Vector2(20, 900)), new Color(0.4f, 0.03f, 0.06f, 0.7f));
         AddImage(CreateRect(curtainL, "Gold", new Vector2(480, 0),  new Vector2(18, 900)), new Color(1f, 0.82f, 0.1f));
+        var rectLeft = curtainL.GetComponent<RectTransform>();
+        var left = new Vector2(0.0f, 0.5f);
+        rectLeft.pivot = left;
+        rectLeft.anchorMax = left;
+        rectLeft.anchorMin = left;
+        
         var curtainR = CreateRect(stagePanelGO, "CurtainRight", new Vector2(560, 0),  new Vector2(1000, 900)); AddImage(curtainR, new Color(0.55f, 0.05f, 0.08f));
         for (int i = 0; i < 4; i++) AddImage(CreateRect(curtainR, $"Fold{i}", new Vector2(350 - i*120, 0), new Vector2(20, 900)), new Color(0.4f, 0.03f, 0.06f, 0.7f));
         AddImage(CreateRect(curtainR, "Gold", new Vector2(-480, 0), new Vector2(18, 900)), new Color(1f, 0.82f, 0.1f));
+        var rectRight = curtainR.GetComponent<RectTransform>();
+        var right = new Vector2(1.0f, 0.5f);
+        rectRight.pivot = right;
+        rectRight.anchorMax = right;
+        rectRight.anchorMin = right;
 
         var curtainAnim = stagePanelGO.AddComponent<CurtainAnimator>();
         curtainAnim.curtainLeft  = curtainL.GetComponent<RectTransform>();

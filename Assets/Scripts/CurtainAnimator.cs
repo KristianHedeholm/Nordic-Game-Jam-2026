@@ -11,7 +11,7 @@ public class CurtainAnimator : MonoBehaviour
     public RectTransform curtainRight;
 
     // How far each curtain slides — enough to fully reveal the centre
-    public float openOffset = 1100f;
+    public float openOffset = 550f;
     public float duration   = 1.4f;
 
     private Vector2 leftClosed;
