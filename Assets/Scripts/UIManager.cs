@@ -192,6 +192,7 @@ public class UIManager : MonoBehaviour
         ResetTracker();
         kingPoseProud?.Invoke(false);
         if (narratorLabel != null) narratorLabel.text = "";
+        if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(true);
         stagePanel?.SetActive(false);
         curtainAnimator?.CloseCurtains();
         AudioManager.Instance?.PlayIntroFanfare();

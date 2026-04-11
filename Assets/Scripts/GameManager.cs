@@ -147,6 +147,7 @@ public class GameManager : MonoBehaviour
         Debug.Log($"[Game] New round (skip intro) — King imagines: {State.TargetColor} {State.TargetMaterial} {State.TargetClothing}");
         uiManager.ResetTracker();
         uiManager.kingPoseProud?.Invoke(false);
+        if (uiManager.narratorLabel != null) uiManager.narratorLabel.text = "";
         uiManager.curtainAnimator?.CloseCurtains();
         GoToPhase(GamePhase.GuessClothing);
     }
