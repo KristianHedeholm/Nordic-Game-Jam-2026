@@ -5,160 +5,171 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Controls all UI panels. Attach to a persistent canvas object in the scene.
+/// Controls all game UI. Wired up by SceneBuilder at runtime.
 /// </summary>
 public class UIManager : MonoBehaviour
 {
-    [Header("Panels")]
+    [Header("Stage")]
+    public GameObject stagePanel;
+    public CurtainAnimator curtainAnimator;
+    public TMP_Text riddleText;
+    public TMP_Text categoryLabel;
+    public Transform optionsContainer;
+    public Button optionButtonPrefab;
+
+    [Header("Overlay Panels")]
     public GameObject introPanel;
     public GameObject loadingPanel;
-    public GameObject guessPanel;
     public GameObject revealPanel;
     public GameObject finalJudgmentPanel;
     public GameObject winPanel;
     public GameObject deathPanel;
 
-    [Header("Intro Panel")]
+    [Header("Intro")]
     public TMP_Text introText;
     public Button introStartButton;
 
-    [Header("Guess Panel")]
-    public TMP_Text riddleText;
-    public TMP_Text categoryLabel;
-    public Transform optionsContainer;   // Horizontal layout with buttons
-    public Button optionButtonPrefab;
-
-    [Header("Reveal Panel")]
+    [Header("Reveal")]
     public TMP_Text revealText;
     public Button revealContinueButton;
 
-    [Header("Final Judgment Panel")]
+    [Header("Judgment")]
     public TMP_Text finalText;
     public Button flatterButton;
     public Button truthButton;
 
-    [Header("Win Panel")]
+    [Header("Win")]
     public TMP_Text winText;
     public Button winPlayAgainButton;
 
-    [Header("Death Panel")]
+    [Header("Death")]
     public TMP_Text deathText;
     public Button deathPlayAgainButton;
 
-    void HideAll()
+    void HideAllOverlays()
     {
         introPanel?.SetActive(false);
         loadingPanel?.SetActive(false);
-        guessPanel?.SetActive(false);
         revealPanel?.SetActive(false);
         finalJudgmentPanel?.SetActive(false);
         winPanel?.SetActive(false);
         deathPanel?.SetActive(false);
     }
 
+    void ClearOptions()
+    {
+        foreach (Transform child in optionsContainer)
+            Destroy(child.gameObject);
+    }
+
     public void ShowIntro()
     {
-        HideAll();
+        HideAllOverlays();
+        stagePanel?.SetActive(false);
+        curtainAnimator?.CloseCurtains();
         introPanel.SetActive(true);
-        introText.text = "The King demands your presence!\n\n" +
-                         "He has dressed in the finest garments in all the land...\n" +
-                         "or so he believes.\n\n" +
-                         "Guess what he is wearing. Answer wisely.\n" +
-                         "<i>Your head depends on it.</i>";
-
+        introText.text =
+            "The King demands your presence!\n\n" +
+            "He has dressed in the finest garments\nin all the land...\n\n" +
+            "<i>...or so he believes.</i>\n\n" +
+            "Guess his outfit. Answer wisely.\nYour head depends on it.";
         introStartButton.onClick.RemoveAllListeners();
         introStartButton.onClick.AddListener(() => GameManager.Instance.GoToPhase(GamePhase.GuessClothing));
     }
 
     public void ShowLoading()
     {
-        HideAll();
+        HideAllOverlays();
+        stagePanel?.SetActive(true);
         loadingPanel.SetActive(true);
+        ClearOptions();
+        riddleText.text = "...";
+        categoryLabel.text = "";
     }
 
     public void ShowGuessPanel(string category, string riddle, List<string> options, Action<string> onChosen)
     {
-        HideAll();
-        guessPanel.SetActive(true);
-
+        HideAllOverlays();
+        stagePanel?.SetActive(true);
         categoryLabel.text = $"What is the King's <b>{category}</b>?";
-        riddleText.text = $"\"{riddle}\"";
+        riddleText.text = riddle;
 
-        // Clear old buttons
-        foreach (Transform child in optionsContainer)
-            Destroy(child.gameObject);
-
-        // Spawn one button per option
-        foreach (string option in options)
+        ClearOptions();
+        foreach (var option in options)
         {
             var btn = Instantiate(optionButtonPrefab, optionsContainer);
+            btn.gameObject.SetActive(true);
             btn.GetComponentInChildren<TMP_Text>().text = option;
             string captured = option;
+            btn.onClick.RemoveAllListeners();
             btn.onClick.AddListener(() => onChosen(captured));
         }
     }
 
     public void ShowReveal(string color, string clothing, string material)
     {
-        HideAll();
-        revealPanel.SetActive(true);
+        HideAllOverlays();
+        stagePanel?.SetActive(true);
+        ClearOptions();
+        categoryLabel.text = "";
+        riddleText.text = "...";
 
-        revealText.text = $"The King steps forward...\n\n" +
-                          $"You guessed: a <b>{color} {material} {clothing}</b>.\n\n" +
-                          $"<i>The curtain falls.</i>\n\n" +
-                          $"The King stands before you.\n\n" +
-                          $"He is... <b>wearing nothing at all.</b>";
-
-        revealContinueButton.onClick.RemoveAllListeners();
-        revealContinueButton.onClick.AddListener(() => GameManager.Instance.GoToPhase(GamePhase.FinalJudgment));
+        // Animate curtains open, then show reveal text
+        curtainAnimator?.OpenCurtains(() =>
+        {
+            revealPanel.SetActive(true);
+            revealText.text =
+                $"You guessed: a <b>{color} {material} {clothing}</b>.\n\n" +
+                $"The curtain falls...\n\n" +
+                $"The King stands before you.\n\n" +
+                $"He is wearing... <b>absolutely nothing at all.</b>";
+            revealContinueButton.onClick.RemoveAllListeners();
+            revealContinueButton.onClick.AddListener(() => GameManager.Instance.GoToPhase(GamePhase.FinalJudgment));
+        });
     }
 
     public void ShowFinalJudgment()
     {
-        HideAll();
+        HideAllOverlays();
+        stagePanel?.SetActive(true);
         finalJudgmentPanel.SetActive(true);
-
-        finalText.text = "The King beams at you with absolute confidence.\n\n" +
-                         "\"Well?\" he says. \"What do you think of my magnificent outfit?\"\n\n" +
-                         "<i>Choose your words carefully.</i>";
-
+        finalText.text =
+            "The King beams at you with absolute confidence.\n\n" +
+            "\"Well?\" he says. \"What do you think of my magnificent outfit?\"\n\n" +
+            "<i>Choose your words very, very carefully.</i>";
         flatterButton.GetComponentInChildren<TMP_Text>().text = "\"Your Majesty, you look absolutely divine!\"";
-        truthButton.GetComponentInChildren<TMP_Text>().text = "\"...You're naked.\"";
-
+        truthButton.GetComponentInChildren<TMP_Text>().text   = "\"...You're naked.\"";
         flatterButton.onClick.RemoveAllListeners();
         truthButton.onClick.RemoveAllListeners();
-
         flatterButton.onClick.AddListener(() => GameManager.Instance.OnPlayerFlatters());
         truthButton.onClick.AddListener(() => GameManager.Instance.OnPlayerTruth());
     }
 
     public void ShowWin()
     {
-        HideAll();
+        HideAllOverlays();
+        stagePanel?.SetActive(false);
         winPanel.SetActive(true);
-
-        winText.text = "The King claps with delight!\n\n" +
-                       "\"Yes! YES! You truly have the finest eyes in the kingdom!\"\n\n" +
-                       "You survive. The King is happy.\n" +
-                       "The kingdom is safe.\n\n" +
-                       "<i>(He is still naked.)</i>";
-
+        winText.text =
+            "The King claps with delight!\n\n" +
+            "\"YES! You truly have the finest eyes in all the kingdom!\"\n\n" +
+            "You survive. The King is happy.\nThe kingdom is at peace.\n\n" +
+            "<i>(He is still naked.)</i>";
         winPlayAgainButton.onClick.RemoveAllListeners();
         winPlayAgainButton.onClick.AddListener(() => GameManager.Instance.OnPlayAgain());
     }
 
     public void ShowDeath()
     {
-        HideAll();
+        HideAllOverlays();
+        stagePanel?.SetActive(false);
         deathPanel.SetActive(true);
-
-        deathText.text = "The King's eyes narrow.\n\n" +
-                         "\"NAKED?!\"\n\n" +
-                         "\"GUARDS! OFF WITH THEIR HEAD!\"\n\n" +
-                         "You told the truth.\n" +
-                         "It didn't matter.\n\n" +
-                         "<i>It never does.</i>";
-
+        deathText.text =
+            "The King's eyes narrow.\n\n" +
+            "\"NAKED?!\"\n\n" +
+            "\"GUARDS! OFF WITH THEIR HEAD!\"\n\n" +
+            "You told the truth.\nIt didn't matter.\n\n" +
+            "<i>It never does.</i>";
         deathPlayAgainButton.onClick.RemoveAllListeners();
         deathPlayAgainButton.onClick.AddListener(() => GameManager.Instance.OnPlayAgain());
     }
