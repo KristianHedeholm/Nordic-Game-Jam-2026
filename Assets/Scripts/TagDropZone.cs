@@ -50,9 +50,9 @@ public class TagDropZone : MonoBehaviour, IDropHandler
         tagRT.offsetMin = new Vector2(32, 28);
         tagRT.offsetMax = new Vector2(-32, 0);
 
-        // Show answer text
+        // Hide the placeholder label — the tag itself shows the answer
         if (answerLabel != null)
-            answerLabel.text = tag.value;
+            answerLabel.gameObject.SetActive(false);
 
         AudioManager.Instance?.PlayButtonClick();
         if (UnityEngine.Random.value > 0.5f) AudioManager.Instance?.PlayCrowdCheerGood();

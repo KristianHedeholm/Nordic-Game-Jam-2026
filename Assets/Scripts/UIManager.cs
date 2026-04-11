@@ -145,7 +145,7 @@ public class UIManager : MonoBehaviour
         var newDz = zone.gameObject.AddComponent<TagDropZone>();
         newDz.category = cat;
         newDz.answerLabel = lbl;
-        if (lbl != null) lbl.text = "";
+        if (lbl != null) { lbl.text = ""; lbl.gameObject.SetActive(true); }
 
         // Re-wire in the correct slot
         if (cat == "Clothing") dropZoneClothing = newDz;
