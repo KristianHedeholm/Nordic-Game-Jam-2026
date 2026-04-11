@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 
 /// <summary>
@@ -36,10 +37,28 @@ public class AudioManager : MonoBehaviour
     public void PlayWin()           => PlayClip(GenerateWin(), 0.8f);
     public void PlayButtonClick()   => PlayClip(GenerateClick(), 0.4f);
     public void PlayKingLaugh()     => PlayClip(GenerateLaugh(), 0.6f);
+    public void PlayKingTalk()      => PlayClip(GenerateOnionKingTalk(), 0.7f);
+    public void PlayTadaaa()        => PlayClip(GenerateTadaaa(), 0.9f);
+    public void PlayCrowdCheerGood()  => PlayClip(GenerateCrowdCheer(true), 0.6f);
+    public void PlayCrowdCheerBad()   => PlayClip(GenerateCrowdCheer(false), 0.6f);
+
+    public void PlayDrumrollThenReveal(Action onReveal)
+        => StartCoroutine(DrumrollRoutine(onReveal));
 
     void PlayClip(AudioClip clip, float volume = 1f)
     {
         sfxSource.PlayOneShot(clip, volume);
+    }
+
+    // ── COROUTINE ─────────────────────────────────────────────────────────
+
+    IEnumerator DrumrollRoutine(Action onReveal)
+    {
+        PlayClip(GenerateDrumroll(), 0.85f);
+        yield return new WaitForSeconds(2.5f);   // drumroll duration
+        PlayTadaaa();
+        yield return new WaitForSeconds(0.3f);
+        onReveal?.Invoke();
     }
 
     // ── SOUND GENERATORS ─────────────────────────────────────────────────
@@ -232,6 +251,120 @@ public class AudioManager : MonoBehaviour
             }
         }
         return MakeClip("ambient", data, sr, loop: true);
+    }
+
+    // Accelerating snare drumroll building to a crescendo
+    AudioClip GenerateDrumroll()
+    {
+        int sr = 44100;
+        float dur = 2.5f;
+        var data = new float[(int)(sr * dur)];
+
+        // Accelerating hit intervals: start at 0.3s apart, end at 0.04s
+        float t = 0f;
+        float interval = 0.30f;
+        while (t < dur)
+        {
+            // Progress 0→1
+            float progress = t / dur;
+            // Each hit: short snare burst
+            int start = (int)(t * sr);
+            int hitLen = (int)(0.05f * sr);
+            float vol = 0.4f + progress * 0.5f; // gets louder
+            for (int i = 0; i < hitLen && start + i < data.Length; i++)
+            {
+                float tt = (float)i / sr;
+                float env = Mathf.Exp(-tt * 80f);
+                data[start + i] += (UnityEngine.Random.value - 0.5f) * env * vol;
+                data[start + i] += Mathf.Sin(2 * Mathf.PI * 180f * tt) * env * vol * 0.4f;
+            }
+            interval = Mathf.Lerp(0.30f, 0.035f, progress);
+            t += interval;
+        }
+        return MakeClip("drumroll", data, sr);
+    }
+
+    // Big triumphant TADAAAA
+    AudioClip GenerateTadaaa()
+    {
+        int sr = 44100;
+        float dur = 1.5f;
+        var data = new float[(int)(sr * dur)];
+        // Brass-like chord: C E G
+        float[] freqs = { 523.2f, 659.2f, 783.9f, 1046.5f };
+        for (int i = 0; i < data.Length; i++)
+        {
+            float t = (float)i / sr;
+            float env = Mathf.Clamp01(t * 15f) * Mathf.Clamp01((dur - t) * 2f);
+            foreach (float f in freqs)
+            {
+                data[i] += Mathf.Sin(2 * Mathf.PI * f * t) * env * 0.18f;
+                data[i] += Mathf.Sin(2 * Mathf.PI * f * 2f * t) * env * 0.06f;
+            }
+        }
+        return MakeClip("tadaaa", data, sr);
+    }
+
+    // Onion King style: wobbly warbling voice sound (Overcooked-inspired)
+    AudioClip GenerateOnionKingTalk()
+    {
+        int sr = 44100;
+        float dur = 0.4f + UnityEngine.Random.value * 0.4f; // variable length each time
+        var data = new float[(int)(sr * dur)];
+        float baseFreq = 180f + UnityEngine.Random.value * 80f;
+        float wobbleRate = 6f + UnityEngine.Random.value * 4f;
+        for (int i = 0; i < data.Length; i++)
+        {
+            float t = (float)i / sr;
+            float env = Mathf.Clamp01(t * 20f) * Mathf.Clamp01((dur - t) * 10f);
+            float wobble = 1f + 0.18f * Mathf.Sin(2 * Mathf.PI * wobbleRate * t);
+            float freq = baseFreq * wobble;
+            // Voiced sound with harmonics (vocalish)
+            data[i]  = Mathf.Sin(2 * Mathf.PI * freq * t) * 0.4f;
+            data[i] += Mathf.Sin(2 * Mathf.PI * freq * 2f * t) * 0.2f;
+            data[i] += Mathf.Sin(2 * Mathf.PI * freq * 3f * t) * 0.1f;
+            data[i] += Mathf.Sin(2 * Mathf.PI * freq * 4f * t) * 0.05f;
+            data[i] *= env * 0.55f;
+        }
+        return MakeClip("kingtalk", data, sr);
+    }
+
+    // Crowd reaction — can be cheering or booing (randomly mixed regardless of correct/wrong for deception)
+    AudioClip GenerateCrowdCheer(bool cheer)
+    {
+        int sr = 44100;
+        float dur = 1.2f;
+        var data = new float[(int)(sr * dur)];
+        // Base noise layer
+        for (int i = 0; i < data.Length; i++)
+        {
+            float t = (float)i / sr;
+            float env = Mathf.Clamp01(t * 5f) * Mathf.Clamp01((dur - t) * 2.5f);
+            data[i] = (UnityEngine.Random.value - 0.5f) * env * 0.3f;
+        }
+        if (cheer)
+        {
+            // Rising pitch sweep for cheer
+            for (int i = 0; i < data.Length; i++)
+            {
+                float t = (float)i / sr;
+                float env = Mathf.Clamp01(t * 4f) * Mathf.Clamp01((dur - t) * 2f);
+                float freq = Mathf.Lerp(300f, 800f, t / dur);
+                data[i] += Mathf.Sin(2 * Mathf.PI * freq * t) * env * 0.15f;
+            }
+        }
+        else
+        {
+            // Falling pitch for boo
+            for (int i = 0; i < data.Length; i++)
+            {
+                float t = (float)i / sr;
+                float env = Mathf.Clamp01(t * 4f) * Mathf.Clamp01((dur - t) * 2f);
+                float freq = Mathf.Lerp(600f, 150f, t / dur);
+                data[i] += Mathf.Sin(2 * Mathf.PI * freq * t) * env * 0.12f;
+            }
+        }
+        return MakeClip(cheer ? "cheer" : "boo", data, sr);
     }
 
     AudioClip MakeClip(string name, float[] data, int sampleRate, bool loop = false)

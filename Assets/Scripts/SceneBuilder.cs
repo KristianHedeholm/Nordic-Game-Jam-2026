@@ -164,6 +164,11 @@ public class SceneBuilder : MonoBehaviour
         curtainAnim.curtainLeft  = curtainL.GetComponent<RectTransform>();
         curtainAnim.curtainRight = curtainR.GetComponent<RectTransform>();
 
+        // Store arm refs for proud pose switch
+        var armLRT = armL.GetComponent<RectTransform>();
+        var armRRT = armR.GetComponent<RectTransform>();
+        var bodyRT = body.GetComponent<RectTransform>();
+
         // ── ANSWER TRACKER (left side panel) ─────────────────────────────
         var trackerBg = CreateRect(stagePanelGO, "TrackerBg", new Vector2(-780, 200), new Vector2(280, 220));
         AddImage(trackerBg, new Color(0.08f, 0.05f, 0.15f, 0.9f));
@@ -264,6 +269,34 @@ public class SceneBuilder : MonoBehaviour
         ui.trackerClothing = tcTmp;
         ui.trackerColor    = tcoTmp;
         ui.trackerMaterial = tmTmp;
+
+        // Proud pose callback — arms raised triumphantly
+        ui.kingPoseProud = (proud) =>
+        {
+            if (proud)
+            {
+                // Arms up — victory pose
+                armLRT.anchoredPosition = new Vector2(-165, 20);
+                armLRT.sizeDelta        = new Vector2(110, 80);
+                armLRT.localRotation    = Quaternion.Euler(0, 0, 45f);
+                armRRT.anchoredPosition = new Vector2(165, 20);
+                armRRT.sizeDelta        = new Vector2(110, 80);
+                armRRT.localRotation    = Quaternion.Euler(0, 0, -45f);
+                // Chest puffed — body slightly wider
+                bodyRT.sizeDelta = new Vector2(250, 200);
+            }
+            else
+            {
+                // Reset to normal
+                armLRT.anchoredPosition = new Vector2(-165, -80);
+                armLRT.sizeDelta        = new Vector2(110, 80);
+                armLRT.localRotation    = Quaternion.identity;
+                armRRT.anchoredPosition = new Vector2(165, -80);
+                armRRT.sizeDelta        = new Vector2(110, 80);
+                armRRT.localRotation    = Quaternion.identity;
+                bodyRT.sizeDelta        = new Vector2(220, 200);
+            }
+        };
 
         // Stage UI refs
         ui.stagePanel       = stagePanelGO;

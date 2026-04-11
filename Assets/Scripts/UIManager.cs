@@ -102,6 +102,7 @@ public class UIManager : MonoBehaviour
     {
         HideAllOverlays();
         ResetTracker();
+        kingPoseProud?.Invoke(false); // reset pose
         stagePanel?.SetActive(false);
         curtainAnimator?.CloseCurtains();
         AudioManager.Instance?.PlayIntroFanfare();
@@ -131,6 +132,7 @@ public class UIManager : MonoBehaviour
         stagePanel?.SetActive(true);
         categoryLabel.text = $"What is the King's <b>{category}</b>?";
         riddleText.text = riddle;
+        AudioManager.Instance?.PlayKingTalk();
 
         ClearOptions();
         foreach (var option in options)
@@ -140,7 +142,13 @@ public class UIManager : MonoBehaviour
             btn.GetComponentInChildren<TMP_Text>().text = option;
             string captured = option;
             btn.onClick.RemoveAllListeners();
-            btn.onClick.AddListener(() => { AudioManager.Instance?.PlayButtonClick(); onChosen(captured); });
+            btn.onClick.AddListener(() => {
+                AudioManager.Instance?.PlayButtonClick();
+                // Crowd reacts — randomly deceiving (50/50 cheer vs boo regardless of answer)
+                if (UnityEngine.Random.value > 0.5f) AudioManager.Instance?.PlayCrowdCheerGood();
+                else AudioManager.Instance?.PlayCrowdCheerBad();
+                onChosen(captured);
+            });
         }
     }
 
@@ -176,6 +184,9 @@ public class UIManager : MonoBehaviour
         btn.onClick.AddListener(() => { reactionPanel.SetActive(false); onContinue?.Invoke(); });
     }
 
+    // Callback to switch king to proud pose (wired by SceneBuilder)
+    public Action<bool> kingPoseProud;
+
     // ── REVEAL ────────────────────────────────────────────────────────────
 
     public void ShowReveal(GameState state)
@@ -186,40 +197,32 @@ public class UIManager : MonoBehaviour
         categoryLabel.text = "";
         riddleText.text = "...";
 
-        AudioManager.Instance?.PlayCurtainOpen();
-        RevealTrackerResult(trackerClothing, "Garment",  state.GuessedClothing, state.TargetClothing);
-        RevealTrackerResult(trackerColor,    "Color",    state.GuessedColor,    state.TargetColor);
-        RevealTrackerResult(trackerMaterial, "Material", state.GuessedMaterial, state.TargetMaterial);
-
         bool allCorrect = state.GuessedClothing == state.TargetClothing &&
                           state.GuessedColor    == state.TargetColor    &&
                           state.GuessedMaterial == state.TargetMaterial;
 
-        curtainAnimator?.OpenCurtains(() =>
+        // Drumroll → tadaaa → curtains open → reveal
+        AudioManager.Instance?.PlayDrumrollThenReveal(() =>
         {
-            AudioManager.Instance?.PlayKingLaugh();
-            revealPanel.SetActive(true);
-
-            if (allCorrect)
+            AudioManager.Instance?.PlayCurtainOpen();
+            curtainAnimator?.OpenCurtains(() =>
             {
-                revealText.text =
-                    $"*The King claps with wild enthusiasm!*\n\n" +
-                    $"\"SPECTACULAR! A <b>{state.TargetColor} {state.TargetMaterial} {state.TargetClothing}</b>! You are a <b>genius</b>!\"\n\n" +
-                    $"\"I have SO many other magnificent outfits...\"\n\n" +
-                    $"<i>He stands before you. Gloriously wearing nothing at all.</i>";
-            }
-            else
-            {
-                revealText.text =
-                    $"The King narrows his eyes at your answers.\n\n" +
-                    $"\"Hmm. <i>Disappointing.</i> But I am a <b>generous</b> King.\"\n\n" +
-                    $"\"Perhaps you simply need more practice...\"\n\n" +
-                    $"<i>He stands before you. Gloriously wearing nothing at all.</i>";
-            }
+                RevealTrackerResult(trackerClothing, "Garment",  state.GuessedClothing, state.TargetClothing);
+                RevealTrackerResult(trackerColor,    "Color",    state.GuessedColor,    state.TargetColor);
+                RevealTrackerResult(trackerMaterial, "Material", state.GuessedMaterial, state.TargetMaterial);
 
-            revealContinueButton.onClick.RemoveAllListeners();
-            revealContinueButton.onClick.AddListener(() =>
-                GameManager.Instance.GoToFinalQuestion(allCorrect));
+                AudioManager.Instance?.PlayKingLaugh();
+                kingPoseProud?.Invoke(true); // switch king to proud pose
+
+                revealPanel.SetActive(true);
+                revealText.text = allCorrect
+                    ? $"*The King claps with wild enthusiasm!*\n\n\"SPECTACULAR! A <b>{state.TargetColor} {state.TargetMaterial} {state.TargetClothing}</b>! You are a <b>genius</b>!\"\n\n\"I have SO many other magnificent outfits...\"\n\n<i>He stands before you. Gloriously wearing nothing at all.</i>"
+                    : $"The King narrows his eyes at your answers.\n\n\"Hmm. <i>Disappointing.</i> But I am a <b>generous</b> King.\"\n\n\"Perhaps you simply need more practice...\"\n\n<i>He stands before you. Gloriously wearing nothing at all.</i>";
+
+                revealContinueButton.onClick.RemoveAllListeners();
+                revealContinueButton.onClick.AddListener(() =>
+                    GameManager.Instance.GoToFinalQuestion(allCorrect));
+            });
         });
     }
 
@@ -245,6 +248,7 @@ public class UIManager : MonoBehaviour
         HideAllOverlays();
         stagePanel?.SetActive(true);
         finalJudgmentPanel.SetActive(true);
+        AudioManager.Instance?.PlayKingTalk();
 
         if (allCorrect)
         {
