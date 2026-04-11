@@ -198,6 +198,7 @@ public class SceneBuilder : MonoBehaviour
         var gm = mgrGO.AddComponent<GameManager>();
         var rg = mgrGO.AddComponent<RiddleGenerator>();
         var ui = mgrGO.AddComponent<UIManager>();
+        var diamond = mgrGO.AddComponent<Diamond>();
         mgrGO.AddComponent<AudioManager>();
         gameObject.AddComponent<AppQuit>();
 
@@ -258,7 +259,9 @@ public class SceneBuilder : MonoBehaviour
         introPanel.root.SetActive(false); loadingPanel.root.SetActive(false); reactionPanel.root.SetActive(false);
         revealPanel.root.SetActive(false); judgmentPanel.root.SetActive(false); winPanel.root.SetActive(false); deathPanel.root.SetActive(false);
 
-        gm.uiManager = ui; gm.riddleGenerator = rg;
+        gm.uiManager = ui; 
+        gm.riddleGenerator = rg;
+        gm.diamond = diamond;
         gm.StartGame();
     }
 

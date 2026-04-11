@@ -15,9 +15,11 @@ public class Diamond : MonoBehaviour
     private string _diamondName;
     
     private TextModule  _textModule;
-
-    private void Awake()
+    private Dictionary<string, string> riddles = new Dictionary<string, string>();
+    
+    public void SetDiamondName(string diamondName)
     {
+	    _diamondName = diamondName;
 	    var diamondPath = DiamondUtility.GetPathFromDiamondName(_diamondName);
 	    var context = new RawPowerLabs.DynamicAI.Context();
 	    var parameters = TextModuleParameters.GetDefault();
@@ -26,37 +28,24 @@ public class Diamond : MonoBehaviour
 	    {
 		    UnityEngine.Debug.LogError("Something went wrong with the Diamond");
 	    }
-
-	    var types = Enum.GetValues(typeof(Type)) as Type[];
-	    var typeIndex = UnityEngine.Random.Range(0, types.Length);
-	    var randomType = types[typeIndex].ToString();
-	    UnityEngine.Debug.Log(randomType);
-	    
-	    var colors = Enum.GetValues(typeof(Color)) as Color[];
-	    var colorIndex = UnityEngine.Random.Range(0, colors.Length);
-	    var randomColor = colors[colorIndex].ToString();
-	    
-	    var materials = Enum.GetValues(typeof(Material)) as Material[];
-	    var materialIndex = UnityEngine.Random.Range(0, materials.Length);
-	    var randomMaterial = materials[materialIndex].ToString();
-	    
-	    PrintReplies(randomType, randomColor, randomMaterial);
     }
     
-    private async void PrintReplies(string type, string color, string material)
+    public async void PrintReplies(string type, string color, string material)
     {
-	    var replies = new Dictionary<string, string>();
+	    riddles = new Dictionary<string, string>();
+	    
+	    UnityEngine.Debug.Log($"Answers {type}, {color}, {material}");
 
 	    try
 	    {
-		    replies = await InvokeReplyAsync(type, color, material);
+		    riddles = await InvokeReplyAsync(type, color, material);
 	    }
 	    catch (Exception e)
 	    {
 		    UnityEngine.Debug.LogException(e);
 	    }
 
-	    foreach (var reply in replies)
+	    foreach (var reply in riddles)
 	    {
 		    UnityEngine.Debug.Log($"Key: {reply.Key}, Value: {reply.Value}");
 	    }

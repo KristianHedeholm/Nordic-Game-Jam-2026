@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     [Header("References")]
     public UIManager uiManager;
     public RiddleGenerator riddleGenerator;
+    public Diamond diamond;
 
     public GameState State { get; private set; } = new GameState();
 
@@ -50,6 +51,8 @@ public class GameManager : MonoBehaviour
         State.NewGame();
         Debug.Log($"[Game] New round — King imagines: {State.TargetColor} {State.TargetMaterial} {State.TargetClothing}");
         GoToPhase(GamePhase.Intro);
+        diamond.SetDiamondName("FashionRoyal");
+        diamond.PrintReplies(State.TargetClothing, State.TargetColor,  State.TargetMaterial);
     }
 
     public void GoToPhase(GamePhase phase)
