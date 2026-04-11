@@ -212,7 +212,10 @@ public class UIManager : MonoBehaviour
             btnImg.sprite = sprite;
             btnImg.color  = Color.white;
             btnImg.type   = Image.Type.Simple;
-            btnImg.SetNativeSize(); // resize rect to exact sprite pixel size
+            // Scale to 32% of native size for a clean compact button
+            btnImg.SetNativeSize();
+            var btnRT2 = introStartButton.GetComponent<RectTransform>();
+            if (btnRT2 != null) btnRT2.sizeDelta *= 0.32f;
         }
         }
         // Hide TMP label — SVG already has text baked in

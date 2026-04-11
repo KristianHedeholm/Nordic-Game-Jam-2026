@@ -155,7 +155,7 @@ public class SceneBuilder : MonoBehaviour
         // ── DRAGGABLE TAG PREFAB ──────────────────────────────────────────────
         var tagPrefabGO = new GameObject("DraggableTagPrefab");
         tagPrefabGO.transform.SetParent(transform, false); tagPrefabGO.SetActive(false);
-        tagPrefabGO.AddComponent<RectTransform>().sizeDelta = new Vector2(220, 70);
+        tagPrefabGO.AddComponent<RectTransform>().sizeDelta = new Vector2(190, 60);
         var tImg = tagPrefabGO.AddComponent<Image>();
         // Match the dark grey inner area of the holder sprite
         tImg.color = new Color(0.55f, 0.55f, 0.58f);
@@ -260,7 +260,7 @@ public class SceneBuilder : MonoBehaviour
         var team = AddTMP(root, "TeamName", "by Invisible Tailors", 24, FontStyles.Italic, new Vector2(0, -440), new Vector2(800, 50));
         team.color = new Color(0.7f, 0.6f, 0.9f);
         // Button size matches SVG natural ratio (321x125 → 2x = 642x250, but display at 480x188 to avoid stretch)
-        var btn = BuildButton(root, "StartButton", "ENTER THE ROYAL COURT", new Vector2(0, -310), new Vector2(480, 188), new Color(0.45f, 0.22f, 0.65f));
+        var btn = BuildButton(root, "StartButton", "ENTER THE ROYAL COURT", new Vector2(0, -310), new Vector2(320, 125), new Color(0.45f, 0.22f, 0.65f));
         return new SimplePanel { root = root, text = body, btn = btn };
     }
 
@@ -288,7 +288,7 @@ public class SceneBuilder : MonoBehaviour
         var tGO = new GameObject("RevealText"); tGO.transform.SetParent(bubble.transform, false);
         var tRT = tGO.AddComponent<RectTransform>(); tRT.anchorMin = Vector2.zero; tRT.anchorMax = Vector2.one; tRT.offsetMin = new Vector2(30,20); tRT.offsetMax = new Vector2(-30,-20);
         var tmp = tGO.AddComponent<TextMeshProUGUI>(); tmp.text=""; tmp.fontSize=26; tmp.alignment=TextAlignmentOptions.Center; tmp.color=new Color(0.1f,0.05f,0.15f); tmp.enableWordWrapping=true;
-        var btn = BuildButton(root, "ContinueBtn", "Continue →", new Vector2(0,-460), new Vector2(320,65), new Color(0.4f,0.2f,0.6f));
+        var btn = BuildButton(root, "ContinueBtn", "Continue →", new Vector2(0,-460), new Vector2(240,55), new Color(0.4f,0.2f,0.6f));
         return new SimplePanel { root=root, text=tmp, btn=btn };
     }
 
@@ -301,8 +301,8 @@ public class SceneBuilder : MonoBehaviour
         var tRT = tGO.AddComponent<RectTransform>(); tRT.anchorMin=Vector2.zero; tRT.anchorMax=Vector2.one; tRT.offsetMin=new Vector2(30,20); tRT.offsetMax=new Vector2(-30,-20);
         var tmp = tGO.AddComponent<TextMeshProUGUI>(); tmp.text=""; tmp.fontSize=26; tmp.alignment=TextAlignmentOptions.Center; tmp.color=new Color(0.1f,0.05f,0.15f); tmp.enableWordWrapping=true;
         var neutral = new Color(0.35f, 0.18f, 0.55f);
-        var flatterBtn = BuildButton(root, "FlatterBtn", "\"Yes Your Majesty!\"",              new Vector2(-320,-460), new Vector2(520,65), neutral);
-        var truthBtn   = BuildButton(root, "TruthBtn",   "\"...Why are you wearing nothing?\"", new Vector2(280,-460),  new Vector2(460,65), neutral);
+        var flatterBtn = BuildButton(root, "FlatterBtn", "\"Yes Your Majesty!\"",              new Vector2(-300,-460), new Vector2(420,55), neutral);
+        var truthBtn   = BuildButton(root, "TruthBtn",   "\"...Why are you wearing nothing?\"", new Vector2(270,-460),  new Vector2(360,55), neutral);
         return new JudgPanel { root=root, text=tmp, flatterBtn=flatterBtn, truthBtn=truthBtn };
     }
 
@@ -311,7 +311,7 @@ public class SceneBuilder : MonoBehaviour
         var root = CreateFull(parent, "WinPanel"); AddImage(root, new Color(0.03f,0.12f,0.05f,0.96f));
         var title = AddTMP(root, "Title", "YOU LIVE!", 100, FontStyles.Bold, new Vector2(0,280), new Vector2(800,140)); title.color = new Color(0.3f,1f,0.45f);
         var text = AddTMP(root, "WinText", "", 32, FontStyles.Normal, new Vector2(0,10), new Vector2(1000,380)); text.alignment = TextAlignmentOptions.Center;
-        var btn = BuildButton(root, "PlayAgainBtn", "Serve the King Again", new Vector2(0,-310), new Vector2(440,85), new Color(0.1f,0.45f,0.18f));
+        var btn = BuildButton(root, "PlayAgainBtn", "Serve the King Again", new Vector2(0,-310), new Vector2(340,65), new Color(0.1f,0.45f,0.18f));
         return new SimplePanel { root=root, text=text, btn=btn };
     }
 
@@ -320,7 +320,7 @@ public class SceneBuilder : MonoBehaviour
         var root = CreateFull(parent, "DeathPanel"); AddImage(root, new Color(0.14f,0.02f,0.02f,0.97f));
         var title = AddTMP(root, "Title", "OFF WITH YOUR HEAD!", 72, FontStyles.Bold, new Vector2(0,280), new Vector2(1100,120)); title.color = new Color(1f,0.18f,0.18f);
         var text = AddTMP(root, "DeathText", "", 32, FontStyles.Normal, new Vector2(0,10), new Vector2(1000,380)); text.alignment = TextAlignmentOptions.Center;
-        var btn = BuildButton(root, "PlayAgainBtn", "Try Again (Lie This Time)", new Vector2(0,-310), new Vector2(460,85), new Color(0.5f,0.08f,0.08f));
+        var btn = BuildButton(root, "PlayAgainBtn", "Try Again (Lie This Time)", new Vector2(0,-310), new Vector2(360,65), new Color(0.5f,0.08f,0.08f));
         return new SimplePanel { root=root, text=text, btn=btn };
     }
 
@@ -359,7 +359,7 @@ public class SceneBuilder : MonoBehaviour
         var cb = btn.colors; cb.highlightedColor=color*1.3f; cb.pressedColor=color*0.7f; btn.colors=cb;
         var lGO = new GameObject("Label"); lGO.transform.SetParent(go.transform, false);
         var lRT = lGO.AddComponent<RectTransform>(); lRT.anchorMin=Vector2.zero; lRT.anchorMax=Vector2.one; lRT.sizeDelta=Vector2.zero;
-        var tmp = lGO.AddComponent<TextMeshProUGUI>(); tmp.text=label; tmp.fontSize=24; tmp.fontStyle=FontStyles.Bold;
+        var tmp = lGO.AddComponent<TextMeshProUGUI>(); tmp.text=label; tmp.fontSize=20; tmp.fontStyle=FontStyles.Bold;
         tmp.alignment=TextAlignmentOptions.Center; tmp.color=Color.white; tmp.enableWordWrapping=true; return btn;
     }
 }
