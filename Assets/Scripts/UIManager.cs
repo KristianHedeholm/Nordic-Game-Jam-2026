@@ -80,7 +80,11 @@ public class UIManager : MonoBehaviour
         if (label == null) return;
         var tw = label.GetComponent<TypewriterEffect>() ?? label.gameObject.AddComponent<TypewriterEffect>();
         tw.charsPerSecond = 22f;
-        tw.TypeWrite(text, onDone);
+        tw.TypeWrite(text, () =>
+        {
+            AudioManager.Instance?.StopKingTalk();
+            onDone?.Invoke();
+        });
     }
 
     void SetInstant(TMP_Text label, string text)

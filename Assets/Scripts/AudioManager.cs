@@ -48,6 +48,26 @@ public class AudioManager : MonoBehaviour
         if (kingSpeechClip != null) PlayClip(kingSpeechClip, 0.8f);
         else PlayClip(GenerateOnionKingTalk(), 0.7f);
     }
+
+    public void StopKingTalk()
+    {
+        // Fade out sfxSource quickly if king speech is playing
+        StartCoroutine(FadeOutSFX(0.2f));
+    }
+
+    IEnumerator FadeOutSFX(float duration)
+    {
+        float startVol = sfxSource.volume;
+        float elapsed  = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            sfxSource.volume = Mathf.Lerp(startVol, 0f, elapsed / duration);
+            yield return null;
+        }
+        sfxSource.Stop();
+        sfxSource.volume = startVol;
+    }
     public void PlayTadaaa()        => PlayClip(GenerateTadaaa(), 0.9f);
     public void PlayCrowdCheerGood()  => PlayClip(GenerateCrowdCheer(true), 0.6f);
     public void PlayCrowdCheerBad()   => PlayClip(GenerateCrowdCheer(false), 0.6f);
