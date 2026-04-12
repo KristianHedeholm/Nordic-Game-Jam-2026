@@ -18,6 +18,9 @@ public class UIManager : MonoBehaviour
     public Transform optionsContainer;   // scatter area for draggable tags
     public Button optionButtonPrefab;    // kept for fallback
 
+    [Header("Backgrounds")]
+    public GameObject revealBackground; // bedroom scene shown when curtains open
+
     [Header("Narrator")]
     public TMP_Text narratorLabel;
 
@@ -192,6 +195,7 @@ public class UIManager : MonoBehaviour
         ResetTracker();
         kingPoseProud?.Invoke(false);
         if (narratorLabel != null) narratorLabel.text = "";
+        if (revealBackground != null) revealBackground.SetActive(false);
         if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(true);
         stagePanel?.SetActive(false);
         curtainAnimator?.CloseCurtains();
@@ -410,6 +414,7 @@ public class UIManager : MonoBehaviour
         AudioManager.Instance?.PlayDrumrollThenReveal(() =>
         {
             AudioManager.Instance?.PlayCurtainOpen();
+            if (revealBackground != null) revealBackground.SetActive(true);
             curtainAnimator?.OpenCurtains(() =>
             {
                 AudioManager.Instance?.PlayKingLaugh();

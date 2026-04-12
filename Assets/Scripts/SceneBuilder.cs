@@ -63,12 +63,20 @@ public class SceneBuilder : MonoBehaviour
         var armR = CreateRect(stagePanelGO, "ArmR", new Vector2(165, -80),  new Vector2(1, 1));
         var body = CreateRect(stagePanelGO, "KingBody", new Vector2(0, -110), new Vector2(1, 1));
 
-        // ── STAGE BACKGROUND IMAGE (replaces curtains during guessing) ────────
+        // ── STAGE BACKGROUND (shown during guessing) ──────────────────────────
         var stageImgGO = CreateFull(stagePanelGO, "StageBackground");
         var stageImg = stageImgGO.AddComponent<Image>();
         var stageSpr = Resources.Load<Sprite>("Art/Stage_Background");
         if (stageSpr != null) { stageImg.sprite = stageSpr; stageImg.type = Image.Type.Simple; stageImg.preserveAspect = false; stageImg.color = Color.white; }
         else stageImg.color = new Color(0.06f, 0.03f, 0.10f);
+
+        // ── REVEAL BACKGROUND (shown behind curtains when they open) ──────────
+        var revealBgGO = CreateFull(stagePanelGO, "RevealBackground");
+        var revealBgImg = revealBgGO.AddComponent<Image>();
+        var revealBgSpr = Resources.Load<Sprite>("Art/Reveal_Background");
+        if (revealBgSpr != null) { revealBgImg.sprite = revealBgSpr; revealBgImg.type = Image.Type.Simple; revealBgImg.preserveAspect = false; revealBgImg.color = Color.white; }
+        else revealBgImg.color = new Color(0.06f, 0.03f, 0.10f);
+        revealBgGO.SetActive(false); // hidden until reveal
 
         // ── BUNNY KING (replaces geometric king) ─────────────────────────────
         var bunnyGO = CreateRect(stagePanelGO, "KingBunny", new Vector2(0, -80), new Vector2(400, 630));
@@ -192,6 +200,9 @@ public class SceneBuilder : MonoBehaviour
         ui.optionsContainer = bottomPanel.transform;
         ui.optionButtonPrefab = null; // unused — drag/drop only
         ui.draggableTagPrefab = tagPrefabGO;
+
+        // Backgrounds
+        ui.revealBackground = revealBgGO;
 
         // Narrator
         ui.narratorLabel = narratorTMP;
