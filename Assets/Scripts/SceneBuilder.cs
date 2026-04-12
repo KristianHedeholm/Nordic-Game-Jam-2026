@@ -70,8 +70,11 @@ public class SceneBuilder : MonoBehaviour
         mgrGO.AddComponent<AudioManager>();
         gameObject.AddComponent<AppQuit>();
 
-        rg.apiKey = "";
-        rg.model  = "openai/gpt-4o-mini";
+        // apiKey and model fields may not exist on Diamond-based RiddleGenerator
+        var apiKeyField = rg.GetType().GetField("apiKey");
+        if (apiKeyField != null) apiKeyField.SetValue(rg, "");
+        var modelField = rg.GetType().GetField("model");
+        if (modelField != null) modelField.SetValue(rg, "openai/gpt-4o-mini");
 
         gm.uiManager       = ui;
         gm.riddleGenerator = rg;
@@ -89,7 +92,7 @@ public class SceneBuilder : MonoBehaviour
 
     void SetupEventSystem()
     {
-        if (FindFirstObjectByType<EventSystem>() != null) return;
+        if (FindAnyObjectByType<EventSystem>() != null) return;
         var es = new GameObject("EventSystem");
         es.AddComponent<EventSystem>();
         es.AddComponent<InputSystemUIInputModule>();
