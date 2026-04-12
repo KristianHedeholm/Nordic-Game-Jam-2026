@@ -256,15 +256,22 @@ public class SceneBuilder : MonoBehaviour
 
     SimplePanel BuildIntroPanel(GameObject parent)
     {
-        var root = CreateFull(parent, "IntroPanel"); AddImage(root, new Color(0.06f, 0.03f, 0.10f, 0.97f));
-        var title = AddTMP(root, "Title", "FASHION ROYAL", 90, FontStyles.Bold, new Vector2(0, 200), new Vector2(1800, 200));
-        title.color = new Color(1f, 0.85f, 0.3f);
+        var root = CreateFull(parent, "IntroPanel");
+        // Full screen title image — baked logo + curtains
+        var bgImg = root.AddComponent<Image>();
+        var titleSpr = Resources.Load<Sprite>("Art/Title_Screen");
+        if (titleSpr != null) { bgImg.sprite = titleSpr; bgImg.type = Image.Type.Simple; bgImg.preserveAspect = false; bgImg.color = Color.white; }
+        else bgImg.color = new Color(0.06f, 0.03f, 0.10f);
+
+        // Body text (hidden — slides explain rules, invisible on title screen)
         var body = AddTMP(root, "Body", "", 30, FontStyles.Normal, new Vector2(0, -40), new Vector2(1000, 350));
-        body.alignment = TextAlignmentOptions.Center; body.color = new Color(0.9f, 0.85f, 1f);
-        var team = AddTMP(root, "TeamName", "by Invisible Tailors", 24, FontStyles.Italic, new Vector2(0, -440), new Vector2(800, 50));
-        team.color = new Color(0.7f, 0.6f, 0.9f);
-        // Button size matches SVG natural ratio (321x125 → 2x = 642x250, but display at 480x188 to avoid stretch)
-        var btn = BuildButton(root, "StartButton", "ENTER THE ROYAL COURT", new Vector2(0, -310), new Vector2(320, 125), new Color(0.45f, 0.22f, 0.65f));
+        body.alignment = TextAlignmentOptions.Center; body.color = new Color(0f, 0f, 0f, 0f); // invisible
+
+        // START button — bottom centre, matches the yellow button in the image
+        var btn = BuildButton(root, "StartButton", "START", new Vector2(0, -310), new Vector2(320, 90), new Color(0.85f, 0.6f, 0.05f));
+        // Make label dark text to match
+        btn.GetComponentInChildren<TMP_Text>().color = new Color(0.1f, 0.05f, 0f);
+
         return new SimplePanel { root = root, text = body, btn = btn };
     }
 
