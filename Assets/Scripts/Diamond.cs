@@ -10,12 +10,14 @@ using Material  = RawPowerLabs.DynamicAI.Material;
 
 public class Diamond : MonoBehaviour
 {
+	public Dictionary<string, string> Riddles => _riddles;
+	
 	[HideInInspector]
     [SerializeField]
     private string _diamondName;
     
     private TextModule  _textModule;
-    private Dictionary<string, string> riddles = new Dictionary<string, string>();
+    private Dictionary<string, string> _riddles = new Dictionary<string, string>();
     
     public void SetDiamondName(string diamondName)
     {
@@ -32,20 +34,20 @@ public class Diamond : MonoBehaviour
     
     public async void PrintReplies(string type, string color, string material)
     {
-	    riddles = new Dictionary<string, string>();
+	    _riddles = new Dictionary<string, string>();
 	    
 	    UnityEngine.Debug.Log($"Answers {type}, {color}, {material}");
 
 	    try
 	    {
-		    riddles = await InvokeReplyAsync(type, color, material);
+		    _riddles = await InvokeReplyAsync(type, color, material);
 	    }
 	    catch (Exception e)
 	    {
 		    UnityEngine.Debug.LogException(e);
 	    }
 
-	    foreach (var reply in riddles)
+	    foreach (var reply in _riddles)
 	    {
 		    UnityEngine.Debug.Log($"Key: {reply.Key}, Value: {reply.Value}");
 	    }

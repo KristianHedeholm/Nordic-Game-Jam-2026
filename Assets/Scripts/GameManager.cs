@@ -105,10 +105,18 @@ public class GameManager : MonoBehaviour
         string riddle = null;
         bool done = false;
 
-        if (riddleGenerator != null)
+        /*if (riddleGenerator != null)
             riddleGenerator.GetRiddle(target, category, r => { riddle = r; done = true; });
         else
-            done = true;
+            done = true;*/
+        
+
+        if (diamond != null)
+        {
+	        var diamondKey = GetDiamondKey(category);
+	        diamond.Riddles.TryGetValue(diamondKey, out riddle);
+        }
+        done = true;
 
         // Wait max 5 seconds for riddle
         float t = 0f;
@@ -129,6 +137,27 @@ public class GameManager : MonoBehaviour
             uiManager.UpdateAnswerTracker(category, chosen, chosen == target);
             GoToPhase(nextPhase);
         });
+    }
+
+    private string GetDiamondKey(string gameKey)
+    {
+	    var dimoandKey = string.Empty;
+	    switch (gameKey)
+	    {
+		    case "Clothing":
+			    dimoandKey = "Type_Riddle";
+			    break;
+		    
+		    case "Color":
+			    dimoandKey = "Color_Riddle";
+			    break;
+		    
+		    case "Material":
+			    dimoandKey = "Material_Riddle";
+			    break;
+	    }
+	    
+	    return dimoandKey;
     }
 
     public void GoToFinalQuestion(bool allCorrect)
