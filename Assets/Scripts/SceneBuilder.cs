@@ -118,21 +118,21 @@ public class SceneBuilder : MonoBehaviour
             dropZones[i] = dz; trackerTMPs[i] = aTMP;
         }
 
-        // ── SPEECH BUBBLE — top center ────────────────────────────────────────
-        var bubblePanel = CreateRect(stagePanelGO, "SpeechBubble", new Vector2(200, 400), new Vector2(800, 200));
+        // ── SPEECH BUBBLE — left of king, tail pointing right toward king ─────
+        // King is at x≈483, so bubble sits to the left at x≈-200
+        var bubblePanel = CreateRect(stagePanelGO, "SpeechBubble", new Vector2(-250, 300), new Vector2(700, 220));
         var bubbleImg = bubblePanel.AddComponent<Image>();
-        var speechBubbleSprite = Resources.Load<Sprite>("Art/Speech bubble");
+        var speechBubbleSprite = Resources.Load<Sprite>("Art/Speech_Bubble_New");
         if (speechBubbleSprite != null) { bubbleImg.sprite = speechBubbleSprite; bubbleImg.type = Image.Type.Simple; bubbleImg.preserveAspect = false; bubbleImg.color = Color.white; }
         else bubbleImg.color = new Color(0.97f, 0.95f, 0.88f);
-        // No separate tail — speech bubble sprite includes it
         var riddleGO = new GameObject("RiddleText"); riddleGO.transform.SetParent(bubblePanel.transform, false);
         var riddleRT = riddleGO.AddComponent<RectTransform>(); riddleRT.anchorMin = Vector2.zero; riddleRT.anchorMax = Vector2.one; riddleRT.offsetMin = new Vector2(25,20); riddleRT.offsetMax = new Vector2(-25,-20);
         var riddleTMP = riddleGO.AddComponent<TextMeshProUGUI>();
         riddleTMP.text = "..."; riddleTMP.fontSize = 26; riddleTMP.fontStyle = FontStyles.Italic;
         riddleTMP.color = new Color(0.1f, 0.05f, 0.15f); riddleTMP.alignment = TextAlignmentOptions.Center; riddleTMP.enableWordWrapping = true;
 
-        // ── NARRATOR LABEL — sits below the speech bubble, visible on reveal ──
-        var narratorGO = CreateRect(stagePanelGO, "NarratorLabel", new Vector2(200, 195), new Vector2(800, 70));
+        // ── NARRATOR LABEL — sits below the speech bubble ────────────────────
+        var narratorGO = CreateRect(stagePanelGO, "NarratorLabel", new Vector2(-250, 175), new Vector2(700, 70));
         var narratorTMP = narratorGO.AddComponent<TextMeshProUGUI>();
         narratorTMP.text = "";
         narratorTMP.fontSize = 24;
@@ -369,7 +369,7 @@ public class SceneBuilder : MonoBehaviour
     void ApplySpeechBubbleSprite(GameObject go)
     {
         var img = go.AddComponent<Image>();
-        var spr = Resources.Load<Sprite>("Art/Speech bubble");
+        var spr = Resources.Load<Sprite>("Art/Speech_Bubble_New");
         if (spr != null) { img.sprite = spr; img.type = Image.Type.Simple; img.preserveAspect = false; img.color = Color.white; }
         else img.color = new Color(0.97f, 0.95f, 0.88f);
     }
