@@ -617,7 +617,8 @@ public class UIManager : MonoBehaviour
             ? "The King's face turns purple with rage.\n\n\"Wearing nothing?! How DARE you!\"\n\n\"I am wearing the FINEST outfit ever created!\"\n\n\"GUARDS! OFF WITH THEIR HEAD!\"\n\n<i>Truth is a crime in this kingdom.</i>"
             : BuildWrongDeathMessage(state);
 
-        SetText(deathText, deathMsg);
+        // No typewriter on death — just show the background image
+        if (deathText != null) { deathText.text = ""; }
         deathPlayAgainButton.onClick.RemoveAllListeners();
         deathPlayAgainButton.onClick.AddListener(() => GameManager.Instance.OnPlayAgain());
     }

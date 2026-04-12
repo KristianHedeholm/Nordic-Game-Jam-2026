@@ -206,7 +206,7 @@ public static class GameUIBuilder
         SetImg(deathPanel, Spr("Death_Screen"), Color.white, false);
         TMP(deathPanel,"Title","OFF WITH YOUR HEAD!",72,FontStyles.Bold,new Vector2(0,280),new Vector2(1100,120)).color=new Color(1f,0.18f,0.18f);
         var deathTMP = TMP(deathPanel,"DeathText","",32,FontStyles.Normal,new Vector2(0,10),new Vector2(1000,380)); deathTMP.alignment=TextAlignmentOptions.Center;
-        var deathBtn = Btn(deathPanel,"PlayAgainBtn","Try Again (Lie This Time)",new Vector2(0,-310),new Vector2(460,65),new Color(0.5f,0.08f,0.08f));
+        var deathBtn = Btn(deathPanel,"PlayAgainBtn","Try Again (Lie This Time)",new Vector2(0,-430),new Vector2(460,65),new Color(0.5f,0.08f,0.08f));
         deathPanel.SetActive(false);
 
         // ── UI MANAGER ────────────────────────────────────────────────────
