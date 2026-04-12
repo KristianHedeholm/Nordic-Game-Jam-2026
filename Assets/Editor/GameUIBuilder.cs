@@ -147,14 +147,24 @@ public static class GameUIBuilder
 
         // ── OVERLAY PANELS ────────────────────────────────────────────────
 
-        // Intro
+        // Intro — title screen only, no text
         var introPanel = CF(canvasGO, "IntroPanel");
-        SetImg(introPanel, Spr("Title_Screen_v2") ?? Spr("Logo_Fashion_Royal"), Color.white, false);
-        var introBody = TMP(introPanel, "Body", "", 38, FontStyles.Bold, new Vector2(0,80), new Vector2(900,400));
-        introBody.color = Color.white;
+        SetImg(introPanel, Spr("Title_Screen_v2") ?? Spr("Logo_Fashion_Royal") ?? Spr("Title_Screen"), Color.white, false);
+        // Hidden body — placeholder, text lives in TutorialPanel
+        var introBody = TMP(introPanel, "Body", "", 1, FontStyles.Normal, new Vector2(0,0), new Vector2(1,1));
+        introBody.color = new Color(0,0,0,0);
         var introBtn = Btn(introPanel, "StartButton", "START", new Vector2(0,-340), new Vector2(320,90), new Color(0.85f,0.6f,0.05f));
         introBtn.GetComponentInChildren<TMP_Text>().color = new Color(0.1f,0.05f,0f);
         introPanel.SetActive(false);
+
+        // Tutorial panel — shown AFTER clicking START, holds the rule slides + typing text
+        var tutPanel = CF(canvasGO, "TutorialPanel");
+        SetImg(tutPanel, Spr("Tutorial_Screen") ?? Spr("BG_Bedroom"), Color.white, false);
+        var tutBody = TMP(tutPanel, "Body", "", 38, FontStyles.Bold, new Vector2(0, 80), new Vector2(900, 400));
+        tutBody.color = Color.white;
+        var tutBtn = Btn(tutPanel, "NextButton", "Next →", new Vector2(0,-340), new Vector2(320,90), new Color(0.85f,0.6f,0.05f));
+        tutBtn.GetComponentInChildren<TMP_Text>().color = new Color(0.1f,0.05f,0f);
+        tutPanel.SetActive(false);
 
         // Loading
         var loadPanel = CF(canvasGO, "LoadingPanel");
@@ -206,7 +216,7 @@ public static class GameUIBuilder
         SetImg(deathPanel, Spr("Death_Screen"), Color.white, false);
         TMP(deathPanel,"Title","OFF WITH YOUR HEAD!",72,FontStyles.Bold,new Vector2(0,280),new Vector2(1100,120)).color=new Color(1f,0.18f,0.18f);
         var deathTMP = TMP(deathPanel,"DeathText","",32,FontStyles.Normal,new Vector2(0,10),new Vector2(1000,380)); deathTMP.alignment=TextAlignmentOptions.Center;
-        var deathBtn = Btn(deathPanel,"PlayAgainBtn","Try Again (Lie This Time)",new Vector2(0,-430),new Vector2(460,65),new Color(0.5f,0.08f,0.08f));
+        var deathBtn = Btn(deathPanel,"PlayAgainBtn","Try Again (Lie This Time)",new Vector2(0,-470),new Vector2(460,65),new Color(0.5f,0.08f,0.08f));
         deathPanel.SetActive(false);
 
         // ── UI MANAGER ────────────────────────────────────────────────────
@@ -237,8 +247,10 @@ public static class GameUIBuilder
         ui.reactionBg        = reactionPanel.GetComponent<Image>();
 
         ui.introPanel        = introPanel;
-        ui.introText         = introBody;
+        ui.introText         = tutBody;   // typing text goes on tutorial panel
         ui.introStartButton  = introBtn;
+        ui.tutorialPanel     = tutPanel;
+        ui.tutorialNextButton = tutBtn;
         ui.loadingPanel      = loadPanel;
         ui.revealPanel       = revealPanel;
         ui.revealText        = revTMP;

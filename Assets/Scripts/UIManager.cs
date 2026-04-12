@@ -54,6 +54,10 @@ public class UIManager : MonoBehaviour
     public TMP_Text introText;
     public Button introStartButton;
 
+    [Header("Tutorial")]
+    public GameObject tutorialPanel;
+    public Button tutorialNextButton;
+
     [Header("Reveal")]
     public TMP_Text revealText;
     public Button revealContinueButton;
@@ -105,6 +109,7 @@ public class UIManager : MonoBehaviour
     void HideAllOverlays()
     {
         introPanel?.SetActive(false);
+        tutorialPanel?.SetActive(false);
         loadingPanel?.SetActive(false);
         revealPanel?.SetActive(false);
         finalJudgmentPanel?.SetActive(false);
@@ -204,18 +209,21 @@ public class UIManager : MonoBehaviour
         curtainAnimator?.CloseCurtains();
         AudioManager.Instance?.PlayIntroFanfare();
 
-        currentSlide = 0;
+        // Show title screen — START button switches to tutorial slides
         introPanel.SetActive(true);
-        ShowSlide(currentSlide);
+        introStartButton.onClick.RemoveAllListeners();
+        introStartButton.onClick.AddListener(() =>
+        {
+            AudioManager.Instance?.PlayButtonClick();
+            introPanel.SetActive(false);
+            tutorialPanel?.SetActive(true);
+            currentSlide = 0;
+            ShowSlide(currentSlide);
+        });
     }
 
     void ShowSlide(int index)
     {
-        // Switch to tutorial background on first slide
-        var titleBg = introPanel?.transform.Find("Image"); // title screen bg
-        var tutBg   = introPanel?.transform.Find("TutorialBg");
-        if (titleBg != null) titleBg.gameObject.SetActive(false);
-        if (tutBg   != null) tutBg.gameObject.SetActive(true);
 
         bool isLast = index >= IntroSlides.Length - 1;
 
@@ -242,14 +250,19 @@ public class UIManager : MonoBehaviour
 
         SetText(introText, IntroSlides[index]);
 
-        introStartButton.onClick.RemoveAllListeners();
-        introStartButton.onClick.AddListener(() =>
+        // Use tutorial button for slides
+        var slideBtn = tutorialNextButton ?? introStartButton;
+        slideBtn?.onClick.RemoveAllListeners();
+        slideBtn?.onClick.AddListener(() =>
         {
             AudioManager.Instance?.PlayButtonClick();
             if (index < IntroSlides.Length - 1)
                 ShowSlide(index + 1);
             else
+            {
+                tutorialPanel?.SetActive(false);
                 GameManager.Instance.GoToPhase(GamePhase.GuessClothing);
+            }
         });
     }
 
