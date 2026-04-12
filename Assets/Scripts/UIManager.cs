@@ -337,7 +337,7 @@ public class UIManager : MonoBehaviour
     {
         var img = go.GetComponent<Image>();
         if (img == null) yield break;
-        float dur = 0.25f;
+        float dur = 0.08f;
         float elapsed = 0f;
         while (elapsed < dur)
         {
