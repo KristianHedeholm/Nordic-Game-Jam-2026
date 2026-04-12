@@ -10,11 +10,11 @@ using UnityEngine.Networking;
 public class RiddleGenerator : MonoBehaviour
 {
     [Header("OpenRouter Settings")]
-    public string apiKey = "";
-    public string model = "openai/gpt-4o-mini";
-    private const string ApiUrl = "https://openrouter.ai/api/v1/chat/completions";
+    //public string apiKey = "";
+    //public string model = "openai/gpt-4o-mini";
+    //private const string ApiUrl = "https://openrouter.ai/api/v1/chat/completions";
 
-    private static readonly System.Collections.Generic.Dictionary<string, string[]> FallbackRiddles =
+    /*private static readonly System.Collections.Generic.Dictionary<string, string[]> FallbackRiddles =
         new System.Collections.Generic.Dictionary<string, string[]>
     {
         // ── CLOTHING ──────────────────────────────────────────────────────
@@ -143,7 +143,7 @@ public class RiddleGenerator : MonoBehaviour
             "I mimic the beast but come from a factory,\nThe King finds my fluffiness satisfactory.",
             "Fake and fabulous, fluffy and fun,\nThe King says real fur? No, this one's done."
         }},
-    };
+    };*/
 
     public static RiddleGenerator Instance { get; private set; }
 
@@ -153,24 +153,24 @@ public class RiddleGenerator : MonoBehaviour
         Instance = this;
     }
 
-    public void GetRiddle(string item, string category, Action<string> onComplete)
+    /*public void GetRiddle(string item, string category, Action<string> onComplete)
     {
         if (!string.IsNullOrEmpty(apiKey))
             StartCoroutine(FetchRiddle(item, category, onComplete));
         else
             onComplete(GetFallback(item, category));
-    }
+    }*/
 
-    private string GetFallback(string item, string category = "")
+    /*private string GetFallback(string item, string category = "")
     {
         // Handle Gold disambiguation: same word appears in Colors and Materials
         string key = (item == "Gold" && category == "Material") ? "Gold (material)" : item;
         if (FallbackRiddles.TryGetValue(key, out var riddles))
             return riddles[UnityEngine.Random.Range(0, riddles.Length)];
         return "I am the finest of its kind,\nCan you guess what fills the King's mind?";
-    }
+    }*/
 
-    private IEnumerator FetchRiddle(string item, string category, Action<string> onComplete)
+    /*private IEnumerator FetchRiddle(string item, string category, Action<string> onComplete)
     {
         string prompt =
             $"You are a royal herald in a medieval court. Write a SHORT 2-line riddle (rhyming couplet) " +
@@ -203,7 +203,7 @@ public class RiddleGenerator : MonoBehaviour
         else Debug.LogWarning("OpenRouter error: " + req.error);
 
         onComplete(GetFallback(item));
-    }
+    }*/
 
     [Serializable] class OAIResponse { public Choice[] choices; }
     [Serializable] class Choice { public Msg message; }
