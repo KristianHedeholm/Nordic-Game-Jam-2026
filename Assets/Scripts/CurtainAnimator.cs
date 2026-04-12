@@ -19,31 +19,27 @@ public class CurtainAnimator : MonoBehaviour
     private Vector2 leftOpen;
     private Vector2 rightOpen;
 
-    void Start()
+    bool initialised;
+
+    void EnsureInit()
     {
-        if (curtainLeft)
-        {
-            // Left curtain: right edge sits at x=0 (centre), slides left
-            var rt = curtainLeft;
-            leftClosed = rt.anchoredPosition;
-            leftOpen   = leftClosed + new Vector2(-openOffset, 0);
-        }
-        if (curtainRight)
-        {
-            // Right curtain: left edge sits at x=0 (centre), slides right
-            var rt = curtainRight;
-            rightClosed = rt.anchoredPosition;
-            rightOpen   = rightClosed + new Vector2(openOffset, 0);
-        }
+        if (initialised) return;
+        initialised = true;
+        if (curtainLeft)  { leftClosed  = curtainLeft.anchoredPosition;  leftOpen  = leftClosed  + new Vector2(-openOffset, 0); }
+        if (curtainRight) { rightClosed = curtainRight.anchoredPosition; rightOpen = rightClosed + new Vector2(openOffset, 0); }
     }
+
+    void Start() => EnsureInit();
 
     public void OpenCurtains(Action onComplete)
     {
+        EnsureInit();
         StartCoroutine(AnimateOpen(onComplete));
     }
 
     public void CloseCurtains()
     {
+        EnsureInit();
         if (curtainLeft)  curtainLeft.anchoredPosition  = leftClosed;
         if (curtainRight) curtainRight.anchoredPosition = rightClosed;
     }
