@@ -259,7 +259,7 @@ public class SceneBuilder : MonoBehaviour
         var root = CreateFull(parent, "IntroPanel");
         // Full screen title image — baked logo + curtains
         var bgImg = root.AddComponent<Image>();
-        var titleSpr = Resources.Load<Sprite>("Art/Title_Screen_v2");
+        var titleSpr = Resources.Load<Sprite>("Art/Title_Screen_v2") ?? Resources.Load<Sprite>("Art/Title_Screen");
         if (titleSpr != null) { bgImg.sprite = titleSpr; bgImg.type = Image.Type.Simple; bgImg.preserveAspect = false; bgImg.color = Color.white; }
         else bgImg.color = new Color(0.06f, 0.03f, 0.10f);
 
