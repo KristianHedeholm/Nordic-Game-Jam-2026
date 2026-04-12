@@ -211,6 +211,12 @@ public class UIManager : MonoBehaviour
 
     void ShowSlide(int index)
     {
+        // Switch to tutorial background on first slide
+        var titleBg = introPanel?.transform.Find("Image"); // title screen bg
+        var tutBg   = introPanel?.transform.Find("TutorialBg");
+        if (titleBg != null) titleBg.gameObject.SetActive(false);
+        if (tutBg   != null) tutBg.gameObject.SetActive(true);
+
         bool isLast = index >= IntroSlides.Length - 1;
 
         // Swap button sprite: Next vs Start

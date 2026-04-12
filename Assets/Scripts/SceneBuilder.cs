@@ -263,13 +263,21 @@ public class SceneBuilder : MonoBehaviour
         if (titleSpr != null) { bgImg.sprite = titleSpr; bgImg.type = Image.Type.Simple; bgImg.preserveAspect = false; bgImg.color = Color.white; }
         else bgImg.color = new Color(0.06f, 0.03f, 0.10f);
 
-        // Body text (hidden — slides explain rules, invisible on title screen)
-        var body = AddTMP(root, "Body", "", 30, FontStyles.Normal, new Vector2(0, -40), new Vector2(1000, 350));
-        body.alignment = TextAlignmentOptions.Center; body.color = new Color(0f, 0f, 0f, 0f); // invisible
+        // Tutorial slide background (replaces title bg for slides 1-3)
+        // Stored separately — UIManager swaps bg on slide change
+        var tutBgGO = CreateFull(root, "TutorialBg");
+        var tutBgImg = tutBgGO.AddComponent<Image>();
+        var tutSpr = Resources.Load<Sprite>("Art/Tutorial_Screen");
+        if (tutSpr != null) { tutBgImg.sprite = tutSpr; tutBgImg.type = Image.Type.Simple; tutBgImg.preserveAspect = false; tutBgImg.color = Color.white; }
+        tutBgGO.SetActive(false); // shown when START is clicked
 
-        // START button — bottom centre, matches the yellow button in the image
-        var btn = BuildButton(root, "StartButton", "START", new Vector2(0, -310), new Vector2(320, 90), new Color(0.85f, 0.6f, 0.05f));
-        // Make label dark text to match
+        // Body text — centred in spotlight, white bold text
+        var body = AddTMP(root, "Body", "", 38, FontStyles.Bold, new Vector2(0, 80), new Vector2(900, 400));
+        body.alignment = TextAlignmentOptions.Center;
+        body.color = Color.white;
+
+        // Button — bottom centre matching the yellow NEXT button in the image
+        var btn = BuildButton(root, "StartButton", "START", new Vector2(0, -340), new Vector2(320, 90), new Color(0.85f, 0.6f, 0.05f));
         btn.GetComponentInChildren<TMP_Text>().color = new Color(0.1f, 0.05f, 0f);
 
         return new SimplePanel { root = root, text = body, btn = btn };
