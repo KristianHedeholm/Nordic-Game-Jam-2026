@@ -63,7 +63,7 @@ public class SceneBuilder : MonoBehaviour
         SetSprite(playerGO.AddComponent<Image>(), "Art/Player_Bunny", true);
 
         // ── LAYER 3: NAKED KING — centre, hidden until reveal ──────────────
-        var nakedKingGO = CreateRect(stagePanelGO, "KingNaked", new Vector2(0, -20), new Vector2(480, 760));
+        var nakedKingGO = CreateRect(stagePanelGO, "KingNaked", new Vector2(350, 80), new Vector2(480, 760));
         SetSprite(nakedKingGO.AddComponent<Image>(), "Art/King_Naked", true);
         nakedKingGO.SetActive(false);
 
@@ -76,7 +76,7 @@ public class SceneBuilder : MonoBehaviour
         SetSprite(curtainR.AddComponent<Image>(), "Art/Curtain_Right", false);
 
         // ── LAYER 6: KING SILHOUETTE — on curtains, hidden on reveal ───────
-        var silhouetteGO = CreateRect(stagePanelGO, "KingSilhouette", new Vector2(0, -20), new Vector2(480, 760));
+        var silhouetteGO = CreateRect(stagePanelGO, "KingSilhouette", new Vector2(350, 80), new Vector2(480, 760));
         SetSprite(silhouetteGO.AddComponent<Image>(), "Art/King_Silhouette", true);
 
         var curtainAnim = stagePanelGO.AddComponent<CurtainAnimator>();
