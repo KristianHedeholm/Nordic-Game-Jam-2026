@@ -202,8 +202,6 @@ public class SceneBuilder : MonoBehaviour
         mgrGO.AddComponent<AudioManager>();
         gameObject.AddComponent<AppQuit>();
 
-        rg.apiKey = ""; rg.model = "openai/gpt-4o-mini";
-
         // Stage
         ui.stagePanel      = stagePanelGO;
         ui.curtainAnimator = curtainAnim;
