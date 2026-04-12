@@ -250,20 +250,22 @@ public class UIManager : MonoBehaviour
 
         SetText(introText, IntroSlides[index]);
 
-        // Use tutorial button for slides
-        var slideBtn = tutorialNextButton ?? introStartButton;
-        slideBtn?.onClick.RemoveAllListeners();
-        slideBtn?.onClick.AddListener(() =>
+        // Use tutorial button — only wire if it exists
+        if (tutorialNextButton != null)
         {
-            AudioManager.Instance?.PlayButtonClick();
-            if (index < IntroSlides.Length - 1)
-                ShowSlide(index + 1);
-            else
+            tutorialNextButton.onClick.RemoveAllListeners();
+            tutorialNextButton.onClick.AddListener(() =>
             {
-                tutorialPanel?.SetActive(false);
-                GameManager.Instance.GoToPhase(GamePhase.GuessClothing);
-            }
-        });
+                AudioManager.Instance?.PlayButtonClick();
+                if (index < IntroSlides.Length - 1)
+                    ShowSlide(index + 1);
+                else
+                {
+                    tutorialPanel?.SetActive(false);
+                    GameManager.Instance.GoToPhase(GamePhase.GuessClothing);
+                }
+            });
+        }
     }
 
     // ── LOADING ───────────────────────────────────────────────────────────
