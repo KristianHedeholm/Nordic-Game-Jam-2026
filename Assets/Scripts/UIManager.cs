@@ -333,6 +333,22 @@ public class UIManager : MonoBehaviour
         StartCoroutine(FallbackShowTags(3f, () => ShowTags()));
     }
 
+    IEnumerator PopIn(GameObject go)
+    {
+        var img = go.GetComponent<Image>();
+        if (img == null) yield break;
+        float dur = 0.25f;
+        float elapsed = 0f;
+        while (elapsed < dur)
+        {
+            elapsed += Time.deltaTime;
+            float t = Mathf.SmoothStep(0f, 1f, elapsed / dur);
+            var c = img.color; c.a = t; img.color = c;
+            yield return null;
+        }
+        var fc = img.color; fc.a = 1f; img.color = fc;
+    }
+
     IEnumerator FallbackShowTags(float delay, Action show)
     {
         yield return new UnityEngine.WaitForSeconds(delay);
@@ -419,9 +435,9 @@ public class UIManager : MonoBehaviour
             AudioManager.Instance?.PlayCurtainOpen();
             curtainAnimator?.OpenCurtains(() =>
             {
-                // Swap silhouette for naked king
+                // Swap silhouette for naked king instantly
                 if (silhouetteGO != null) silhouetteGO.SetActive(false);
-                if (nakedKingGO  != null) nakedKingGO.SetActive(true);
+                if (nakedKingGO  != null) { nakedKingGO.SetActive(true); StartCoroutine(PopIn(nakedKingGO)); }
                 AudioManager.Instance?.PlayKingLaugh();
                 kingPoseProud?.Invoke(true);
 

@@ -70,12 +70,12 @@ public class SceneBuilder : MonoBehaviour
         // ── LAYER 4: LEFT CURTAIN ──────────────────────────────────────────
         var curtainL = CreateRect(stagePanelGO, "CurtainLeft", new Vector2(193f, 164.1f), new Vector2(650, 750));
         var clRT = curtainL.GetComponent<RectTransform>(); clRT.anchorMin = new Vector2(0.5f, 0.5f); clRT.anchorMax = new Vector2(0.5f, 0.5f); clRT.anchoredPosition = new Vector2(193f, 164.1f);
-        SetSprite(curtainL.AddComponent<Image>(), "Art/Curtain_Right", false);
+        SetSprite(curtainL.AddComponent<Image>(), "Art/Curtain_Left", false);
 
         // ── LAYER 5: RIGHT CURTAIN ─────────────────────────────────────────
         var curtainR = CreateRect(stagePanelGO, "CurtainRight", new Vector2(635.9f, 162.5f), new Vector2(650, 750));
         var crRT = curtainR.GetComponent<RectTransform>(); crRT.anchorMin = new Vector2(0.5f, 0.5f); crRT.anchorMax = new Vector2(0.5f, 0.5f); crRT.anchoredPosition = new Vector2(635.9f, 162.5f);
-        SetSprite(curtainR.AddComponent<Image>(), "Art/Curtain_Left", false);
+        SetSprite(curtainR.AddComponent<Image>(), "Art/Curtain_Right", false);
 
         // ── LAYER 6: KING SILHOUETTE — on curtains, hidden on reveal ───────
         var silhouetteGO = CreateRect(stagePanelGO, "KingSilhouette", new Vector2(483.2f, 134.9f), new Vector2(380, 600));
