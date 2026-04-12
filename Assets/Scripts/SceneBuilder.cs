@@ -79,7 +79,9 @@ public class SceneBuilder : MonoBehaviour
 
         // ── LAYER 6: KING SILHOUETTE — on curtains, hidden on reveal ───────
         var silhouetteGO = CreateRect(stagePanelGO, "KingSilhouette", new Vector2(483.2f, 134.9f), new Vector2(380, 600));
-        SetSprite(silhouetteGO.AddComponent<Image>(), "Art/King_Silhouette", true);
+        var silImg = silhouetteGO.AddComponent<Image>();
+        SetSprite(silImg, "Art/King_Silhouette", true);
+        silImg.color = new Color(1f, 1f, 1f, 0.55f); // semi-transparent blend
 
         var curtainAnim = stagePanelGO.AddComponent<CurtainAnimator>();
         curtainAnim.curtainLeft  = curtainL.GetComponent<RectTransform>();
