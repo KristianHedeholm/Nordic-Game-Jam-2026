@@ -19,7 +19,9 @@ public class UIManager : MonoBehaviour
     public Button optionButtonPrefab;    // kept for fallback
 
     [Header("Backgrounds")]
-    public GameObject revealBackground; // bedroom scene shown when curtains open
+    public GameObject revealBackground;  // unused - bedroom always visible
+    public GameObject nakedKingGO;       // shown on reveal
+    public GameObject silhouetteGO;      // hidden on reveal
 
     [Header("Narrator")]
     public TMP_Text narratorLabel;
@@ -195,7 +197,8 @@ public class UIManager : MonoBehaviour
         ResetTracker();
         kingPoseProud?.Invoke(false);
         if (narratorLabel != null) narratorLabel.text = "";
-        if (revealBackground != null) revealBackground.SetActive(false);
+        if (nakedKingGO  != null) nakedKingGO.SetActive(false);
+        if (silhouetteGO != null) silhouetteGO.SetActive(true);
         if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(true);
         stagePanel?.SetActive(false);
         curtainAnimator?.CloseCurtains();
@@ -414,9 +417,11 @@ public class UIManager : MonoBehaviour
         AudioManager.Instance?.PlayDrumrollThenReveal(() =>
         {
             AudioManager.Instance?.PlayCurtainOpen();
-            if (revealBackground != null) revealBackground.SetActive(true);
             curtainAnimator?.OpenCurtains(() =>
             {
+                // Swap silhouette for naked king
+                if (silhouetteGO != null) silhouetteGO.SetActive(false);
+                if (nakedKingGO  != null) nakedKingGO.SetActive(true);
                 AudioManager.Instance?.PlayKingLaugh();
                 kingPoseProud?.Invoke(true);
 

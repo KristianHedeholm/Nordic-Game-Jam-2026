@@ -54,53 +54,40 @@ public class SceneBuilder : MonoBehaviour
         AddImage(stagePanelGO, new Color(0.06f, 0.03f, 0.10f));
 
         // Floor
-        AddImage(CreateRect(stagePanelGO, "Floor",     new Vector2(0, -350), new Vector2(1920, 220)), new Color(0.25f, 0.15f, 0.05f));
-        AddImage(CreateRect(stagePanelGO, "FloorLine", new Vector2(0, -245), new Vector2(1920, 12)),  new Color(0.55f, 0.38f, 0.10f));
+        // ── LAYER 1: BEDROOM BACKGROUND (always visible) ──────────────────
+        var bgGO = CreateFull(stagePanelGO, "BG_Bedroom");
+        SetSprite(bgGO.AddComponent<Image>(), "Art/BG_Bedroom", false);
 
-        // Geometric king removed — bunny king sprite used instead
-        // Proud pose arms still needed for animation references (invisible placeholders)
-        var armL = CreateRect(stagePanelGO, "ArmL", new Vector2(-165, -80), new Vector2(1, 1));
-        var armR = CreateRect(stagePanelGO, "ArmR", new Vector2(165, -80),  new Vector2(1, 1));
-        var body = CreateRect(stagePanelGO, "KingBody", new Vector2(0, -110), new Vector2(1, 1));
+        // ── LAYER 2: PLAYER BUNNY — bottom left, watching ──────────────────
+        var playerGO = CreateRect(stagePanelGO, "PlayerBunny", new Vector2(-700, -310), new Vector2(380, 420));
+        SetSprite(playerGO.AddComponent<Image>(), "Art/Player_Bunny", true);
 
-        // ── STAGE BACKGROUND (shown during guessing) ──────────────────────────
-        var stageImgGO = CreateFull(stagePanelGO, "StageBackground");
-        var stageImg = stageImgGO.AddComponent<Image>();
-        var stageSpr = Resources.Load<Sprite>("Art/Stage_Background");
-        if (stageSpr != null) { stageImg.sprite = stageSpr; stageImg.type = Image.Type.Simple; stageImg.preserveAspect = false; stageImg.color = Color.white; }
-        else stageImg.color = new Color(0.06f, 0.03f, 0.10f);
+        // ── LAYER 3: NAKED KING — centre, hidden until reveal ──────────────
+        var nakedKingGO = CreateRect(stagePanelGO, "KingNaked", new Vector2(200, -30), new Vector2(310, 490));
+        SetSprite(nakedKingGO.AddComponent<Image>(), "Art/King_Naked", true);
+        nakedKingGO.SetActive(false);
 
-        // ── REVEAL BACKGROUND (shown behind curtains when they open) ──────────
-        var revealBgGO = CreateFull(stagePanelGO, "RevealBackground");
-        var revealBgImg = revealBgGO.AddComponent<Image>();
-        var revealBgSpr = Resources.Load<Sprite>("Art/Reveal_Background");
-        if (revealBgSpr != null) { revealBgImg.sprite = revealBgSpr; revealBgImg.type = Image.Type.Simple; revealBgImg.preserveAspect = false; revealBgImg.color = Color.white; }
-        else revealBgImg.color = new Color(0.06f, 0.03f, 0.10f);
-        revealBgGO.SetActive(false); // hidden until reveal
+        // ── LAYER 4: LEFT CURTAIN ──────────────────────────────────────────
+        var curtainL = CreateRect(stagePanelGO, "CurtainLeft", new Vector2(-300, 20), new Vector2(900, 1080));
+        SetSprite(curtainL.AddComponent<Image>(), "Art/Curtain_Left", false);
 
-        // ── BUNNY KING (replaces geometric king) ─────────────────────────────
-        var bunnyGO = CreateRect(stagePanelGO, "KingBunny", new Vector2(0, -80), new Vector2(400, 630));
-        var bunnyImg = bunnyGO.AddComponent<Image>();
-        var bunnySpr = Resources.Load<Sprite>("Art/King_Bunny");
-        if (bunnySpr != null) { bunnyImg.sprite = bunnySpr; bunnyImg.type = Image.Type.Simple; bunnyImg.preserveAspect = true; bunnyImg.color = Color.white; }
-        else bunnyImg.color = new Color(0.95f, 0.75f, 0.55f);
+        // ── LAYER 5: RIGHT CURTAIN ─────────────────────────────────────────
+        var curtainR = CreateRect(stagePanelGO, "CurtainRight", new Vector2(530, 20), new Vector2(900, 1080));
+        SetSprite(curtainR.AddComponent<Image>(), "Art/Curtain_Right", false);
 
-        // ── CURTAINS (sprite-based, animate open on reveal) ───────────────────
-        var curtainL = CreateRect(stagePanelGO, "CurtainLeft",  new Vector2(-480, 0), new Vector2(960, 1080));
-        var clImg = curtainL.AddComponent<Image>();
-        var clSpr = Resources.Load<Sprite>("Art/Curtain_Left");
-        if (clSpr != null) { clImg.sprite = clSpr; clImg.type = Image.Type.Simple; clImg.preserveAspect = false; clImg.color = Color.white; }
-        else clImg.color = new Color(0.55f, 0.05f, 0.08f);
-
-        var curtainR = CreateRect(stagePanelGO, "CurtainRight", new Vector2(480, 0), new Vector2(960, 1080));
-        var crImg = curtainR.AddComponent<Image>();
-        var crSpr = Resources.Load<Sprite>("Art/Curtain_Right");
-        if (crSpr != null) { crImg.sprite = crSpr; crImg.type = Image.Type.Simple; crImg.preserveAspect = false; crImg.color = Color.white; }
-        else crImg.color = new Color(0.55f, 0.05f, 0.08f);
+        // ── LAYER 6: KING SILHOUETTE — on curtains, hidden on reveal ───────
+        var silhouetteGO = CreateRect(stagePanelGO, "KingSilhouette", new Vector2(200, -30), new Vector2(290, 560));
+        SetSprite(silhouetteGO.AddComponent<Image>(), "Art/King_Silhouette", true);
 
         var curtainAnim = stagePanelGO.AddComponent<CurtainAnimator>();
         curtainAnim.curtainLeft  = curtainL.GetComponent<RectTransform>();
         curtainAnim.curtainRight = curtainR.GetComponent<RectTransform>();
+
+        // Invisible refs for proud pose (unused but wired)
+        var armL = CreateRect(stagePanelGO, "ArmL", new Vector2(0, 0), new Vector2(1, 1));
+        var armR = CreateRect(stagePanelGO, "ArmR", new Vector2(0, 0), new Vector2(1, 1));
+        var body = CreateRect(stagePanelGO, "KingBody", new Vector2(0, 0), new Vector2(1, 1));
+        var revealBgGO = nakedKingGO; // reuse for UIManager wiring
 
         // ── LEFT PANEL: Tag drop zones ────────────────────────────────────────
         string[] holderSprites = { "Place_Garment_tag_holder", "Place_Colour_tag_holder", "Place_Material_tag_holder" };
@@ -201,8 +188,10 @@ public class SceneBuilder : MonoBehaviour
         ui.optionButtonPrefab = null; // unused — drag/drop only
         ui.draggableTagPrefab = tagPrefabGO;
 
-        // Backgrounds
-        ui.revealBackground = revealBgGO;
+        // Backgrounds / reveal swap
+        ui.revealBackground = null;
+        ui.nakedKingGO  = nakedKingGO;
+        ui.silhouetteGO = silhouetteGO;
 
         // Narrator
         ui.narratorLabel = narratorTMP;
@@ -349,6 +338,13 @@ public class SceneBuilder : MonoBehaviour
         var go = new GameObject(name); go.transform.SetParent(parent.transform, false);
         var rt = go.AddComponent<RectTransform>(); rt.anchoredPosition=pos; rt.sizeDelta=size;
         return go;
+    }
+
+    void SetSprite(Image img, string path, bool preserveAspect)
+    {
+        var spr = Resources.Load<Sprite>(path);
+        if (spr != null) { img.sprite = spr; img.type = Image.Type.Simple; img.preserveAspect = preserveAspect; img.color = Color.white; }
+        else img.color = new Color(0.2f, 0.1f, 0.3f);
     }
 
     void ApplySpeechBubbleSprite(GameObject go)
