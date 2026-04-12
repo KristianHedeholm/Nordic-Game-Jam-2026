@@ -86,24 +86,16 @@ public class SceneBuilder : MonoBehaviour
         AddImage(CreateRect(cC, "Jewel", Vector2.zero, new Vector2(22, 22)), new Color(0.1f, 0.4f, 0.9f));
         AddImage(CreateRect(cR, "Jewel", Vector2.zero, new Vector2(20, 20)), new Color(0.1f, 0.8f, 0.2f));
 
-        // ── CURTAINS ──────────────────────────────────────────────────────────
-        var curtainL = CreateRect(stagePanelGO, "CurtainLeft",  new Vector2(-560, 0), new Vector2(1000, 900)); AddImage(curtainL, new Color(0.55f, 0.05f, 0.08f));
-        for (int i = 0; i < 4; i++) AddImage(CreateRect(curtainL, $"Fold{i}", new Vector2(-350 + i*120, 0), new Vector2(20, 900)), new Color(0.4f, 0.03f, 0.06f, 0.7f));
-        AddImage(CreateRect(curtainL, "Gold", new Vector2(480, 0),  new Vector2(18, 900)), new Color(1f, 0.82f, 0.1f));
-        var rectLeft = curtainL.GetComponent<RectTransform>();
-        var left = new Vector2(0.0f, 0.5f);
-        rectLeft.pivot = left;
-        rectLeft.anchorMax = left;
-        rectLeft.anchorMin = left;
-        
-        var curtainR = CreateRect(stagePanelGO, "CurtainRight", new Vector2(560, 0),  new Vector2(1000, 900)); AddImage(curtainR, new Color(0.55f, 0.05f, 0.08f));
-        for (int i = 0; i < 4; i++) AddImage(CreateRect(curtainR, $"Fold{i}", new Vector2(350 - i*120, 0), new Vector2(20, 900)), new Color(0.4f, 0.03f, 0.06f, 0.7f));
-        AddImage(CreateRect(curtainR, "Gold", new Vector2(-480, 0), new Vector2(18, 900)), new Color(1f, 0.82f, 0.1f));
-        var rectRight = curtainR.GetComponent<RectTransform>();
-        var right = new Vector2(1.0f, 0.5f);
-        rectRight.pivot = right;
-        rectRight.anchorMax = right;
-        rectRight.anchorMin = right;
+        // ── STAGE BACKGROUND IMAGE (replaces curtains during guessing) ────────
+        var stageImgGO = CreateFull(stagePanelGO, "StageBackground");
+        var stageImg = stageImgGO.AddComponent<Image>();
+        var stageSpr = Resources.Load<Sprite>("Art/Stage_Background");
+        if (stageSpr != null) { stageImg.sprite = stageSpr; stageImg.type = Image.Type.Simple; stageImg.preserveAspect = false; stageImg.color = Color.white; }
+        else stageImg.color = new Color(0.06f, 0.03f, 0.10f);
+
+        // ── CURTAINS (hidden during guessing, used only for reveal animation) ─
+        var curtainL = CreateRect(stagePanelGO, "CurtainLeft",  new Vector2(-560, 0), new Vector2(1000, 900)); AddImage(curtainL, new Color(0.55f, 0.05f, 0.08f, 0f));
+        var curtainR = CreateRect(stagePanelGO, "CurtainRight", new Vector2(560, 0),  new Vector2(1000, 900)); AddImage(curtainR, new Color(0.55f, 0.05f, 0.08f, 0f));
 
         var curtainAnim = stagePanelGO.AddComponent<CurtainAnimator>();
         curtainAnim.curtainLeft  = curtainL.GetComponent<RectTransform>();
