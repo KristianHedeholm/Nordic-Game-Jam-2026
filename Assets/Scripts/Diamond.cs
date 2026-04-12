@@ -34,10 +34,7 @@ public class Diamond : MonoBehaviour
     
     public async void PrintReplies(string type, string color, string material)
     {
-	    _riddles = new Dictionary<string, string>();
-	    
 	    UnityEngine.Debug.Log($"Answers {type}, {color}, {material}");
-
 	    try
 	    {
 		    _riddles = await InvokeReplyAsync(type, color, material);

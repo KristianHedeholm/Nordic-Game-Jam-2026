@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
@@ -104,13 +105,7 @@ public class GameManager : MonoBehaviour
     {
         string riddle = null;
         bool done = false;
-
-        /*if (riddleGenerator != null)
-            riddleGenerator.GetRiddle(target, category, r => { riddle = r; done = true; });
-        else
-            done = true;*/
         
-
         if (diamond != null)
         {
 	        var diamondKey = GetDiamondKey(category);
@@ -173,14 +168,16 @@ public class GameManager : MonoBehaviour
     public void OnPlayAgain() => StartGame();
 
     /// <summary>Skip intro — close curtains and start a new round of guessing.</summary>
-    public void OnPlayAgainSkipIntro()
+    public async void OnPlayAgainSkipIntro()
     {
         State.NewGame();
+        diamond.PrintReplies(State.TargetClothing, State.TargetColor,  State.TargetMaterial);
         Debug.Log($"[Game] New round (skip intro) — King imagines: {State.TargetColor} {State.TargetMaterial} {State.TargetClothing}");
         uiManager.ResetTracker();
         uiManager.kingPoseProud?.Invoke(false);
         if (uiManager.narratorLabel != null) uiManager.narratorLabel.text = "";
         uiManager.curtainAnimator?.CloseCurtains();
+        await Task.Delay(1000);
         GoToPhase(GamePhase.GuessClothing);
     }
 }
