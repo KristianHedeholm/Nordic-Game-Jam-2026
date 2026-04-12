@@ -59,24 +59,24 @@ public class SceneBuilder : MonoBehaviour
         SetSprite(bgGO.AddComponent<Image>(), "Art/BG_Bedroom", false);
 
         // ── LAYER 2: PLAYER BUNNY — bottom left, watching ──────────────────
-        var playerGO = CreateRect(stagePanelGO, "PlayerBunny", new Vector2(-700, -310), new Vector2(380, 420));
+        var playerGO = CreateRect(stagePanelGO, "PlayerBunny", new Vector2(435, -310), new Vector2(460, 510));
         SetSprite(playerGO.AddComponent<Image>(), "Art/Player_Bunny", true);
 
         // ── LAYER 3: NAKED KING — centre, hidden until reveal ──────────────
-        var nakedKingGO = CreateRect(stagePanelGO, "KingNaked", new Vector2(350, 80), new Vector2(480, 760));
+        var nakedKingGO = CreateRect(stagePanelGO, "KingNaked", new Vector2(350, 151), new Vector2(420, 660));
         SetSprite(nakedKingGO.AddComponent<Image>(), "Art/King_Naked", true);
         nakedKingGO.SetActive(false);
 
         // ── LAYER 4: LEFT CURTAIN ──────────────────────────────────────────
-        var curtainL = CreateRect(stagePanelGO, "CurtainLeft", new Vector2(-325, 0), new Vector2(650, 750));
+        var curtainL = CreateRect(stagePanelGO, "CurtainLeft", new Vector2(27, 166), new Vector2(650, 750));
         SetSprite(curtainL.AddComponent<Image>(), "Art/Curtain_Left", false);
 
         // ── LAYER 5: RIGHT CURTAIN ─────────────────────────────────────────
-        var curtainR = CreateRect(stagePanelGO, "CurtainRight", new Vector2(325, 0), new Vector2(650, 750));
+        var curtainR = CreateRect(stagePanelGO, "CurtainRight", new Vector2(636, 166), new Vector2(650, 750));
         SetSprite(curtainR.AddComponent<Image>(), "Art/Curtain_Right", false);
 
         // ── LAYER 6: KING SILHOUETTE — on curtains, hidden on reveal ───────
-        var silhouetteGO = CreateRect(stagePanelGO, "KingSilhouette", new Vector2(350, 80), new Vector2(480, 760));
+        var silhouetteGO = CreateRect(stagePanelGO, "KingSilhouette", new Vector2(350, 151), new Vector2(420, 660));
         SetSprite(silhouetteGO.AddComponent<Image>(), "Art/King_Silhouette", true);
 
         var curtainAnim = stagePanelGO.AddComponent<CurtainAnimator>();
