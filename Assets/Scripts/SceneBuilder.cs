@@ -57,34 +57,11 @@ public class SceneBuilder : MonoBehaviour
         AddImage(CreateRect(stagePanelGO, "Floor",     new Vector2(0, -350), new Vector2(1920, 220)), new Color(0.25f, 0.15f, 0.05f));
         AddImage(CreateRect(stagePanelGO, "FloorLine", new Vector2(0, -245), new Vector2(1920, 12)),  new Color(0.55f, 0.38f, 0.10f));
 
-        // ── KING (short, fat, on stool) ───────────────────────────────────────
-        var skin = new Color(0.95f, 0.75f, 0.55f);
-        AddImage(CreateRect(stagePanelGO, "Stool",    new Vector2(0, -270), new Vector2(160, 60)),  new Color(0.35f, 0.2f, 0.05f));
-        AddImage(CreateRect(stagePanelGO, "StoolTop", new Vector2(0, -245), new Vector2(180, 18)),  new Color(0.5f, 0.3f, 0.08f));
-        var body = CreateRect(stagePanelGO, "KingBody",  new Vector2(0, -110),   new Vector2(220, 200)); AddImage(body, skin);
-        AddImage(CreateRect(stagePanelGO, "KingBelly", new Vector2(0, -130),   new Vector2(200, 160)), new Color(1f, 0.8f, 0.62f));
-        AddImage(CreateRect(stagePanelGO, "LegL",      new Vector2(-55, -248),  new Vector2(80, 60)),  skin);
-        AddImage(CreateRect(stagePanelGO, "LegR",      new Vector2(55, -248),   new Vector2(80, 60)),  skin);
-        var armL = CreateRect(stagePanelGO, "ArmL", new Vector2(-165, -80), new Vector2(110, 80)); AddImage(armL, skin);
-        var armR = CreateRect(stagePanelGO, "ArmR", new Vector2(165, -80),  new Vector2(110, 80)); AddImage(armR, skin);
-        var head = CreateRect(stagePanelGO, "KingHead", new Vector2(0, 60),  new Vector2(200, 190)); AddImage(head, skin);
-        var eyeL = CreateRect(stagePanelGO, "EyeL", new Vector2(-45, 70), new Vector2(35, 35)); AddImage(eyeL, new Color(0.1f, 0.1f, 0.3f));
-        var eyeR = CreateRect(stagePanelGO, "EyeR", new Vector2(45, 70),  new Vector2(35, 35)); AddImage(eyeR, new Color(0.1f, 0.1f, 0.3f));
-        AddImage(CreateRect(eyeL, "Shine", new Vector2(8, 8), new Vector2(10, 10)), Color.white);
-        AddImage(CreateRect(eyeR, "Shine", new Vector2(8, 8), new Vector2(10, 10)), Color.white);
-        AddImage(CreateRect(stagePanelGO, "Smile",     new Vector2(0, 15),  new Vector2(80, 18)),  new Color(0.6f, 0.25f, 0.15f));
-        AddImage(CreateRect(stagePanelGO, "Moustache", new Vector2(0, 35),  new Vector2(100, 20)), new Color(0.3f, 0.15f, 0.05f));
-        AddImage(CreateRect(stagePanelGO, "BlushL",    new Vector2(-70, 40), new Vector2(45, 25)), new Color(1f, 0.5f, 0.5f, 0.55f));
-        AddImage(CreateRect(stagePanelGO, "BlushR",    new Vector2(70, 40),  new Vector2(45, 25)), new Color(1f, 0.5f, 0.5f, 0.55f));
-
-        // Crown above curtains
-        AddImage(CreateRect(stagePanelGO, "CrownBase", new Vector2(0, 180),   new Vector2(200, 35)), new Color(1f, 0.85f, 0.1f));
-        var cL = CreateRect(stagePanelGO, "CrownL", new Vector2(-65, 210), new Vector2(45, 60)); AddImage(cL, new Color(1f, 0.85f, 0.1f));
-        var cC = CreateRect(stagePanelGO, "CrownC", new Vector2(0, 225),   new Vector2(45, 75)); AddImage(cC, new Color(1f, 0.85f, 0.1f));
-        var cR = CreateRect(stagePanelGO, "CrownR", new Vector2(65, 210),  new Vector2(45, 60)); AddImage(cR, new Color(1f, 0.85f, 0.1f));
-        AddImage(CreateRect(cL, "Jewel", Vector2.zero, new Vector2(20, 20)), new Color(0.8f, 0.1f, 0.1f));
-        AddImage(CreateRect(cC, "Jewel", Vector2.zero, new Vector2(22, 22)), new Color(0.1f, 0.4f, 0.9f));
-        AddImage(CreateRect(cR, "Jewel", Vector2.zero, new Vector2(20, 20)), new Color(0.1f, 0.8f, 0.2f));
+        // Geometric king removed — bunny king sprite used instead
+        // Proud pose arms still needed for animation references (invisible placeholders)
+        var armL = CreateRect(stagePanelGO, "ArmL", new Vector2(-165, -80), new Vector2(1, 1));
+        var armR = CreateRect(stagePanelGO, "ArmR", new Vector2(165, -80),  new Vector2(1, 1));
+        var body = CreateRect(stagePanelGO, "KingBody", new Vector2(0, -110), new Vector2(1, 1));
 
         // ── STAGE BACKGROUND IMAGE (replaces curtains during guessing) ────────
         var stageImgGO = CreateFull(stagePanelGO, "StageBackground");
@@ -93,9 +70,25 @@ public class SceneBuilder : MonoBehaviour
         if (stageSpr != null) { stageImg.sprite = stageSpr; stageImg.type = Image.Type.Simple; stageImg.preserveAspect = false; stageImg.color = Color.white; }
         else stageImg.color = new Color(0.06f, 0.03f, 0.10f);
 
-        // ── CURTAINS (hidden during guessing, used only for reveal animation) ─
-        var curtainL = CreateRect(stagePanelGO, "CurtainLeft",  new Vector2(-560, 0), new Vector2(1000, 900)); AddImage(curtainL, new Color(0.55f, 0.05f, 0.08f, 0f));
-        var curtainR = CreateRect(stagePanelGO, "CurtainRight", new Vector2(560, 0),  new Vector2(1000, 900)); AddImage(curtainR, new Color(0.55f, 0.05f, 0.08f, 0f));
+        // ── BUNNY KING (replaces geometric king) ─────────────────────────────
+        var bunnyGO = CreateRect(stagePanelGO, "KingBunny", new Vector2(0, -80), new Vector2(400, 630));
+        var bunnyImg = bunnyGO.AddComponent<Image>();
+        var bunnySpr = Resources.Load<Sprite>("Art/King_Bunny");
+        if (bunnySpr != null) { bunnyImg.sprite = bunnySpr; bunnyImg.type = Image.Type.Simple; bunnyImg.preserveAspect = true; bunnyImg.color = Color.white; }
+        else bunnyImg.color = new Color(0.95f, 0.75f, 0.55f);
+
+        // ── CURTAINS (sprite-based, animate open on reveal) ───────────────────
+        var curtainL = CreateRect(stagePanelGO, "CurtainLeft",  new Vector2(-480, 0), new Vector2(960, 1080));
+        var clImg = curtainL.AddComponent<Image>();
+        var clSpr = Resources.Load<Sprite>("Art/Curtain_Left");
+        if (clSpr != null) { clImg.sprite = clSpr; clImg.type = Image.Type.Simple; clImg.preserveAspect = false; clImg.color = Color.white; }
+        else clImg.color = new Color(0.55f, 0.05f, 0.08f);
+
+        var curtainR = CreateRect(stagePanelGO, "CurtainRight", new Vector2(480, 0), new Vector2(960, 1080));
+        var crImg = curtainR.AddComponent<Image>();
+        var crSpr = Resources.Load<Sprite>("Art/Curtain_Right");
+        if (crSpr != null) { crImg.sprite = crSpr; crImg.type = Image.Type.Simple; crImg.preserveAspect = false; crImg.color = Color.white; }
+        else crImg.color = new Color(0.55f, 0.05f, 0.08f);
 
         var curtainAnim = stagePanelGO.AddComponent<CurtainAnimator>();
         curtainAnim.curtainLeft  = curtainL.GetComponent<RectTransform>();
