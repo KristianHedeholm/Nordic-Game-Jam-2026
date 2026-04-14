@@ -89,7 +89,7 @@ public static class GameUIBuilder
 
         // Speech bubble (left of king)
         var bubble = CR(stage, "SpeechBubble", new Vector2(-250, 300), new Vector2(700, 220));
-        SetImg(bubble, Spr("Speech_Bubble_New"), Color.white, false);
+        SetImg(bubble, Spr("Speech_Bubble"), Color.white, false);
         var riddleGO = new GameObject("RiddleText"); riddleGO.transform.SetParent(bubble.transform, false);
         var riddleRT = riddleGO.AddComponent<RectTransform>();
         riddleRT.anchorMin=Vector2.zero; riddleRT.anchorMax=Vector2.one;
@@ -183,7 +183,7 @@ public static class GameUIBuilder
         var revealPanel = CF(canvasGO, "RevealPanel");
         SetImg(revealPanel, null, new Color(0,0,0,0));
         var revBubble = CR(revealPanel,"RevealBubble",new Vector2(380,260),new Vector2(700,200));
-        SetImg(revBubble, Spr("Speech_Bubble_New"), Color.white, false);
+        SetImg(revBubble, Spr("Speech_Bubble"), Color.white, false);
         var revTGO=new GameObject("RevealText"); revTGO.transform.SetParent(revBubble.transform,false);
         var revTRT=revTGO.AddComponent<RectTransform>(); revTRT.anchorMin=Vector2.zero; revTRT.anchorMax=Vector2.one; revTRT.offsetMin=new Vector2(30,20); revTRT.offsetMax=new Vector2(-30,-20);
         var revTMP=revTGO.AddComponent<TextMeshProUGUI>(); revTMP.text=""; revTMP.fontSize=26; revTMP.alignment=TextAlignmentOptions.Center; revTMP.color=new Color(0.1f,0.05f,0.15f); revTMP.enableWordWrapping=true;
@@ -194,7 +194,7 @@ public static class GameUIBuilder
         var judgPanel = CF(canvasGO, "JudgmentPanel");
         SetImg(judgPanel, null, new Color(0,0,0,0));
         var jBubble = CR(judgPanel,"JudgBubble",new Vector2(380,260),new Vector2(700,200));
-        SetImg(jBubble, Spr("Speech_Bubble_New"), Color.white, false);
+        SetImg(jBubble, Spr("Speech_Bubble"), Color.white, false);
         var jTGO=new GameObject("JudgText"); jTGO.transform.SetParent(jBubble.transform,false);
         var jTRT=jTGO.AddComponent<RectTransform>(); jTRT.anchorMin=Vector2.zero; jTRT.anchorMax=Vector2.one; jTRT.offsetMin=new Vector2(30,20); jTRT.offsetMax=new Vector2(-30,-20);
         var jTMP=jTGO.AddComponent<TextMeshProUGUI>(); jTMP.text=""; jTMP.fontSize=26; jTMP.alignment=TextAlignmentOptions.Center; jTMP.color=new Color(0.1f,0.05f,0.15f); jTMP.enableWordWrapping=true;
