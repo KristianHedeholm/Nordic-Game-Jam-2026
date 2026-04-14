@@ -10,7 +10,6 @@ public class GameManager : MonoBehaviour
 
     [Header("References")]
     public UIManager uiManager;
-    public RiddleGenerator riddleGenerator;
     public Diamond diamond;
 
     public GameState State { get; private set; } = new GameState();

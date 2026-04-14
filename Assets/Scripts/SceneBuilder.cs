@@ -18,7 +18,6 @@ public class SceneBuilder : MonoBehaviour
     void Awake()
     {
         SetupCamera();
-        SetupEventSystem();
 
         if (gameUIPrefab == null)
         {
@@ -66,19 +65,11 @@ public class SceneBuilder : MonoBehaviour
         // ── GAME SYSTEMS ──────────────────────────────────────────────────
         var mgrGO = new GameObject("GameManager");
         var gm = mgrGO.AddComponent<GameManager>();
-        var rg = mgrGO.AddComponent<RiddleGenerator>();
         var diamond = mgrGO.AddComponent<Diamond>();
         mgrGO.AddComponent<AudioManager>();
         gameObject.AddComponent<AppQuit>();
-
-        // apiKey and model fields may not exist on Diamond-based RiddleGenerator
-        var apiKeyField = rg.GetType().GetField("apiKey");
-        if (apiKeyField != null) apiKeyField.SetValue(rg, "");
-        var modelField = rg.GetType().GetField("model");
-        if (modelField != null) modelField.SetValue(rg, "openai/gpt-4o-mini");
-
+        
         gm.uiManager       = ui;
-        gm.riddleGenerator = rg;
         gm.diamond         = diamond;
         gm.StartGame();
     }
@@ -90,14 +81,6 @@ public class SceneBuilder : MonoBehaviour
         cam.clearFlags      = CameraClearFlags.SolidColor;
         cam.backgroundColor = new Color(0.05f, 0.03f, 0.08f);
         cam.orthographic    = true;
-    }
-
-    void SetupEventSystem()
-    {
-        if (FindAnyObjectByType<EventSystem>() != null) return;
-        var es = new GameObject("EventSystem");
-        es.AddComponent<EventSystem>();
-        es.AddComponent<InputSystemUIInputModule>();
     }
 
     GameObject FindDeep(GameObject root, string name)
