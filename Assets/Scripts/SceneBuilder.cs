@@ -67,6 +67,7 @@ public class SceneBuilder : MonoBehaviour
         var mgrGO = new GameObject("GameManager");
         var gm = mgrGO.AddComponent<GameManager>();
         var rg = mgrGO.AddComponent<RiddleGenerator>();
+        var diamond = mgrGO.AddComponent<Diamond>();
         mgrGO.AddComponent<AudioManager>();
         gameObject.AddComponent<AppQuit>();
 
@@ -78,6 +79,7 @@ public class SceneBuilder : MonoBehaviour
 
         gm.uiManager       = ui;
         gm.riddleGenerator = rg;
+        gm.diamond         = diamond;
         gm.StartGame();
     }
 
