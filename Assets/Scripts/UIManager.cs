@@ -473,7 +473,7 @@ public class UIManager : MonoBehaviour
                 string kingQuote = allCorrect
                     ? "\"BEHOLD! Am I not the most magnificently dressed monarch you have ever seen?\""
                     : "\"Feast your eyes upon the FINEST outfit ever crafted by mortal hands!\"";
-                string narratorLine = "\n\n<size=20><i>...says the King, obviously wearing <b>absolutely nothing.</b></i></size>";
+                string narratorLine = "\n<size=20><i>...says the King, obviously wearing <b>absolutely nothing.</b></i></size>";
 
                 AudioManager.Instance?.PlayKingTalk();
                 SetText(revealText, kingQuote, () =>
@@ -508,10 +508,10 @@ public class UIManager : MonoBehaviour
 
         // Show score in speech bubble
         string scoreMsg = score == 3
-            ? $"<b>{score}/3</b> correct!\n\n\"Extraordinary! You truly understand fashion!\""
+            ? $"<b>{score}/3</b> correct!\n\"Extraordinary! You truly understand fashion!\""
             : score == 0
-            ? $"<b>{score}/3</b> correct.\n\n\"...I expected more from you.\""
-            : $"<b>{score}/3</b> correct.\n\n\"Hmm. Some potential, perhaps.\"";
+            ? $"<b>{score}/3</b> correct.\n\"...I expected more from you.\""
+            : $"<b>{score}/3</b> correct.\n\"Hmm. Some potential, perhaps.\"";
 
         AudioManager.Instance?.PlayKingTalk();
         SetText(revealText, scoreMsg, () =>
@@ -577,8 +577,8 @@ public class UIManager : MonoBehaviour
         truthButton.gameObject.SetActive(false);
 
         string question = allCorrect
-            ? "\"You have <b>magnificent</b> taste!\"\n\n\"Would you like to admire another one of my spectacular outfits?\""
-            : "\"You clearly need more practice.\"\n\n\"Would you like to try again and improve yourself?\"";
+            ? "\"You have <b>magnificent</b> taste!\"\n\"Would you like to admire another one of my spectacular outfits?\""
+            : "\"You clearly need more practice.\"\n\"Would you like to try again and improve yourself?\"";
 
         flatterButton.GetComponentInChildren<TMP_Text>().text = allCorrect
             ? "\"Yes Your Majesty, it would be an honour!\""
@@ -617,8 +617,8 @@ public class UIManager : MonoBehaviour
         AudioManager.Instance?.PlayWin();
         SetText(winText,
             "The King claps with delight!\n\n" +
-            "\"YES! You truly have the finest eyes in all the kingdom!\"\n\n" +
-            "You survive. The King is happy.\nThe kingdom is at peace.\n\n" +
+            "\"YES! You truly have the finest eyes in all the kingdom!\"\n" +
+            "You survive. The King is happy.\nThe kingdom is at peace.\n" +
             "<i>(He is still wearing nothing at all.)</i>");
         winPlayAgainButton.onClick.RemoveAllListeners();
         winPlayAgainButton.onClick.AddListener(() => GameManager.Instance.OnPlayAgain());
@@ -639,7 +639,7 @@ public class UIManager : MonoBehaviour
             state.GuessedMaterial == state.TargetMaterial;
 
         string deathMsg = askedAboutNakedness
-            ? "The King's face turns purple with rage.\n\n\"Wearing nothing?! How DARE you!\"\n\n\"I am wearing the FINEST outfit ever created!\"\n\n\"GUARDS! OFF WITH THEIR HEAD!\"\n\n<i>Truth is a crime in this kingdom.</i>"
+            ? "The King's face turns purple with rage.\n\"Wearing nothing?! How DARE you!\"\n\"I am wearing the FINEST outfit ever created!\"\n\"GUARDS! OFF WITH THEIR HEAD!\"\n<i>Truth is a crime in this kingdom.</i>"
             : BuildWrongDeathMessage(state);
 
         // No typewriter on death — just show the background image
