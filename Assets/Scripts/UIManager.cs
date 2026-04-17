@@ -467,6 +467,7 @@ public class UIManager : MonoBehaviour
                     narratorLabel.text = "<i>...says the King.\nObviously wearing <b>absolutely nothing.</b></i>";
 
                 // Phase 2: Reveal panel shows — king says something short
+                revealContinueButton.gameObject.SetActive(false);
                 revealPanel.SetActive(true);
 
                 // King speaks the quote — speech stops when quote ends, then narrator line appends silently
