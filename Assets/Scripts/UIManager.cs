@@ -569,6 +569,8 @@ public class UIManager : MonoBehaviour
         stagePanel?.SetActive(true);
         finalJudgmentPanel.SetActive(true);
         AudioManager.Instance?.PlayKingTalk();
+        
+        if (finalText != null) finalText.transform.parent.gameObject.SetActive(true);
 
         // Hide buttons until text is done
         flatterButton.gameObject.SetActive(false);
@@ -591,7 +593,15 @@ public class UIManager : MonoBehaviour
 
         flatterButton.onClick.RemoveAllListeners();
         truthButton.onClick.RemoveAllListeners();
-        flatterButton.onClick.AddListener(() => GameManager.Instance.OnPlayAgainSkipIntro());
+        flatterButton.onClick.AddListener(() =>
+        {
+	        if (finalText != null) finalText.transform.parent.gameObject.SetActive(false);
+	        if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(false);
+	        flatterButton.gameObject.SetActive(false);
+	        truthButton.gameObject.SetActive(false);
+	        loadingPanel?.SetActive(true);
+	        GameManager.Instance.OnPlayAgainSkipIntro();
+        });
         truthButton.onClick.AddListener(() => GameManager.Instance.OnPlayerTruth());
     }
 

@@ -109,8 +109,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: -60, y: -40}
+  m_AnchoredPosition: {x: 0.33850098, y: 15.2323}
+  m_SizeDelta: {x: -28.1814, y: -108.3765}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &818325843599146338
 CanvasRenderer:
@@ -299,7 +299,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -518,11 +518,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1088561279171687619}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 160}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 5}
   m_SizeDelta: {x: 650, y: 750}
-  m_Pivot: {x: 1, y: 0.5}
+  m_Pivot: {x: 1, y: 1}
 --- !u!222 &509135310975103868
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1207,7 +1207,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -1577,7 +1577,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -1881,11 +1881,11 @@ RectTransform:
   m_Children: []
   m_Father: {fileID: 1088561279171687619}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 1, y: 0.5}
-  m_AnchorMax: {x: 1, y: 0.5}
-  m_AnchoredPosition: {x: -545, y: 160}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -545, y: 5}
   m_SizeDelta: {x: 650, y: 750}
-  m_Pivot: {x: 1, y: 0.5}
+  m_Pivot: {x: 1, y: 1}
 --- !u!222 &3841528198938944943
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1983,7 +1983,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.06, g: 0.03, b: 0.1, a: 0.85}
+  m_Color: {r: 0.06, g: 0.03, b: 0.1, a: 0.9372549}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -2767,12 +2767,12 @@ RectTransform:
   - {fileID: 1844803674506408408}
   - {fileID: 3940232507960044051}
   - {fileID: 4991070139301087505}
-  - {fileID: 7072115152042616339}
   - {fileID: 905698709634773093}
   - {fileID: 8271438518920060292}
   - {fileID: 2902841065143707269}
   - {fileID: 9809464910754535}
   - {fileID: 5772100378170958045}
+  - {fileID: 7072115152042616339}
   m_Father: {fileID: 1918853388153749925}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -3542,7 +3542,7 @@ MonoBehaviour:
   m_fontMaterials: []
   m_fontColor32:
     serializedVersion: 2
-    rgba: 4294967295
+    rgba: 4285792076
   m_fontColor: {r: 0.3, g: 1, b: 0.45, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
@@ -3555,7 +3555,7 @@ MonoBehaviour:
   m_spriteAsset: {fileID: 0}
   m_tintAllSprites: 0
   m_StyleSheet: {fileID: 0}
-  m_TextStyleHashCode: 0
+  m_TextStyleHashCode: -1183493901
   m_overrideHtmlColors: 0
   m_faceColor:
     serializedVersion: 2
@@ -4398,7 +4398,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -410, y: -110}
+  m_AnchoredPosition: {x: -410, y: -90}
   m_SizeDelta: {x: 380, y: 600}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &4987411517238347728
@@ -4841,7 +4841,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4991070139301087505
 RectTransform:
   m_ObjectHideFlags: 0
@@ -5984,7 +5984,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -410, y: -110}
+  m_AnchoredPosition: {x: -410, y: -90}
   m_SizeDelta: {x: 380, y: 600}
   m_Pivot: {x: 1, y: 1}
 --- !u!222 &5150330261710312301
