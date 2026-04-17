@@ -202,8 +202,6 @@ public class UIManager : MonoBehaviour
         ResetTracker();
         kingPoseProud?.Invoke(false);
         if (narratorLabel != null) narratorLabel.text = "";
-        if (nakedKingGO  != null) nakedKingGO.SetActive(false);
-        if (silhouetteGO != null) silhouetteGO.SetActive(true);
         if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(true);
         stagePanel?.SetActive(false);
         curtainAnimator?.CloseCurtains();
@@ -274,6 +272,8 @@ public class UIManager : MonoBehaviour
     {
         HideAllOverlays();
         stagePanel?.SetActive(true);
+        if (silhouetteGO != null) silhouetteGO.SetActive(true);
+        if (nakedKingGO  != null) nakedKingGO.SetActive(false);
         ClearOptions();
         if (categoryLabel != null) categoryLabel.text = "";
         if (riddleText != null)
