@@ -83,29 +83,19 @@ public class UIManager : MonoBehaviour
     [HideInInspector] public Sprite buttonNextSprite;
 
     // ── TYPEWRITER HELPER ─────────────────────────────────────────────────
-
-    void SetText(TMP_Text label, string text, Action onDone = null)
+    
+    void SetKingSpeechText(TMP_Text label, string text, Action onDone = null)
     {
-        if (label == null) return;
-        var tw = label.GetComponent<TypewriterEffect>() ?? label.gameObject.AddComponent<TypewriterEffect>();
-        tw.charsPerSecond = 22f;
-        tw.TypeWrite(text, () =>
-        {
-            AudioManager.Instance?.StopKingTalk();
-            onDone?.Invoke();
-        });
+	    if (label == null) return;
+	    var tw = label.GetComponent<TypewriterEffect>() ?? label.gameObject.AddComponent<TypewriterEffect>();
+	    tw.charsPerSecond = 22f;
+	    tw.TypeWrite(text, () =>
+	    {
+		    AudioManager.Instance?.StopKingTalk();
+		    onDone?.Invoke();
+	    });
     }
-
-    void SetInstant(TMP_Text label, string text)
-    {
-        if (label == null) return;
-        // Stop any running typewriter first
-        var tw = label.GetComponent<TypewriterEffect>();
-        if (tw != null) tw.Skip();
-        label.text = text;
-        label.maxVisibleCharacters = int.MaxValue;
-    }
-
+    
     void HideAllOverlays()
     {
         introPanel?.SetActive(false);
@@ -205,7 +195,6 @@ public class UIManager : MonoBehaviour
         if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(true);
         stagePanel?.SetActive(false);
         curtainAnimator?.CloseCurtains();
-        AudioManager.Instance?.PlayIntroFanfare();
 
         // Show title screen — START button switches to tutorial slides
         introPanel.SetActive(true);
@@ -222,50 +211,33 @@ public class UIManager : MonoBehaviour
 
     void ShowSlide(int index)
     {
-
-        bool isLast = index >= IntroSlides.Length - 1;
-
-        // Swap button sprite: Next vs Start
-        var btnImg = introStartButton.GetComponent<Image>();
-        if (btnImg != null)
+        if (!introText.TryGetComponent<TypewriterEffect>(out var tw))
         {
-            var sprite = isLast ? buttonStartSprite : buttonNextSprite;
-            if (sprite == null) sprite = Resources.Load<Sprite>(isLast ? "Art/Button_Start" : "Art/Button_Next");
-            if (sprite != null)
-        {
-            btnImg.sprite = sprite;
-            btnImg.color  = Color.white;
-            btnImg.type   = Image.Type.Simple;
-            // Scale to 32% of native size for a clean compact button
-            btnImg.SetNativeSize();
-            var btnRT2 = introStartButton.GetComponent<RectTransform>();
-            if (btnRT2 != null) btnRT2.sizeDelta *= 0.32f;
+	        tw = introText.gameObject.AddComponent<TypewriterEffect>();
         }
-        }
-        // Hide TMP label — SVG already has text baked in
-        var lbl = introStartButton.GetComponentInChildren<TMP_Text>();
-        if (lbl != null) lbl.text = "";
-
-        SetText(introText, IntroSlides[index]);
-
+        tw.charsPerSecond = 22f;
+        tw.TypeWrite(IntroSlides[index]);
+        
         // Use tutorial button — only wire if it exists
-        if (tutorialNextButton != null)
-        {
-            tutorialNextButton.onClick.RemoveAllListeners();
-            tutorialNextButton.onClick.AddListener(() =>
-            {
-                AudioManager.Instance?.PlayButtonClick();
-                if (index < IntroSlides.Length - 1)
-                    ShowSlide(index + 1);
-                else
-                {
-                    tutorialPanel?.SetActive(false);
-                    GameManager.Instance.GoToPhase(GamePhase.GuessClothing);
-                }
-            });
-        }
+        if(tutorialNextButton == null)
+		{
+			return;
+		}
+        
+		tutorialNextButton.onClick.RemoveAllListeners();
+		tutorialNextButton.onClick.AddListener(() =>
+		{
+			AudioManager.Instance?.PlayButtonClick();
+			if (index < IntroSlides.Length - 1)
+				ShowSlide(index + 1);
+			else
+			{
+				tutorialPanel?.SetActive(false);
+				GameManager.Instance.GoToPhase(GamePhase.GuessClothing);
+			}
+		});
     }
-
+    
     // ── LOADING ───────────────────────────────────────────────────────────
 
     public void ShowLoading()
@@ -350,7 +322,7 @@ public class UIManager : MonoBehaviour
         bool tagsShown = false;
         void ShowTags() { if (tagsShown) return; tagsShown = true; foreach (var t in tags) t?.SetActive(true); }
 
-        SetText(riddleText, riddle, () => ShowTags());
+        SetKingSpeechText(riddleText, riddle, () => ShowTags());
         StartCoroutine(FallbackShowTags(3f, () => ShowTags()));
     }
 
@@ -415,7 +387,7 @@ public class UIManager : MonoBehaviour
         stagePanel?.SetActive(true);
         reactionPanel.SetActive(true);
         reactionBg.color = new Color(0.05f, 0.25f, 0.08f, 0.92f);
-        SetText(reactionText, "<size=60><b>CORRECT!</b></size>\n\n" + kingQuote + "\n\n<size=24><i>~ tap to continue ~</i></size>");
+        SetKingSpeechText(reactionText, "<size=60><b>CORRECT!</b></size>\n\n" + kingQuote + "\n\n<size=24><i>~ tap to continue ~</i></size>");
         var btn = reactionPanel.GetComponent<Button>() ?? reactionPanel.AddComponent<Button>();
         btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(() => { reactionPanel.SetActive(false); onContinue?.Invoke(); });
@@ -427,7 +399,7 @@ public class UIManager : MonoBehaviour
         stagePanel?.SetActive(true);
         reactionPanel.SetActive(true);
         reactionBg.color = new Color(0.3f, 0.04f, 0.04f, 0.92f);
-        SetText(reactionText, "<size=60><b>WRONG!</b></size>\n\n" + kingInsult + "\n\n<size=24><i>~ tap to face your fate ~</i></size>");
+        SetKingSpeechText(reactionText, "<size=60><b>WRONG!</b></size>\n\n" + kingInsult + "\n\n<size=24><i>~ tap to face your fate ~</i></size>");
         var btn = reactionPanel.GetComponent<Button>() ?? reactionPanel.AddComponent<Button>();
         btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(() => { reactionPanel.SetActive(false); onContinue?.Invoke(); });
@@ -477,7 +449,7 @@ public class UIManager : MonoBehaviour
                 string narratorLine = "\n<size=20><i>...says the King, obviously wearing <b>absolutely nothing.</b></i></size>";
 
                 AudioManager.Instance?.PlayKingTalk();
-                SetText(revealText, kingQuote, () =>
+                SetKingSpeechText(revealText, kingQuote, () =>
                 {
                     // King speech stops — now silently append narrator text
                     revealText.text += narratorLine;
@@ -515,7 +487,7 @@ public class UIManager : MonoBehaviour
             : $"<b>{score}/3</b> correct.\n\"Hmm. Some potential, perhaps.\"";
 
         AudioManager.Instance?.PlayKingTalk();
-        SetText(revealText, scoreMsg, () =>
+        SetKingSpeechText(revealText, scoreMsg, () =>
         {
             revealContinueButton.gameObject.SetActive(true);
         });
@@ -586,7 +558,7 @@ public class UIManager : MonoBehaviour
             : "\"Yes Your Majesty, please give me another chance!\"";
         truthButton.GetComponentInChildren<TMP_Text>().text = "\"...Why are you wearing nothing?\"";
 
-        SetText(finalText, question, () =>
+        SetKingSpeechText(finalText, question, () =>
         {
             flatterButton.gameObject.SetActive(true);
             truthButton.gameObject.SetActive(true);
@@ -610,7 +582,7 @@ public class UIManager : MonoBehaviour
 
     // ── WIN / DEATH ───────────────────────────────────────────────────────
 
-    public void ShowWin()
+    /*public void ShowWin()
     {
         HideAllOverlays();
         stagePanel?.SetActive(false);
@@ -623,7 +595,7 @@ public class UIManager : MonoBehaviour
             "<i>(He is still wearing nothing at all.)</i>");
         winPlayAgainButton.onClick.RemoveAllListeners();
         winPlayAgainButton.onClick.AddListener(() => GameManager.Instance.OnPlayAgain());
-    }
+    }*/
 
     public void ShowDeath()
     {

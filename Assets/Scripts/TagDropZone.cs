@@ -55,9 +55,6 @@ public class TagDropZone : MonoBehaviour, IDropHandler
             answerLabel.gameObject.SetActive(false);
 
         AudioManager.Instance?.PlayButtonClick();
-        if (UnityEngine.Random.value > 0.5f) AudioManager.Instance?.PlayCrowdCheerGood();
-        else AudioManager.Instance?.PlayCrowdCheerBad();
-
         onAnswered?.Invoke(tag.value);
     }
 }

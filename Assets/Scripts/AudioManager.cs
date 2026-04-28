@@ -1,48 +1,26 @@
 using System;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Networking;
 
-/// <summary>
-/// Procedurally generates all game sounds — no audio files needed.
-/// </summary>
 public class AudioManager : MonoBehaviour
 {
     public static AudioManager Instance { get; private set; }
 
+    [SerializeField]
     private AudioSource sfxSource;
+    [SerializeField]
     private AudioSource musicSource;
 
+    [SerializeField]
     private AudioClip kingSpeechClip;
-    private AudioClip ambientMusicClip;
-
+    
     void Awake()
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
-
-        sfxSource   = gameObject.AddComponent<AudioSource>();
-        musicSource = gameObject.AddComponent<AudioSource>();
-        musicSource.loop   = true;
-        musicSource.volume = 0f; // start silent, fade in after fanfare
-
-        // Load audio clips
-        kingSpeechClip  = Resources.Load<AudioClip>("Audio/Kings_Speech_");
-        ambientMusicClip = Resources.Load<AudioClip>("Audio/fashion_royal_melodic_loop");
-
-        // Use real music if available, fallback to procedural
-        musicSource.clip = ambientMusicClip != null ? ambientMusicClip : GenerateAmbientMusic();
-        musicSource.Play();
     }
 
     // ── PUBLIC SOUND TRIGGERS ─────────────────────────────────────────────
-
-    public void PlayIntroFanfare()
-    {
-        PlayClip(GenerateFanfare(), 0.7f);
-        // Fade in ambient music after fanfare ends (~1.2s)
-        StartCoroutine(FadeInMusic(1.4f, 0.07f)); // delay, target volume
-    }
     public void PlayCorrect()       => PlayClip(GenerateCorrect(), 0.8f);
     public void PlayWrong()         => PlayClip(GenerateWrong(), 0.7f);
     public void PlayCurtainOpen()   => PlayClip(GenerateCurtainWhoosh(), 0.6f);
@@ -52,8 +30,14 @@ public class AudioManager : MonoBehaviour
     public void PlayKingLaugh()     => PlayClip(GenerateLaugh(), 0.6f);
     public void PlayKingTalk()
     {
-        if (kingSpeechClip != null) PlayClip(kingSpeechClip, 1.0f);
-        else PlayClip(GenerateOnionKingTalk(), 0.7f);
+	    if (kingSpeechClip != null)
+	    {
+		    PlayClip(kingSpeechClip, 1.0f);
+	    }
+	    else
+	    {
+		    UnityEngine.Debug.LogError("kingSpeechClip is null");
+	    }
     }
 
     public void StopKingTalk()
@@ -61,21 +45,7 @@ public class AudioManager : MonoBehaviour
         // Fade out sfxSource quickly if king speech is playing
         StartCoroutine(FadeOutSFX(0.2f));
     }
-
-    IEnumerator FadeInMusic(float delay, float targetVolume)
-    {
-        yield return new WaitForSeconds(delay);
-        float elapsed = 0f;
-        float fadeDur = 2f;
-        while (elapsed < fadeDur)
-        {
-            elapsed += Time.deltaTime;
-            musicSource.volume = Mathf.Lerp(0f, targetVolume, elapsed / fadeDur);
-            yield return null;
-        }
-        musicSource.volume = targetVolume;
-    }
-
+    
     IEnumerator FadeOutSFX(float duration)
     {
         float startVol = sfxSource.volume;
@@ -90,8 +60,6 @@ public class AudioManager : MonoBehaviour
         sfxSource.volume = startVol;
     }
     public void PlayTadaaa()        => PlayClip(GenerateTadaaa(), 0.9f);
-    public void PlayCrowdCheerGood()  => PlayClip(GenerateCrowdCheer(true), 0.6f);
-    public void PlayCrowdCheerBad()   => PlayClip(GenerateCrowdCheer(false), 0.6f);
 
     public void PlayDrumrollThenReveal(Action onReveal)
         => StartCoroutine(DrumrollRoutine(onReveal));
@@ -115,7 +83,7 @@ public class AudioManager : MonoBehaviour
     // ── SOUND GENERATORS ─────────────────────────────────────────────────
 
     // Short royal fanfare — ascending notes
-    AudioClip GenerateFanfare()
+    /*AudioClip GenerateFanfare()
     {
         int sr = 44100;
         float dur = 1.2f;
@@ -136,7 +104,7 @@ public class AudioManager : MonoBehaviour
             }
         }
         return MakeClip("fanfare", data, sr);
-    }
+    }*/
 
     // Happy ascending ding
     AudioClip GenerateCorrect()
@@ -280,7 +248,7 @@ public class AudioManager : MonoBehaviour
     }
 
     // Ambient royal loop — slow arpeggiated chords
-    AudioClip GenerateAmbientMusic()
+    /*AudioClip GenerateAmbientMusic()
     {
         int sr = 44100;
         float dur = 8f;
@@ -302,7 +270,7 @@ public class AudioManager : MonoBehaviour
             }
         }
         return MakeClip("ambient", data, sr, loop: true);
-    }
+    }*/
 
     // Accelerating snare drumroll building to a crescendo
     AudioClip GenerateDrumroll()
@@ -381,7 +349,7 @@ public class AudioManager : MonoBehaviour
     }
 
     // Crowd reaction — many overlapping voices
-    AudioClip GenerateCrowdCheer(bool cheer)
+    /*AudioClip GenerateCrowdCheer(bool cheer)
     {
         int sr = 44100;
         float dur = 1.6f;
@@ -437,9 +405,9 @@ public class AudioManager : MonoBehaviour
             for (int i = 0; i < data.Length; i++) data[i] /= peak / 0.9f;
 
         return MakeClip(cheer ? "cheer" : "boo", data, sr);
-    }
+    }*/
 
-    AudioClip MakeClip(string name, float[] data, int sampleRate, bool loop = false)
+    AudioClip MakeClip(string name, float[] data, int sampleRate)
     {
         var clip = AudioClip.Create(name, data.Length, 1, sampleRate, false);
         clip.SetData(data, 0);
