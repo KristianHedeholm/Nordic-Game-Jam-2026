@@ -1,22 +1,18 @@
 using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.InputSystem.UI;
 using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
-/// Instantiates the GameUI prefab and wires up GameManager + AudioManager.
-/// 
-/// SETUP:
-/// 1. Run "Tools → Kings New Clothes → Build UI Prefab" once in the editor
-/// 2. Add this script to an empty GameObject in your scene
-/// 3. Assign the GameUI prefab in the Inspector
-/// 4. Hit Play
-/// 
-/// The art team can edit Assets/Prefabs/GameUI.prefab freely.
+/// Instantiates the GameUI prefab and wires up runtime-only logic.
+/// Assign the GameUI prefab in the Inspector.
+/// All visual editing is done directly in the prefab — no code changes needed.
 /// </summary>
 [DefaultExecutionOrder(-100)]
 public class SceneBuilder : MonoBehaviour
 {
-    [Header("Assign after running Tools → Kings New Clothes → Build UI Prefab")]
+    [Header("Assign GameUI prefab here")]
     public GameObject gameUIPrefab;
 
     void Awake()
@@ -25,22 +21,25 @@ public class SceneBuilder : MonoBehaviour
 
         if (gameUIPrefab == null)
         {
-            Debug.LogError("[SceneBuilder] gameUIPrefab is not assigned! Run Tools → Kings New Clothes → Build UI Prefab first.");
+            Debug.LogError("[SceneBuilder] gameUIPrefab not assigned! Drag Assets/Prefabs/GameUI onto this field.");
             return;
         }
 
-        // Instantiate the prefab
         var uiInstance = Instantiate(gameUIPrefab);
         uiInstance.name = "GameUI";
 
-        // Get UIManager from the prefab instance
         var ui = uiInstance.GetComponentInChildren<UIManager>();
-        if (ui == null) { Debug.LogError("[SceneBuilder] UIManager not found in GameUI prefab!"); return; }
+        if (ui == null) { Debug.LogError("[SceneBuilder] UIManager not found in prefab!"); return; }
 
-        // Wire the king proud pose callback (runtime only — can't store lambdas in prefab)
-        var armL = uiInstance.transform.Find("Canvas/StagePanel/ArmL")?.GetComponent<RectTransform>();
-        var armR = uiInstance.transform.Find("Canvas/StagePanel/ArmR")?.GetComponent<RectTransform>();
-        var body = uiInstance.transform.Find("Canvas/StagePanel/KingBody")?.GetComponent<RectTransform>();
+        // ── RUNTIME-ONLY WIRING ───────────────────────────────────────────
+        // Button sprites
+        ui.buttonStartSprite = Resources.Load<Sprite>("Art/Button_Start");
+        ui.buttonNextSprite  = Resources.Load<Sprite>("Art/Button_Next");
+
+        // King proud pose (lambda — can't live in prefab)
+        var armL = FindDeep(uiInstance, "ArmL")?.GetComponent<RectTransform>();
+        var armR = FindDeep(uiInstance, "ArmR")?.GetComponent<RectTransform>();
+        var body = FindDeep(uiInstance, "KingBody")?.GetComponent<RectTransform>();
 
         ui.kingPoseProud = (proud) =>
         {
@@ -59,52 +58,20 @@ public class SceneBuilder : MonoBehaviour
             }
         };
 
-        // ESC to quit
-        gameObject.AddComponent<AppQuit>();
+        // Naked king / silhouette swap (if present in prefab)
+        ui.nakedKingGO  = FindDeep(uiInstance, "KingNaked");
+        ui.silhouetteGO = FindDeep(uiInstance, "KingSilhouette");
 
-        // Create GameManager + AudioManager
+        // ── GAME SYSTEMS ──────────────────────────────────────────────────
         var mgrGO = new GameObject("GameManager");
         var gm = mgrGO.AddComponent<GameManager>();
-        var rg = mgrGO.AddComponent<RiddleGenerator>();
+        var diamond = mgrGO.AddComponent<Diamond>();
         mgrGO.AddComponent<AudioManager>();
-
-        rg.apiKey = "";
-        rg.model  = "openai/gpt-4o-mini";
-
+        gameObject.AddComponent<AppQuit>();
+        
         gm.uiManager       = ui;
-        gm.riddleGenerator = rg;
-
-        // Apply button sprites at runtime (bypasses prefab bake issues)
-        ApplyButtonSprites(uiInstance);
-
+        gm.diamond         = diamond;
         gm.StartGame();
-    }
-
-    void ApplyButtonSprites(GameObject uiRoot)
-    {
-        var startSprite = Resources.Load<Sprite>("Art/Button_Start");
-        var nextSprite  = Resources.Load<Sprite>("Art/Button_Next");
-
-        if (startSprite == null) { Debug.LogWarning("[SceneBuilder] Button_Start sprite not found in Resources/Art/"); return; }
-        if (nextSprite  == null) { Debug.LogWarning("[SceneBuilder] Button_Next sprite not found in Resources/Art/");  return; }
-
-        // Apply to intro start button
-        var startBtn = uiRoot.transform.Find("Canvas/IntroPanel/StartButton");
-        if (startBtn != null)
-        {
-            var img = startBtn.GetComponent<Image>();
-            if (img != null) { img.sprite = startSprite; img.color = Color.white; img.type = Image.Type.Sliced; }
-            var lbl = startBtn.GetComponentInChildren<TextMeshProUGUI>();
-            if (lbl != null) lbl.color = new Color(0.15f, 0.08f, 0.25f);
-        }
-
-        // Store next sprite on UIManager for runtime swap
-        var ui = uiRoot.GetComponentInChildren<UIManager>();
-        if (ui != null)
-        {
-            ui.buttonNextSprite  = nextSprite;
-            ui.buttonStartSprite = startSprite;
-        }
     }
 
     void SetupCamera()
@@ -114,5 +81,12 @@ public class SceneBuilder : MonoBehaviour
         cam.clearFlags      = CameraClearFlags.SolidColor;
         cam.backgroundColor = new Color(0.05f, 0.03f, 0.08f);
         cam.orthographic    = true;
+    }
+
+    GameObject FindDeep(GameObject root, string name)
+    {
+        foreach (Transform t in root.GetComponentsInChildren<Transform>(true))
+            if (t.name == name) return t.gameObject;
+        return null;
     }
 }

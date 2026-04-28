@@ -3,49 +3,63 @@ using System.Collections;
 using UnityEngine;
 
 /// <summary>
-/// Animates the curtains sliding open on reveal.
+/// Animates curtains opening from the centre — each side slides outward and bunches up.
 /// </summary>
 public class CurtainAnimator : MonoBehaviour
 {
     public RectTransform curtainLeft;
     public RectTransform curtainRight;
 
+    // How far each curtain slides — enough to fully reveal the centre
+    public float openOffset = 550f;
+    public float duration   = 1.4f;
+
     private Vector2 leftClosed;
     private Vector2 rightClosed;
+    private Vector2 leftOpen;
+    private Vector2 rightOpen;
 
-    void Start()
+    bool initialised;
+
+    void EnsureInit()
     {
-        if (curtainLeft)  leftClosed  = curtainLeft.anchoredPosition;
-        if (curtainRight) rightClosed = curtainRight.anchoredPosition;
+        if (initialised) return;
+        initialised = true;
+        if (curtainLeft)  { leftClosed  = curtainLeft.anchoredPosition;  leftOpen  = leftClosed  + new Vector2(-openOffset, 0); }
+        if (curtainRight) { rightClosed = curtainRight.anchoredPosition; rightOpen = rightClosed + new Vector2(openOffset, 0); }
     }
+
+    void Start() => EnsureInit();
 
     public void OpenCurtains(Action onComplete)
     {
+        EnsureInit();
         StartCoroutine(AnimateOpen(onComplete));
     }
 
     public void CloseCurtains()
     {
+        EnsureInit();
         if (curtainLeft)  curtainLeft.anchoredPosition  = leftClosed;
         if (curtainRight) curtainRight.anchoredPosition = rightClosed;
     }
 
     private IEnumerator AnimateOpen(Action onComplete)
     {
-        float duration = 1.2f;
-        float elapsed  = 0f;
-
-        Vector2 leftTarget  = leftClosed  + new Vector2(-900, 0);
-        Vector2 rightTarget = rightClosed + new Vector2(900, 0);
+        float elapsed = 0f;
 
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0f, 1f, elapsed / duration);
-            if (curtainLeft)  curtainLeft.anchoredPosition  = Vector2.Lerp(leftClosed,  leftTarget,  t);
-            if (curtainRight) curtainRight.anchoredPosition = Vector2.Lerp(rightClosed, rightTarget, t);
+            // Ease out — fast start, slows as it reaches the folded position
+            float t = 1f - Mathf.Pow(1f - Mathf.Clamp01(elapsed / duration), 3f);
+            if (curtainLeft)  curtainLeft.anchoredPosition  = Vector2.Lerp(leftClosed,  leftOpen,  t);
+            if (curtainRight) curtainRight.anchoredPosition = Vector2.Lerp(rightClosed, rightOpen, t);
             yield return null;
         }
+
+        if (curtainLeft)  curtainLeft.anchoredPosition  = leftOpen;
+        if (curtainRight) curtainRight.anchoredPosition = rightOpen;
 
         onComplete?.Invoke();
     }

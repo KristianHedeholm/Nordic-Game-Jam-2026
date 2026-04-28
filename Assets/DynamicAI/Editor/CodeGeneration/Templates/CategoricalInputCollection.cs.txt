@@ -1,0 +1,28 @@
+// This source file is generated from the editor tool
+// provided by Raw Power Labs. It is advised not to
+// make any direct changes to this source file,
+// since these will be overwritten by the tool.
+namespace RawPowerLabs.DynamicAI
+{
+    using System;
+    using System.Collections.Generic;
+    
+#INSERTENUMS
+
+    public static class CategoricalInputCollection
+    {
+#INSERTSTRINGENUMS
+
+        public static IReadOnlyDictionary<System.Type, IReadOnlyDictionary<Enum, string>> AllCollections =
+        new Dictionary<System.Type, IReadOnlyDictionary<Enum, string>>()
+        {
+#INSERTMAPPINGENUMS
+        };
+        
+        public static IReadOnlyDictionary<System.Type, string> TypeNames =
+        new Dictionary<System.Type, string>()
+        {
+#INSERTCATEGORICALS
+        };
+    }
+}
