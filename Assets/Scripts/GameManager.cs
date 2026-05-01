@@ -1,6 +1,14 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using RawPowerLabs.DynamicAI;
 using UnityEngine;
+
+public enum RiddleKind
+{
+	Garment,
+	Color,
+	Material,
+}
 
 /// <summary>
 /// Central game manager. Drives phase transitions and wires up UI.
@@ -27,7 +35,7 @@ public class GameManager : MonoBehaviour
     {
         State.NewGame();
         GoToPhase(GamePhase.Intro);
-        diamond.SetDiamondName("FashionRoyal");
+        diamond.Init();
         diamond.PrintReplies(State.TargetClothing, State.TargetColor,  State.TargetMaterial);
     }
 
@@ -43,15 +51,15 @@ public class GameManager : MonoBehaviour
                 break;
             case GamePhase.GuessClothing:
 	            options =  GameData.GetOptions(GameData.Clothing, State.TargetClothing);
-                FetchRiddleAndShow("Clothing", State.TargetClothing, options, GamePhase.GuessColor);
+                FetchRiddleAndShow(RiddleKind.Garment, options, GamePhase.GuessColor);
                 break;
             case GamePhase.GuessColor:
 	            options = GameData.GetOptions(GameData.Colors, State.TargetColor);
-                FetchRiddleAndShow("Color", State.TargetColor, options, GamePhase.GuessMaterial);
+                FetchRiddleAndShow(RiddleKind.Color, options, GamePhase.GuessMaterial);
                 break;
             case GamePhase.GuessMaterial:
 	            options = GameData.GetOptions(GameData.Materials, State.TargetMaterial);
-                FetchRiddleAndShow("Material", State.TargetMaterial, options, GamePhase.Reveal);
+                FetchRiddleAndShow(RiddleKind.Material, options, GamePhase.Reveal);
                 break;
             case GamePhase.Reveal:
                 uiManager.ShowReveal(State);
@@ -68,55 +76,54 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void FetchRiddleAndShow(string category, string target, List<string> options, GamePhase nextPhase)
+    private void FetchRiddleAndShow(RiddleKind riddleKind, List<string> options, GamePhase nextPhase)
     {
         uiManager.ShowLoading();
-        var riddle = FetchRiddle(category);
+        var riddle = FetchRiddle(riddleKind);
         State.CurrentRiddle = riddle;
-        uiManager.ShowGuessPanel(category, riddle, options, chosen =>
+        uiManager.ShowGuessPanel(riddleKind, riddle, options, chosen =>
         {
-	        switch (category)
+	        switch (riddleKind)
 	        {
-		        case "Clothing": State.GuessedClothing = chosen; break;
-		        case "Color":    State.GuessedColor    = chosen; break;
-		        case "Material": State.GuessedMaterial = chosen; break;
+		        case RiddleKind.Garment:
+			        State.GuessedClothing = chosen;
+			        break;
+		        case RiddleKind.Color:
+			        State.GuessedColor    = chosen;
+			        break;
+		        case RiddleKind.Material:
+			        State.GuessedMaterial = chosen;
+			        break;
 	        }
-	        uiManager.UpdateAnswerTracker(category, chosen, chosen == target);
 	        GoToPhase(nextPhase);
         });
     }
     
-    private string FetchRiddle(string category)
+    private string FetchRiddle(RiddleKind riddleKind)
     {
-	    var riddle = string.Empty;
-	    if (diamond != null)
+	    if (diamond == null)
 	    {
-		    var diamondKey = GetDiamondKey(category);
-		    diamond.Riddles.TryGetValue(diamondKey, out riddle);
+		    return string.Empty;
+	    }
+
+	    var categorialcal = GetCategoricalOutputFromRiddle(riddleKind);
+	    if (!diamond.Riddles.TryGetValue(categorialcal, out var riddle))
+	    {
+		    return string.Empty;
 	    }
 
 	    return riddle;
     }
-
-    private string GetDiamondKey(string gameKey)
+    
+    private CategoricalOutput GetCategoricalOutputFromRiddle(RiddleKind riddleKind)
     {
-	    var dimoandKey = string.Empty;
-	    switch (gameKey)
+	    return riddleKind switch
 	    {
-		    case "Clothing":
-			    dimoandKey = "Type_Riddle";
-			    break;
-		    
-		    case "Color":
-			    dimoandKey = "Color_Riddle";
-			    break;
-		    
-		    case "Material":
-			    dimoandKey = "Material_Riddle";
-			    break;
-	    }
-	    
-	    return dimoandKey;
+		    RiddleKind.Garment => CategoricalOutput.TypeRiddle,
+		    RiddleKind.Color => CategoricalOutput.ColorRiddle,
+		    RiddleKind.Material => CategoricalOutput.MaterialRiddle,
+		    _ => CategoricalOutput.TypeRiddle,
+	    };
     }
 
     public void GoToFinalQuestion(bool allCorrect)
@@ -137,8 +144,6 @@ public class GameManager : MonoBehaviour
         State.NewGame();
         diamond.PrintReplies(State.TargetClothing, State.TargetColor,  State.TargetMaterial);
         uiManager.ResetTracker();
-        uiManager.kingPoseProud?.Invoke(false);
-        if (uiManager.narratorLabel != null) uiManager.narratorLabel.text = "";
         uiManager.curtainAnimator?.CloseCurtains();
         await Task.Delay(1000);
         GoToPhase(GamePhase.GuessClothing);

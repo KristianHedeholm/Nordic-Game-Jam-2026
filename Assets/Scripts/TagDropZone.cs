@@ -14,7 +14,11 @@ public class TagDropZone : MonoBehaviour, IDropHandler
 
     private bool filled;
     private Image bgImage;
-    public TMP_Text answerLabel;  // text label shown inside the holder once filled
+
+    private readonly Color CorrectColor = new Color(0.15f, 0.75f, 0.25f, 1f); 
+    private readonly Color WrongColor = new Color(0.85f, 0.15f, 0.15f, 1f);
+    private readonly Color ActiveColor = new Color(1f, 1f, 1f, 1f);
+    private readonly Color InactiveColor = new Color(1f, 1f, 1f, 0.35f);  
 
     void Awake()
     {
@@ -24,10 +28,30 @@ public class TagDropZone : MonoBehaviour, IDropHandler
     public void SetActive(bool active)
     {
         isActive = active;
-        // Highlight active zone, dim inactive
-        if (bgImage) bgImage.color = active
-            ? new Color(1f, 1f, 1f, 1f)       // full opacity when active
-            : new Color(1f, 1f, 1f, 0.35f);   // dimmed when not yet active
+        if (bgImage)
+        {
+	        bgImage.color = active ? ActiveColor : InactiveColor;
+        }
+    }
+
+    public void Reset()
+    {
+	    filled = false;
+	    foreach (Transform child in transform)
+	    {
+		    if (child.GetComponent<DraggableTag>() != null)
+		    {
+			    Destroy(child.gameObject);
+		    }
+	    }
+    }
+
+    public void SetAnswerColor(bool isCorrect)
+    {
+	    if (bgImage)
+	    {
+		    bgImage.color = isCorrect ? CorrectColor : WrongColor;
+	    }
     }
 
     public void OnDrop(PointerEventData e)
@@ -50,11 +74,7 @@ public class TagDropZone : MonoBehaviour, IDropHandler
         tagRT.offsetMin = new Vector2(32, 28);
         tagRT.offsetMax = new Vector2(-32, 0);
 
-        // Hide the placeholder label — the tag itself shows the answer
-        if (answerLabel != null)
-            answerLabel.gameObject.SetActive(false);
-
         AudioManager.Instance?.PlayButtonClick();
-        onAnswered?.Invoke(tag.value);
+        onAnswered?.Invoke(tag.TagValue);
     }
 }

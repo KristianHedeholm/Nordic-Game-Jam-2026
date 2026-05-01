@@ -1,23 +1,27 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 using TMPro;
 
 /// <summary>
 /// Makes a UI element draggable. Snaps back if not dropped on a valid DropZone.
 /// </summary>
-public class DraggableTag : MonoBehaviour,
-    IBeginDragHandler, IDragHandler, IEndDragHandler
+public class DraggableTag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    [HideInInspector] public string value;
-    [HideInInspector] public System.Action<string> onDropped; // called when successfully dropped
+    public Action<string> onDropped; // called when successfully dropped
 
+    public string TagValue => _tagValue;
+
+    [SerializeField]
+    private TMP_Text _tagLabel;
+    
     private RectTransform rt;
     private Canvas rootCanvas;
     private Vector2 startPos;
     private Transform originalParent;
     private int originalSiblingIndex;
     private bool locked;
+    private string _tagValue;
 
     void Awake()
     {
@@ -26,6 +30,12 @@ public class DraggableTag : MonoBehaviour,
     }
 
     public void Lock() => locked = true;
+
+    public void SetTagLabel(string tagValue)
+    {
+	    _tagValue = tagValue;
+	    _tagLabel.text = tagValue;
+    }
 
     public void OnBeginDrag(PointerEventData e)
     {

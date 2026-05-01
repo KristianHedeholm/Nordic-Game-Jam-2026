@@ -14,49 +14,37 @@ public class UIManager : MonoBehaviour
     public GameObject stagePanel;
     public CurtainAnimator curtainAnimator;
     public TMP_Text riddleText;
-    public TMP_Text categoryLabel;
     public Transform optionsContainer;   // scatter area for draggable tags
-    public Button optionButtonPrefab;    // kept for fallback
 
     [Header("Backgrounds")]
-    public GameObject revealBackground;  // unused - bedroom always visible
     public GameObject nakedKingGO;       // shown on reveal
     public GameObject silhouetteGO;      // hidden on reveal
-
-    [Header("Narrator")]
-    public TMP_Text narratorLabel;
 
     [Header("Drag & Drop")]
     public TagDropZone dropZoneClothing;
     public TagDropZone dropZoneColor;
     public TagDropZone dropZoneMaterial;
     public GameObject draggableTagPrefab; // spawned at runtime by SceneBuilder
-
-    [Header("Answer Tracker")]
-    public TMP_Text trackerClothing;
-    public TMP_Text trackerColor;
-    public TMP_Text trackerMaterial;
-
-    [Header("Reaction Overlay")]
-    public GameObject reactionPanel;
-    public TMP_Text reactionText;
-    public Image reactionBg;
-
+    
     [Header("Overlay Panels")]
-    public GameObject introPanel;
+    [SerializeField]
+    private GameObject _mainMenuPanel;
+    [SerializeField]
+    private GameObject _introPanel;
     public GameObject loadingPanel;
     public GameObject revealPanel;
     public GameObject finalJudgmentPanel;
-    public GameObject winPanel;
     public GameObject deathPanel;
 
-    [Header("Intro")]
-    public TMP_Text introText;
-    public Button introStartButton;
+    [Header("Main Menu")]
+    [SerializeField]
+    private Button _mainMenuStartButton;
 
-    [Header("Tutorial")]
-    public GameObject tutorialPanel;
-    public Button tutorialNextButton;
+    [Header("Intro")]
+    [SerializeField]
+    private TMP_Text _introText;
+    [SerializeField]
+    private Button _introNextSlideButton;
 
     [Header("Reveal")]
     public TMP_Text revealText;
@@ -67,27 +55,19 @@ public class UIManager : MonoBehaviour
     public Button flatterButton;
     public Button truthButton;
 
-    [Header("Win")]
-    public TMP_Text winText;
-    public Button winPlayAgainButton;
-
     [Header("Death")]
     public TMP_Text deathText;
     public Button deathPlayAgainButton;
-
-    // Callback to switch king to proud pose (wired by SceneBuilder)
-    public Action<bool> kingPoseProud;
-
-    // Button sprites (set by SceneBuilder at runtime)
-    [HideInInspector] public Sprite buttonStartSprite;
-    [HideInInspector] public Sprite buttonNextSprite;
 
     // ── TYPEWRITER HELPER ─────────────────────────────────────────────────
     
     void SetKingSpeechText(TMP_Text label, string text, Action onDone = null)
     {
 	    if (label == null) return;
-	    var tw = label.GetComponent<TypewriterEffect>() ?? label.gameObject.AddComponent<TypewriterEffect>();
+	    if (!label.TryGetComponent<TypewriterEffect>(out var tw))
+	    {
+		    tw = label.gameObject.AddComponent<TypewriterEffect>();
+	    }
 	    tw.charsPerSecond = 22f;
 	    tw.TypeWrite(text, () =>
 	    {
@@ -98,14 +78,12 @@ public class UIManager : MonoBehaviour
     
     void HideAllOverlays()
     {
-        introPanel?.SetActive(false);
-        tutorialPanel?.SetActive(false);
+        _mainMenuPanel?.SetActive(false);
+        _introPanel?.SetActive(false);
         loadingPanel?.SetActive(false);
         revealPanel?.SetActive(false);
         finalJudgmentPanel?.SetActive(false);
-        winPanel?.SetActive(false);
         deathPanel?.SetActive(false);
-        reactionPanel?.SetActive(false);
     }
 
     void ClearOptions()
@@ -124,56 +102,16 @@ public class UIManager : MonoBehaviour
 
     public void ResetTracker()
     {
-        if (trackerClothing)  { trackerClothing.text  = "";  trackerClothing.color  = Color.white; }
-        if (trackerColor)     { trackerColor.text     = "";  trackerColor.color     = Color.white; }
-        if (trackerMaterial)  { trackerMaterial.text  = "";  trackerMaterial.color  = Color.white; }
-
         // Clear any locked tags still sitting in drop zones
         ResetDropZone(dropZoneClothing);
         ResetDropZone(dropZoneColor);
         ResetDropZone(dropZoneMaterial);
     }
-
+    
     void ResetDropZone(TagDropZone zone)
     {
-        if (zone == null) return;
-        // Destroy any draggable tag children
-        foreach (Transform child in zone.transform)
-        {
-            if (child.GetComponent<DraggableTag>() != null)
-                Destroy(child.gameObject);
-        }
-        // Reset the drop zone state via reflection-free approach
-        var dz = zone.GetComponent<TagDropZone>();
-        // Re-add component trick: destroy and re-add to reset state
-        var cat = dz.category;
-        var lbl = dz.answerLabel;
-        Destroy(dz);
-        var newDz = zone.gameObject.AddComponent<TagDropZone>();
-        newDz.category = cat;
-        newDz.answerLabel = lbl;
-        if (lbl != null) { lbl.text = ""; lbl.gameObject.SetActive(true); }
-
-        // Re-wire in the correct slot
-        if (cat == "Clothing") dropZoneClothing = newDz;
-        else if (cat == "Color") dropZoneColor = newDz;
-        else if (cat == "Material") dropZoneMaterial = newDz;
-
-        newDz.SetActive(false);
-    }
-
-    public void UpdateAnswerTracker(string category, string answer, bool correct)
-    {
-        TMP_Text target = category switch
-        {
-            "Clothing" => trackerClothing,
-            "Color"    => trackerColor,
-            "Material" => trackerMaterial,
-            _          => null
-        };
-        if (target == null) return;
-        target.text  = $"{category}: {answer}";
-        target.color = Color.white;
+	    zone.Reset();
+	    zone.SetActive(false);
     }
 
     // ── INTRO — 3 animated tutorial slides ───────────────────────────────
@@ -190,20 +128,18 @@ public class UIManager : MonoBehaviour
     {
         HideAllOverlays();
         ResetTracker();
-        kingPoseProud?.Invoke(false);
-        if (narratorLabel != null) narratorLabel.text = "";
         if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(true);
         stagePanel?.SetActive(false);
         curtainAnimator?.CloseCurtains();
 
         // Show title screen — START button switches to tutorial slides
-        introPanel.SetActive(true);
-        introStartButton.onClick.RemoveAllListeners();
-        introStartButton.onClick.AddListener(() =>
+        _mainMenuPanel.SetActive(true);
+        _mainMenuStartButton.onClick.RemoveAllListeners();
+        _mainMenuStartButton.onClick.AddListener(() =>
         {
             AudioManager.Instance?.PlayButtonClick();
-            introPanel.SetActive(false);
-            tutorialPanel?.SetActive(true);
+            _mainMenuPanel.SetActive(false);
+            _introPanel?.SetActive(true);
             currentSlide = 0;
             ShowSlide(currentSlide);
         });
@@ -211,28 +147,28 @@ public class UIManager : MonoBehaviour
 
     void ShowSlide(int index)
     {
-        if (!introText.TryGetComponent<TypewriterEffect>(out var tw))
+        if (!_introText.TryGetComponent<TypewriterEffect>(out var tw))
         {
-	        tw = introText.gameObject.AddComponent<TypewriterEffect>();
+	        tw = _introText.gameObject.AddComponent<TypewriterEffect>();
         }
         tw.charsPerSecond = 22f;
         tw.TypeWrite(IntroSlides[index]);
         
         // Use tutorial button — only wire if it exists
-        if(tutorialNextButton == null)
+        if(_introNextSlideButton == null)
 		{
 			return;
 		}
         
-		tutorialNextButton.onClick.RemoveAllListeners();
-		tutorialNextButton.onClick.AddListener(() =>
+		_introNextSlideButton.onClick.RemoveAllListeners();
+		_introNextSlideButton.onClick.AddListener(() =>
 		{
 			AudioManager.Instance?.PlayButtonClick();
 			if (index < IntroSlides.Length - 1)
 				ShowSlide(index + 1);
 			else
 			{
-				tutorialPanel?.SetActive(false);
+				_introPanel?.SetActive(false);
 				GameManager.Instance.GoToPhase(GamePhase.GuessClothing);
 			}
 		});
@@ -247,7 +183,6 @@ public class UIManager : MonoBehaviour
         if (silhouetteGO != null) silhouetteGO.SetActive(true);
         if (nakedKingGO  != null) nakedKingGO.SetActive(false);
         ClearOptions();
-        if (categoryLabel != null) categoryLabel.text = "";
         if (riddleText != null)
         {
             riddleText.transform.parent.gameObject.SetActive(true);
@@ -257,131 +192,82 @@ public class UIManager : MonoBehaviour
 
     // ── GUESS PANEL — riddle first, buttons appear after ─────────────────
 
-    public void ShowGuessPanel(string category, string riddle, List<string> options, Action<string> onChosen)
+    public void ShowGuessPanel(RiddleKind riddleKind, string riddle, List<string> options, Action<string> onChosen)
     {
         HideAllOverlays();
         // Force hide loading panel explicitly
         loadingPanel?.SetActive(false);
         stagePanel?.SetActive(true);
         if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(true);
-        if (categoryLabel != null) categoryLabel.text = $"What is the King's <b>{category}</b>?";
 
         // Activate the correct drop zone, dim the others
-        ActivateDropZone(category, onChosen);
+        ActivateDropZone(riddleKind, onChosen);
 
         // Clear old tags
         ClearOptions();
 
         // Scatter draggable tags
-        var tags = new List<GameObject>();
+        
         if (draggableTagPrefab == null)
         {
             Debug.LogError("[UIManager] draggableTagPrefab is null! Tags cannot be spawned.");
         }
-        else
+        
+        var tags = new List<GameObject>();
+        for (int idx = 0; idx < options.Count; idx++)
         {
-            var tagSprite = Resources.Load<Sprite>("Art/Theme_Tag");
-            float areaW = 1400f;
-            float startX = -areaW / 2f + 150f;
-            float spacing = areaW / (options.Count + 1);
-
-            for (int idx = 0; idx < options.Count; idx++)
-            {
-                var tagGO = Instantiate(draggableTagPrefab, optionsContainer);
-                tagGO.SetActive(false);
-                var rt = tagGO.GetComponent<RectTransform>();
-                float x = startX + spacing * (idx + 1) + UnityEngine.Random.Range(-30f, 30f);
-                float y = UnityEngine.Random.Range(-60f, 60f);
-                rt.anchoredPosition = new Vector2(x, y);
-
-                // Apply Theme_Tag sprite to background image
-                var img = tagGO.GetComponent<Image>();
-                if (img == null) img = tagGO.AddComponent<Image>();
-                img.sprite = tagSprite;
-                img.type   = Image.Type.Simple;
-                img.preserveAspect = false;
-                img.color  = Color.white;
-
-                var drag = tagGO.GetComponent<DraggableTag>();
-                if (drag != null) drag.value = options[idx];
-                var lbl = tagGO.GetComponentInChildren<TMP_Text>();
-                if (lbl != null)
-                {
-                    lbl.text = options[idx];
-                    lbl.enableWordWrapping = false;
-                    lbl.enableAutoSizing   = true;
-                    lbl.fontSizeMin = 12;
-                    lbl.fontSizeMax = 22;
-                }
-                tags.Add(tagGO);
-            }
+	        var tagGO = Instantiate(draggableTagPrefab, optionsContainer);
+	        tagGO.SetActive(false);
+	        var drag = tagGO.GetComponent<DraggableTag>();
+	        drag.SetTagLabel(options[idx]);
+	        
+	        tags.Add(tagGO);
         }
-
-        // Type riddle, reveal tags after — if typewriter fails, show after 3s fallback
+        
+        // Type riddle, reveal tags after.
         AudioManager.Instance?.PlayKingTalk();
-        bool tagsShown = false;
-        void ShowTags() { if (tagsShown) return; tagsShown = true; foreach (var t in tags) t?.SetActive(true); }
-
-        SetKingSpeechText(riddleText, riddle, () => ShowTags());
-        StartCoroutine(FallbackShowTags(3f, () => ShowTags()));
+        SetKingSpeechText(riddleText, riddle, () =>
+        {
+	        foreach (var tag in tags)
+	        {
+		        tag?.SetActive(true);
+	        }
+        });
+    }
+    
+    void ActivateDropZone(RiddleKind riddleKind, Action<string> onChosen)
+    {
+	    // Dim all, activate current
+	    dropZoneClothing?.SetActive(riddleKind == RiddleKind.Garment);
+	    dropZoneColor?.SetActive(riddleKind == RiddleKind.Color);
+	    dropZoneMaterial?.SetActive(riddleKind == RiddleKind.Material);
+	    
+	    var zone = GetTagDropZone(riddleKind);
+	    if (zone == null)
+	    {
+		    return;
+	    }
+	    
+	    zone.onAnswered = (chosen) =>
+	    {
+		    onChosen(chosen);
+	    };
     }
 
-    IEnumerator PopIn(GameObject go)
+    private TagDropZone GetTagDropZone(RiddleKind kind)
     {
-        var img = go.GetComponent<Image>();
-        if (img == null) yield break;
-        float dur = 0.08f;
-        float elapsed = 0f;
-        while (elapsed < dur)
-        {
-            elapsed += Time.deltaTime;
-            float t = Mathf.SmoothStep(0f, 1f, elapsed / dur);
-            var c = img.color; c.a = t; img.color = c;
-            yield return null;
-        }
-        var fc = img.color; fc.a = 1f; img.color = fc;
-    }
-
-    IEnumerator FallbackShowTags(float delay, Action show)
-    {
-        yield return new UnityEngine.WaitForSeconds(delay);
-        show?.Invoke();
-    }
-
-    void ActivateDropZone(string category, Action<string> onChosen)
-    {
-        // Dim all, activate current
-        dropZoneClothing?.SetActive(category == "Clothing");
-        dropZoneColor?.SetActive(category == "Color");
-        dropZoneMaterial?.SetActive(category == "Material");
-
-        TagDropZone zone = category switch
-        {
-            "Clothing" => dropZoneClothing,
-            "Color"    => dropZoneColor,
-            "Material" => dropZoneMaterial,
-            _          => null
-        };
-
-        if (zone != null)
-        {
-            zone.onAnswered = (chosen) =>
-            {
-                UpdateAnswerTracker(category, chosen, false);
-                switch (category)
-                {
-                    case "Clothing": if (trackerClothing) trackerClothing.text = $"Garment: {chosen}"; break;
-                    case "Color":    if (trackerColor)    trackerColor.text    = $"Color: {chosen}";    break;
-                    case "Material": if (trackerMaterial) trackerMaterial.text = $"Material: {chosen}"; break;
-                }
-                onChosen(chosen);
-            };
-        }
+	    return kind switch
+	    {
+		    RiddleKind.Garment  => dropZoneClothing,
+		    RiddleKind.Color    => dropZoneColor,
+		    RiddleKind.Material => dropZoneMaterial,
+		    _          => null
+	    };
     }
 
     // ── REACTION SCREENS ──────────────────────────────────────────────────
 
-    public void ShowCorrectAnswerReaction(string kingQuote, Action onContinue)
+    /*public void ShowCorrectAnswerReaction(string kingQuote, Action onContinue)
     {
         HideAllOverlays();
         stagePanel?.SetActive(true);
@@ -403,7 +289,7 @@ public class UIManager : MonoBehaviour
         var btn = reactionPanel.GetComponent<Button>() ?? reactionPanel.AddComponent<Button>();
         btn.onClick.RemoveAllListeners();
         btn.onClick.AddListener(() => { reactionPanel.SetActive(false); onContinue?.Invoke(); });
-    }
+    }*/
 
     // ── REVEAL — phased: curtains → score → judgment ──────────────────────
 
@@ -412,7 +298,6 @@ public class UIManager : MonoBehaviour
         HideAllOverlays();
         stagePanel?.SetActive(true);
         ClearOptions();
-        if (categoryLabel != null) categoryLabel.text = "";
         riddleText.text = "...";
 
         bool allCorrect = state.GuessedClothing == state.TargetClothing &&
@@ -429,15 +314,17 @@ public class UIManager : MonoBehaviour
             curtainAnimator?.OpenCurtains(() =>
             {
                 // Swap silhouette for naked king instantly
-                if (silhouetteGO != null) silhouetteGO.SetActive(false);
-                if (nakedKingGO  != null) { nakedKingGO.SetActive(true); StartCoroutine(PopIn(nakedKingGO)); }
+                if (silhouetteGO != null)
+                {
+	                silhouetteGO.SetActive(false);
+                }
+
+                if (nakedKingGO != null)
+                {
+	                nakedKingGO.SetActive(true);
+                }
                 AudioManager.Instance?.PlayKingLaugh();
-                kingPoseProud?.Invoke(true);
-
-                // Narrator text — shown as part of reveal bubble text after king speech
-                if (narratorLabel != null)
-                    narratorLabel.text = "<i>...says the King.\nObviously wearing <b>absolutely nothing.</b></i>";
-
+                
                 // Phase 2: Reveal panel shows — king says something short
                 revealContinueButton.gameObject.SetActive(false);
                 revealPanel.SetActive(true);
@@ -466,11 +353,13 @@ public class UIManager : MonoBehaviour
         yield return new WaitForSeconds(0.8f);
 
         // Reveal tracker results one by one with sound
-        RevealTrackerResult(trackerClothing, "Garment",  state.GuessedClothing, state.TargetClothing);
+        RevealTrackerResult(RiddleKind.Garment, state.GuessedClothing, state.TargetClothing);
         yield return new WaitForSeconds(0.6f);
-        RevealTrackerResult(trackerColor,    "Color",    state.GuessedColor,    state.TargetColor);
+        
+        RevealTrackerResult(RiddleKind.Color, state.GuessedColor,    state.TargetColor);
         yield return new WaitForSeconds(0.6f);
-        RevealTrackerResult(trackerMaterial, "Material", state.GuessedMaterial, state.TargetMaterial);
+        
+        RevealTrackerResult(RiddleKind.Material, state.GuessedMaterial, state.TargetMaterial);
         yield return new WaitForSeconds(0.5f);
 
         // Count correct
@@ -496,42 +385,26 @@ public class UIManager : MonoBehaviour
         revealContinueButton.onClick.RemoveAllListeners();
         revealContinueButton.onClick.AddListener(() => GameManager.Instance.GoToFinalQuestion(allCorrect));
     }
-
-    void RevealTrackerResult(TMP_Text label, string category, string guessed, string correct)
+    
+    void RevealTrackerResult(RiddleKind riddleKind, string guessed, string correct)
     {
-        if (label == null) return;
-
-        bool isCorrect = guessed == correct;
-
-        // Colour the drop zone background green or red at full alpha
-        TagDropZone zone = category switch
-        {
-            "Garment"  => dropZoneClothing,
-            "Color"    => dropZoneColor,
-            "Material" => dropZoneMaterial,
-            _          => null
-        };
-        if (zone != null)
-        {
-            var img = zone.GetComponent<Image>();
-            if (img != null)
-                img.color = isCorrect
-                    ? new Color(0.15f, 0.75f, 0.25f, 1f)  // green, full alpha
-                    : new Color(0.85f, 0.15f, 0.15f, 1f); // red, full alpha
-        }
-
-        if (isCorrect)
-        {
-            label.text  = $"<b>{guessed} ✓</b>";
-            label.color = Color.white;
-            AudioManager.Instance?.PlayCorrect();
-        }
-        else
-        {
-            label.text  = $"<b>{guessed} ✗</b>\n<size=18>→ {correct}</size>";
-            label.color = Color.white;
-            AudioManager.Instance?.PlayWrong();
-        }
+	    var isCorrect = guessed == correct;
+	    var zone = GetTagDropZone(riddleKind);
+	    if (zone == null)
+	    {
+		    return;
+	    }
+	    
+	    zone.SetAnswerColor(isCorrect);
+	    
+	    if (isCorrect)
+	    {
+		    AudioManager.Instance?.PlayCorrect();
+	    }
+	    else
+	    {
+		    AudioManager.Instance?.PlayWrong();
+	    }
     }
 
     // ── FINAL JUDGMENT ────────────────────────────────────────────────────
