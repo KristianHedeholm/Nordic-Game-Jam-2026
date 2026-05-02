@@ -19,12 +19,12 @@ public class UIManager : MonoBehaviour
     [Header("Backgrounds")]
     public GameObject nakedKingGO;       // shown on reveal
     public GameObject silhouetteGO;      // hidden on reveal
-
+    
     [Header("Drag & Drop")]
-    public TagDropZone dropZoneClothing;
-    public TagDropZone dropZoneColor;
-    public TagDropZone dropZoneMaterial;
-    public GameObject draggableTagPrefab; // spawned at runtime by SceneBuilder
+    [SerializeField]
+    private TagDropZone[] _dropZones; 
+    [SerializeField]
+    private GameObject _draggableTagPrefab;
     
     [Header("Overlay Panels")]
     [SerializeField]
@@ -42,7 +42,7 @@ public class UIManager : MonoBehaviour
 
     [Header("Intro")]
     [SerializeField]
-    private TMP_Text _introText;
+    private TypewriterEffect _introTextTypewriterEffect;
     [SerializeField]
     private Button _introNextSlideButton;
 
@@ -56,10 +56,7 @@ public class UIManager : MonoBehaviour
     public Button truthButton;
 
     [Header("Death")]
-    public TMP_Text deathText;
-    public Button deathPlayAgainButton;
-
-    // ── TYPEWRITER HELPER ─────────────────────────────────────────────────
+    public Button _playAgainOnDeathButton;
     
     void SetKingSpeechText(TMP_Text label, string text, Action onDone = null)
     {
@@ -92,42 +89,28 @@ public class UIManager : MonoBehaviour
             Destroy(child.gameObject);
     }
 
-    void SetOptionsVisible(bool visible)
+    public void ResetDropZones()
     {
-        foreach (Transform child in optionsContainer)
-            child.gameObject.SetActive(visible);
-    }
-
-    // ── TRACKER ───────────────────────────────────────────────────────────
-
-    public void ResetTracker()
-    {
-        // Clear any locked tags still sitting in drop zones
-        ResetDropZone(dropZoneClothing);
-        ResetDropZone(dropZoneColor);
-        ResetDropZone(dropZoneMaterial);
-    }
-    
-    void ResetDropZone(TagDropZone zone)
-    {
-	    zone.Reset();
-	    zone.SetActive(false);
+	    foreach (var dropZone in _dropZones)
+	    {
+		    dropZone.Reset();
+	    }
     }
 
     // ── INTRO — 3 animated tutorial slides ───────────────────────────────
 
     private static readonly string[] IntroSlides = {
         "The King has dressed himself in the\n<b>finest outfit in all the land.</b>",
-        "He will give you <b>three riddles.</b>\n\nFor each one, guess:\n• The <b>garment</b>\n• The <b>colour</b>\n• The <b>material</b>",
+        "He will give you <b>three riddles.</b>\n\nFor each one, guess: <margin-left=\"300\">\n\n• <align=\"left\">The <b>garment</b>\n• <align=\"left\">The <b>colour</b>\n• <align=\"left\">The <b>material</b>",
         "At the end, the truth will be revealed.\n\nChoose your words wisely.\n\n<b>Your head depends on it.</b>"
     };
-
-    private int currentSlide = 0;
+    
+    private int _currentSlideIndex = 0;
 
     public void ShowIntro()
     {
         HideAllOverlays();
-        ResetTracker();
+        ResetDropZones();
         if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(true);
         stagePanel?.SetActive(false);
         curtainAnimator?.CloseCurtains();
@@ -140,41 +123,32 @@ public class UIManager : MonoBehaviour
             AudioManager.Instance?.PlayButtonClick();
             _mainMenuPanel.SetActive(false);
             _introPanel?.SetActive(true);
-            currentSlide = 0;
-            ShowSlide(currentSlide);
+            _currentSlideIndex = 0;
+            ShowSlide(0);
+        });
+        
+        _introNextSlideButton.onClick.RemoveAllListeners();
+        _introNextSlideButton.onClick.AddListener(() =>
+        {
+	        AudioManager.Instance?.PlayButtonClick();
+	        _currentSlideIndex++;
+	        if (_currentSlideIndex < IntroSlides.Length)
+	        {
+		        ShowSlide(_currentSlideIndex);
+	        }
+	        else
+	        {
+		        _introPanel?.SetActive(false);
+		        GameManager.Instance.GoToPhase(GamePhase.GuessClothing);
+	        }
         });
     }
 
     void ShowSlide(int index)
     {
-        if (!_introText.TryGetComponent<TypewriterEffect>(out var tw))
-        {
-	        tw = _introText.gameObject.AddComponent<TypewriterEffect>();
-        }
-        tw.charsPerSecond = 22f;
-        tw.TypeWrite(IntroSlides[index]);
-        
-        // Use tutorial button — only wire if it exists
-        if(_introNextSlideButton == null)
-		{
-			return;
-		}
-        
-		_introNextSlideButton.onClick.RemoveAllListeners();
-		_introNextSlideButton.onClick.AddListener(() =>
-		{
-			AudioManager.Instance?.PlayButtonClick();
-			if (index < IntroSlides.Length - 1)
-				ShowSlide(index + 1);
-			else
-			{
-				_introPanel?.SetActive(false);
-				GameManager.Instance.GoToPhase(GamePhase.GuessClothing);
-			}
-		});
+	    _introTextTypewriterEffect.TypeWrite(IntroSlides[index]);
     }
     
-    // ── LOADING ───────────────────────────────────────────────────────────
 
     public void ShowLoading()
     {
@@ -195,8 +169,6 @@ public class UIManager : MonoBehaviour
     public void ShowGuessPanel(RiddleKind riddleKind, string riddle, List<string> options, Action<string> onChosen)
     {
         HideAllOverlays();
-        // Force hide loading panel explicitly
-        loadingPanel?.SetActive(false);
         stagePanel?.SetActive(true);
         if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(true);
 
@@ -208,7 +180,7 @@ public class UIManager : MonoBehaviour
 
         // Scatter draggable tags
         
-        if (draggableTagPrefab == null)
+        if (_draggableTagPrefab == null)
         {
             Debug.LogError("[UIManager] draggableTagPrefab is null! Tags cannot be spawned.");
         }
@@ -216,7 +188,7 @@ public class UIManager : MonoBehaviour
         var tags = new List<GameObject>();
         for (int idx = 0; idx < options.Count; idx++)
         {
-	        var tagGO = Instantiate(draggableTagPrefab, optionsContainer);
+	        var tagGO = Instantiate(_draggableTagPrefab, optionsContainer);
 	        tagGO.SetActive(false);
 	        var drag = tagGO.GetComponent<DraggableTag>();
 	        drag.SetTagLabel(options[idx]);
@@ -238,9 +210,10 @@ public class UIManager : MonoBehaviour
     void ActivateDropZone(RiddleKind riddleKind, Action<string> onChosen)
     {
 	    // Dim all, activate current
-	    dropZoneClothing?.SetActive(riddleKind == RiddleKind.Garment);
-	    dropZoneColor?.SetActive(riddleKind == RiddleKind.Color);
-	    dropZoneMaterial?.SetActive(riddleKind == RiddleKind.Material);
+	    foreach (var dropZone in _dropZones)
+	    {
+		    dropZone.ActivateForCurrentRiddle(riddleKind);
+	    }
 	    
 	    var zone = GetTagDropZone(riddleKind);
 	    if (zone == null)
@@ -253,17 +226,20 @@ public class UIManager : MonoBehaviour
 		    onChosen(chosen);
 	    };
     }
-
+    
     private TagDropZone GetTagDropZone(RiddleKind kind)
     {
-	    return kind switch
+	    foreach (var dropZone in _dropZones)
 	    {
-		    RiddleKind.Garment  => dropZoneClothing,
-		    RiddleKind.Color    => dropZoneColor,
-		    RiddleKind.Material => dropZoneMaterial,
-		    _          => null
-	    };
+		    if (dropZone.RiddleKind == kind)
+		    {
+			    return dropZone;
+		    }
+	    }
+
+	    return null;
     }
+    
 
     // ── REACTION SCREENS ──────────────────────────────────────────────────
 
@@ -476,36 +452,8 @@ public class UIManager : MonoBehaviour
         stagePanel?.SetActive(false);
         deathPanel.SetActive(true);
         AudioManager.Instance?.PlayDeath();
-
-        var state = GameManager.Instance.State;
-        bool askedAboutNakedness =
-            state.GuessedClothing != null && state.GuessedColor != null && state.GuessedMaterial != null &&
-            state.GuessedClothing == state.TargetClothing &&
-            state.GuessedColor    == state.TargetColor    &&
-            state.GuessedMaterial == state.TargetMaterial;
-
-        string deathMsg = askedAboutNakedness
-            ? "The King's face turns purple with rage.\n\"Wearing nothing?! How DARE you!\"\n\"I am wearing the FINEST outfit ever created!\"\n\"GUARDS! OFF WITH THEIR HEAD!\"\n<i>Truth is a crime in this kingdom.</i>"
-            : BuildWrongDeathMessage(state);
-
-        // No typewriter on death — just show the background image
-        if (deathText != null) { deathText.text = ""; }
-        deathPlayAgainButton.onClick.RemoveAllListeners();
-        deathPlayAgainButton.onClick.AddListener(() => GameManager.Instance.OnPlayAgain());
-    }
-
-    string BuildWrongDeathMessage(GameState state)
-    {
-        string reason = "";
-        if (state.GuessedClothing != null && state.GuessedClothing != state.TargetClothing)
-            reason = $"A <b>{state.GuessedClothing}</b>?! The King wears a magnificent <b>{state.TargetClothing}</b>!";
-        else if (state.GuessedColor != null && state.GuessedColor != state.TargetColor)
-            reason = $"<b>{state.GuessedColor}</b>?! The colour is <b>{state.TargetColor}</b>, you blind fool!";
-        else if (state.GuessedMaterial != null && state.GuessedMaterial != state.TargetMaterial)
-            reason = $"<b>{state.GuessedMaterial}</b>?! It is obviously <b>{state.TargetMaterial}</b>!";
-        else
-            reason = "Your taste is an insult to the crown!";
-
-        return $"The King's eyes narrow.\n\n\"{reason}\"\n\n\"GUARDS! OFF WITH THEIR HEAD!\"\n\n<i>You should have lied.</i>";
+        
+        _playAgainOnDeathButton.onClick.RemoveAllListeners();
+        _playAgainOnDeathButton.onClick.AddListener(() => GameManager.Instance.OnPlayAgain());
     }
 }

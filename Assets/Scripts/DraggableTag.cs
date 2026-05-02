@@ -8,8 +8,6 @@ using TMPro;
 /// </summary>
 public class DraggableTag : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    public Action<string> onDropped; // called when successfully dropped
-
     public string TagValue => _tagValue;
 
     [SerializeField]

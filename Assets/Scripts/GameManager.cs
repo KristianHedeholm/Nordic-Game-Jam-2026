@@ -143,7 +143,7 @@ public class GameManager : MonoBehaviour
     {
         State.NewGame();
         diamond.PrintReplies(State.TargetClothing, State.TargetColor,  State.TargetMaterial);
-        uiManager.ResetTracker();
+        uiManager.ResetDropZones();
         uiManager.curtainAnimator?.CloseCurtains();
         await Task.Delay(1000);
         GoToPhase(GamePhase.GuessClothing);
