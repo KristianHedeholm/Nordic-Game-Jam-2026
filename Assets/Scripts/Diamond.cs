@@ -6,6 +6,7 @@ using RawPowerLabs.DynamicAI;
 using RawPowerLabs.DynamicAI.Utility;
 using Color = RawPowerLabs.DynamicAI.Color;
 using Material  = RawPowerLabs.DynamicAI.Material;
+using Type = RawPowerLabs.DynamicAI.Type;
 
 public class Diamond : MonoBehaviour
 {
@@ -30,12 +31,18 @@ public class Diamond : MonoBehaviour
 	    }
     }
     
-    public async void PrintReplies(string type, string color, string material)
+    public async void GenerateRiddles(RiddleData riddleData)
     {
-	    UnityEngine.Debug.Log($"Answers {type}, {color}, {material}");
+	    var riddleKinds = Enum.GetValues(typeof(RiddleKind)) as  RiddleKind[];
+	    foreach (var riddleKind in riddleKinds)
+	    {
+		    var answer = riddleData.GetCorrectAnswer(riddleKind);
+		    UnityEngine.Debug.Log($"RiddleKind: {riddleKind.ToString()} Answer: {answer}");
+	    }
+	    
 	    try
 	    {
-		    _riddles = await InvokeReplyAsync(type, color, material);
+		    _riddles = await InvokeReplyAsync(riddleData);
 	    }
 	    catch (Exception e)
 	    {
@@ -48,12 +55,12 @@ public class Diamond : MonoBehaviour
 	    }
     }
     
-    private async Task<Dictionary<CategoricalOutput, string>> InvokeReplyAsync(string type, string color, string material)
+	private async Task<Dictionary<CategoricalOutput, string>> InvokeReplyAsync(RiddleData riddleData)
 	{
-		return await Task.Run(() => InvokeReply(type, color, material));
+		return await Task.Run(() => InvokeReply(riddleData));
 	}
 	
-	private Dictionary<CategoricalOutput, string> InvokeReply(string type, string color, string material)
+	private Dictionary<CategoricalOutput, string> InvokeReply(RiddleData riddleData)
 	{
 		if (_textModule == null)
 		{
@@ -62,15 +69,18 @@ public class Diamond : MonoBehaviour
 		}
 		
 		using var textModuleInput = _textModule.CreateInput();
-
-		textModuleInput.Set("Type", type);
 		
+		var typeAnswer = riddleData.GetCorrectAnswer(RiddleKind.Garment);
+		var typeCategory = CategoricalInputCollection.TypeNames[typeof(Type)];
+		textModuleInput.Set(typeCategory, typeAnswer);
+		
+		var colorAnswer = riddleData.GetCorrectAnswer(RiddleKind.Color);
 		var colorCategory = CategoricalInputCollection.TypeNames[typeof(Color)];
-		textModuleInput.Set(colorCategory, color);
+		textModuleInput.Set(colorCategory, colorAnswer);
 		
+		var materialAnswer = riddleData.GetCorrectAnswer(RiddleKind.Color);
 		var materialCategory = CategoricalInputCollection.TypeNames[typeof(Material)];
-		textModuleInput.Set(materialCategory, material);
-		
+		textModuleInput.Set(materialCategory, materialAnswer);
 		
 		var invokeParameters = TextModuleInvokeParameters.GetDefault();
 		invokeParameters.PredictCount = 4048;

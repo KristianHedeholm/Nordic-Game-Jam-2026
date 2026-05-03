@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviour
     public UIManager uiManager;
     public Diamond diamond;
 
-    public GameState State { get; private set; } = new GameState();
+    public RiddleData RiddleData { get; private set; } = new RiddleData();
     
     void Awake()
     {
@@ -31,70 +31,50 @@ public class GameManager : MonoBehaviour
         StartGame();
     }
 
-    public void StartGame()
+    private void StartGame()
     {
-        State.NewGame();
+        RiddleData.CreateNewRiddleAnswers();
         GoToPhase(GamePhase.Intro);
         diamond.Init();
-        diamond.PrintReplies(State.TargetClothing, State.TargetColor,  State.TargetMaterial);
+        diamond.GenerateRiddles(RiddleData);
     }
 
     public void GoToPhase(GamePhase phase)
     {
-        State.Phase = phase;
-        var options = new List<string>();
-        
         switch (phase)
         {
             case GamePhase.Intro:
                 uiManager.ShowIntro();
                 break;
             case GamePhase.GuessClothing:
-	            options =  GameData.GetOptions(GameData.Clothing, State.TargetClothing);
-                FetchRiddleAndShow(RiddleKind.Garment, options, GamePhase.GuessColor);
+                FetchRiddleAndShow(RiddleKind.Garment, GamePhase.GuessColor);
                 break;
             case GamePhase.GuessColor:
-	            options = GameData.GetOptions(GameData.Colors, State.TargetColor);
-                FetchRiddleAndShow(RiddleKind.Color, options, GamePhase.GuessMaterial);
+                FetchRiddleAndShow(RiddleKind.Color, GamePhase.GuessMaterial);
                 break;
             case GamePhase.GuessMaterial:
-	            options = GameData.GetOptions(GameData.Materials, State.TargetMaterial);
-                FetchRiddleAndShow(RiddleKind.Material, options, GamePhase.Reveal);
+                FetchRiddleAndShow(RiddleKind.Material, GamePhase.Reveal);
                 break;
             case GamePhase.Reveal:
-                uiManager.ShowReveal(State);
+                uiManager.ShowReveal(RiddleData);
                 break;
             case GamePhase.FinalJudgment:
                 uiManager.ShowFinalJudgment();
                 break;
-            /*case GamePhase.WinScreen:
-                uiManager.ShowWin();
-                break;*/
             case GamePhase.DeathScreen:
                 uiManager.ShowDeath();
                 break;
         }
     }
 
-    private void FetchRiddleAndShow(RiddleKind riddleKind, List<string> options, GamePhase nextPhase)
+    private void FetchRiddleAndShow(RiddleKind riddleKind, GamePhase nextPhase)
     {
         uiManager.ShowLoading();
         var riddle = FetchRiddle(riddleKind);
-        State.CurrentRiddle = riddle;
-        uiManager.ShowGuessPanel(riddleKind, riddle, options, chosen =>
+        var newOptions = GameData.GetRiddleAnswerOptions(riddleKind, RiddleData);
+        uiManager.ShowGuessPanel(riddleKind, riddle, newOptions, chosen =>
         {
-	        switch (riddleKind)
-	        {
-		        case RiddleKind.Garment:
-			        State.GuessedClothing = chosen;
-			        break;
-		        case RiddleKind.Color:
-			        State.GuessedColor    = chosen;
-			        break;
-		        case RiddleKind.Material:
-			        State.GuessedMaterial = chosen;
-			        break;
-	        }
+	        RiddleData.SetGuessedAnswer(riddleKind, chosen);
 	        GoToPhase(nextPhase);
         });
     }
@@ -128,7 +108,6 @@ public class GameManager : MonoBehaviour
 
     public void GoToFinalQuestion(bool allCorrect)
     {
-        State.AllCorrect = allCorrect;
         uiManager.ShowFinalQuestion(allCorrect);
     }
 
@@ -141,8 +120,8 @@ public class GameManager : MonoBehaviour
     /// <summary>Skip intro — close curtains and start a new round of guessing.</summary>
     public async void OnPlayAgainSkipIntro()
     {
-        State.NewGame();
-        diamond.PrintReplies(State.TargetClothing, State.TargetColor,  State.TargetMaterial);
+        RiddleData.CreateNewRiddleAnswers();
+        diamond.GenerateRiddles(RiddleData);
         uiManager.ResetDropZones();
         uiManager.curtainAnimator?.CloseCurtains();
         await Task.Delay(1000);

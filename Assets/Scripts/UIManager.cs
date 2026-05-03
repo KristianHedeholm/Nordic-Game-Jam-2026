@@ -35,6 +35,9 @@ public class UIManager : MonoBehaviour
     public GameObject revealPanel;
     public GameObject finalJudgmentPanel;
     public GameObject deathPanel;
+    
+    [SerializeField]
+    private DialogueContainer _dialogueContainer;
 
     [Header("Main Menu")]
     [SerializeField]
@@ -53,6 +56,9 @@ public class UIManager : MonoBehaviour
     [Header("Judgment")]
     public TMP_Text finalText;
     public Button flatterButton;
+
+    [SerializeField]
+    private TMP_Text _flatterButtonLabel;
     public Button truthButton;
 
     [Header("Death")]
@@ -96,14 +102,6 @@ public class UIManager : MonoBehaviour
 		    dropZone.Reset();
 	    }
     }
-
-    // ── INTRO — 3 animated tutorial slides ───────────────────────────────
-
-    private static readonly string[] IntroSlides = {
-        "The King has dressed himself in the\n<b>finest outfit in all the land.</b>",
-        "He will give you <b>three riddles.</b>\n\nFor each one, guess: <margin-left=\"300\">\n\n• <align=\"left\">The <b>garment</b>\n• <align=\"left\">The <b>colour</b>\n• <align=\"left\">The <b>material</b>",
-        "At the end, the truth will be revealed.\n\nChoose your words wisely.\n\n<b>Your head depends on it.</b>"
-    };
     
     private int _currentSlideIndex = 0;
 
@@ -132,7 +130,7 @@ public class UIManager : MonoBehaviour
         {
 	        AudioManager.Instance?.PlayButtonClick();
 	        _currentSlideIndex++;
-	        if (_currentSlideIndex < IntroSlides.Length)
+	        if (_currentSlideIndex < _dialogueContainer.AmountOfIntroSlides)
 	        {
 		        ShowSlide(_currentSlideIndex);
 	        }
@@ -146,10 +144,10 @@ public class UIManager : MonoBehaviour
 
     void ShowSlide(int index)
     {
-	    _introTextTypewriterEffect.TypeWrite(IntroSlides[index]);
+	    var slideText = _dialogueContainer.GetIntroSlideText(index);
+	    _introTextTypewriterEffect.TypeWrite(slideText);
     }
     
-
     public void ShowLoading()
     {
         HideAllOverlays();
@@ -163,9 +161,7 @@ public class UIManager : MonoBehaviour
             riddleText.text = "...";
         }
     }
-
-    // ── GUESS PANEL — riddle first, buttons appear after ─────────────────
-
+    
     public void ShowGuessPanel(RiddleKind riddleKind, string riddle, List<string> options, Action<string> onChosen)
     {
         HideAllOverlays();
@@ -239,46 +235,15 @@ public class UIManager : MonoBehaviour
 
 	    return null;
     }
-    
 
-    // ── REACTION SCREENS ──────────────────────────────────────────────────
-
-    /*public void ShowCorrectAnswerReaction(string kingQuote, Action onContinue)
-    {
-        HideAllOverlays();
-        stagePanel?.SetActive(true);
-        reactionPanel.SetActive(true);
-        reactionBg.color = new Color(0.05f, 0.25f, 0.08f, 0.92f);
-        SetKingSpeechText(reactionText, "<size=60><b>CORRECT!</b></size>\n\n" + kingQuote + "\n\n<size=24><i>~ tap to continue ~</i></size>");
-        var btn = reactionPanel.GetComponent<Button>() ?? reactionPanel.AddComponent<Button>();
-        btn.onClick.RemoveAllListeners();
-        btn.onClick.AddListener(() => { reactionPanel.SetActive(false); onContinue?.Invoke(); });
-    }
-
-    public void ShowWrongAnswerReaction(string kingInsult, Action onContinue)
-    {
-        HideAllOverlays();
-        stagePanel?.SetActive(true);
-        reactionPanel.SetActive(true);
-        reactionBg.color = new Color(0.3f, 0.04f, 0.04f, 0.92f);
-        SetKingSpeechText(reactionText, "<size=60><b>WRONG!</b></size>\n\n" + kingInsult + "\n\n<size=24><i>~ tap to face your fate ~</i></size>");
-        var btn = reactionPanel.GetComponent<Button>() ?? reactionPanel.AddComponent<Button>();
-        btn.onClick.RemoveAllListeners();
-        btn.onClick.AddListener(() => { reactionPanel.SetActive(false); onContinue?.Invoke(); });
-    }*/
-
-    // ── REVEAL — phased: curtains → score → judgment ──────────────────────
-
-    public void ShowReveal(GameState state)
+    public void ShowReveal(RiddleData riddleData)
     {
         HideAllOverlays();
         stagePanel?.SetActive(true);
         ClearOptions();
         riddleText.text = "...";
-
-        bool allCorrect = state.GuessedClothing == state.TargetClothing &&
-                          state.GuessedColor    == state.TargetColor    &&
-                          state.GuessedMaterial == state.TargetMaterial;
+        
+        var allCorrect = riddleData.AreAllAnswersCorrect();
 
         // Hide speech bubble during drumroll — clean stage for the reveal
         riddleText.transform.parent.gameObject.SetActive(false);
@@ -305,54 +270,41 @@ public class UIManager : MonoBehaviour
                 revealContinueButton.gameObject.SetActive(false);
                 revealPanel.SetActive(true);
 
-                // King speaks the quote — speech stops when quote ends, then narrator line appends silently
-                string kingQuote = allCorrect
-                    ? "\"BEHOLD! Am I not the most magnificently dressed monarch you have ever seen?\""
-                    : "\"Feast your eyes upon the FINEST outfit ever crafted by mortal hands!\"";
-                string narratorLine = "\n<size=20><i>...says the King, obviously wearing <b>absolutely nothing.</b></i></size>";
-
                 AudioManager.Instance?.PlayKingTalk();
+                var kingQuote = _dialogueContainer.GetKingRevealText(allCorrect);
                 SetKingSpeechText(revealText, kingQuote, () =>
                 {
                     // King speech stops — now silently append narrator text
-                    revealText.text += narratorLine;
+                    revealText.text += _dialogueContainer.NarratorLine;
                     revealText.maxVisibleCharacters = int.MaxValue;
-                    StartCoroutine(ShowScoreThenJudgment(state, allCorrect));
+                    StartCoroutine(ShowScoreThenJudgment(riddleData, allCorrect));
                 });
             });
         });
     }
 
-    IEnumerator ShowScoreThenJudgment(GameState state, bool allCorrect)
+    IEnumerator ShowScoreThenJudgment(RiddleData riddleData, bool allCorrect)
     {
         // Brief pause after king speech
         yield return new WaitForSeconds(0.8f);
 
         // Reveal tracker results one by one with sound
-        RevealTrackerResult(RiddleKind.Garment, state.GuessedClothing, state.TargetClothing);
+        RevealTrackerResult(RiddleKind.Garment, riddleData);
         yield return new WaitForSeconds(0.6f);
         
-        RevealTrackerResult(RiddleKind.Color, state.GuessedColor,    state.TargetColor);
+        RevealTrackerResult(RiddleKind.Color, riddleData);
         yield return new WaitForSeconds(0.6f);
         
-        RevealTrackerResult(RiddleKind.Material, state.GuessedMaterial, state.TargetMaterial);
+        RevealTrackerResult(RiddleKind.Material, riddleData);
         yield return new WaitForSeconds(0.5f);
-
-        // Count correct
-        int score = 0;
-        if (state.GuessedClothing == state.TargetClothing) score++;
-        if (state.GuessedColor    == state.TargetColor)    score++;
-        if (state.GuessedMaterial == state.TargetMaterial) score++;
+        
+        var score = riddleData.GetNumberOfCorrectAnswers();
 
         // Show score in speech bubble
-        string scoreMsg = score == 3
-            ? $"<b>{score}/3</b> correct!\n\"Extraordinary! You truly understand fashion!\""
-            : score == 0
-            ? $"<b>{score}/3</b> correct.\n\"...I expected more from you.\""
-            : $"<b>{score}/3</b> correct.\n\"Hmm. Some potential, perhaps.\"";
-
+        var scoreMessage = _dialogueContainer.GetScoreMessage(score);
+        
         AudioManager.Instance?.PlayKingTalk();
-        SetKingSpeechText(revealText, scoreMsg, () =>
+        SetKingSpeechText(revealText, scoreMessage, () =>
         {
             revealContinueButton.gameObject.SetActive(true);
         });
@@ -362,9 +314,9 @@ public class UIManager : MonoBehaviour
         revealContinueButton.onClick.AddListener(() => GameManager.Instance.GoToFinalQuestion(allCorrect));
     }
     
-    void RevealTrackerResult(RiddleKind riddleKind, string guessed, string correct)
+    void RevealTrackerResult(RiddleKind riddleKind, RiddleData riddleData)
     {
-	    var isCorrect = guessed == correct;
+	    var isCorrect = riddleData.IsAnswerCorrect(riddleKind);
 	    var zone = GetTagDropZone(riddleKind);
 	    if (zone == null)
 	    {
@@ -382,9 +334,7 @@ public class UIManager : MonoBehaviour
 		    AudioManager.Instance?.PlayWrong();
 	    }
     }
-
-    // ── FINAL JUDGMENT ────────────────────────────────────────────────────
-
+    
     public void ShowFinalQuestion(bool allCorrect)
     {
         HideAllOverlays();
@@ -397,17 +347,11 @@ public class UIManager : MonoBehaviour
         // Hide buttons until text is done
         flatterButton.gameObject.SetActive(false);
         truthButton.gameObject.SetActive(false);
-
-        string question = allCorrect
-            ? "\"You have <b>magnificent</b> taste!\"\n\"Would you like to admire another one of my spectacular outfits?\""
-            : "\"You clearly need more practice.\"\n\"Would you like to try again and improve yourself?\"";
-
-        flatterButton.GetComponentInChildren<TMP_Text>().text = allCorrect
-            ? "\"Yes Your Majesty, it would be an honour!\""
-            : "\"Yes Your Majesty, please give me another chance!\"";
-        truthButton.GetComponentInChildren<TMP_Text>().text = "\"...Why are you wearing nothing?\"";
-
-        SetKingSpeechText(finalText, question, () =>
+        
+        _flatterButtonLabel.text = _dialogueContainer.GetFlatterLabelText(allCorrect);
+        var finalQuestion = _dialogueContainer.GetFinalQuestion(allCorrect);
+        
+        SetKingSpeechText(finalText, finalQuestion, () =>
         {
             flatterButton.gameObject.SetActive(true);
             truthButton.gameObject.SetActive(true);
@@ -428,24 +372,7 @@ public class UIManager : MonoBehaviour
     }
 
     public void ShowFinalJudgment() => ShowFinalQuestion(true);
-
-    // ── WIN / DEATH ───────────────────────────────────────────────────────
-
-    /*public void ShowWin()
-    {
-        HideAllOverlays();
-        stagePanel?.SetActive(false);
-        winPanel.SetActive(true);
-        AudioManager.Instance?.PlayWin();
-        SetText(winText,
-            "The King claps with delight!\n\n" +
-            "\"YES! You truly have the finest eyes in all the kingdom!\"\n" +
-            "You survive. The King is happy.\nThe kingdom is at peace.\n" +
-            "<i>(He is still wearing nothing at all.)</i>");
-        winPlayAgainButton.onClick.RemoveAllListeners();
-        winPlayAgainButton.onClick.AddListener(() => GameManager.Instance.OnPlayAgain());
-    }*/
-
+    
     public void ShowDeath()
     {
         HideAllOverlays();

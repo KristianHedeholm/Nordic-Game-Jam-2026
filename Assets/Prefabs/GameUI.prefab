@@ -1087,7 +1087,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.34901962}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1333,14 +1333,15 @@ MonoBehaviour:
   revealPanel: {fileID: 6171498505817679214}
   finalJudgmentPanel: {fileID: 2020563346302174099}
   deathPanel: {fileID: 5324522576110681775}
+  _dialogueContainer: {fileID: 11400000, guid: f1a44f85e604880459e12c2e3c64cab2, type: 2}
   _mainMenuStartButton: {fileID: 4340794576733303635}
-  _introText: {fileID: 5395858347772427679}
   _introTextTypewriterEffect: {fileID: 2382796321988214088}
   _introNextSlideButton: {fileID: 9012689291736479093}
   revealText: {fileID: 7085393464378280294}
   revealContinueButton: {fileID: 5902458373270406122}
   finalText: {fileID: 5702019677978979118}
   flatterButton: {fileID: 3388067058118008772}
+  _flatterButtonLabel: {fileID: 8026736944457167227}
   truthButton: {fileID: 7770740752490775374}
   _playAgainOnDeathButton: {fileID: 4310123321792792020}
 --- !u!1 &3831461500177101447
@@ -3629,7 +3630,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.34901962}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -3718,7 +3719,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.34901962}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
