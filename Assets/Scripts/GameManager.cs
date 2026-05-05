@@ -71,8 +71,8 @@ public class GameManager : MonoBehaviour
     {
         uiManager.ShowLoading();
         var riddle = FetchRiddle(riddleKind);
-        var newOptions = GameData.GetRiddleAnswerOptions(riddleKind, RiddleData);
-        uiManager.ShowGuessPanel(riddleKind, riddle, newOptions, chosen =>
+        var options = RiddleData.GetAvailableAnswers(riddleKind);
+        uiManager.ShowGuessPanel(riddleKind, riddle, options, chosen =>
         {
 	        RiddleData.SetGuessedAnswer(riddleKind, chosen);
 	        GoToPhase(nextPhase);
