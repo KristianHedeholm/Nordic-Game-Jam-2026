@@ -57,6 +57,8 @@ public class UIManager : MonoBehaviour
     private Button _mainMenuStartButton;
 	[SerializeField]
 	private Button _creditsButton;
+	[SerializeField]
+	private TMP_Text _versionLabel;
 	
 	[Header("Credits")]
 	[SerializeField]
@@ -82,7 +84,12 @@ public class UIManager : MonoBehaviour
     [Header("Death")]
     [SerializeField]
     private Button _playAgainOnDeathButton;
-    
+
+    private void Awake()
+    {
+	    _versionLabel.text = "Version: " + Application.version;
+    }
+
     void SetKingSpeechText(string text, Action onDone = null)
     {
 	    _speechBubble.SetActive(true);
