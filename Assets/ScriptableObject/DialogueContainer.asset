@@ -31,7 +31,7 @@ MonoBehaviour:
     you have ever seen?"'
   _kingRevealReply: '"Feast your eyes upon the FINEST outfit ever crafted by mortal
     hands!"'
-  _narratorLine: \n<size=20><i>...says the King, obviously wearing <b>absolutely
+  _narratorLine: \n<size=30><i>...says the King, obviously wearing <b>absolutely
     nothing.</b></i></size>
   _topScoreMessage: '<b>{0}/3</b> Correct!
 

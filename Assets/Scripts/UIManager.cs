@@ -13,12 +13,19 @@ public class UIManager : MonoBehaviour
     [Header("Stage")]
     public GameObject stagePanel;
     public CurtainAnimator curtainAnimator;
-    public TMP_Text riddleText;
+    [SerializeField]
+    private GameObject _speechBubble;
+    [SerializeField]
+    private TMP_Text _speechBubbleText;
+    [SerializeField]
+    TypewriterEffect _speechBubbleTypewriterEffect;
     public Transform optionsContainer;   // scatter area for draggable tags
 
     [Header("Backgrounds")]
-    public GameObject nakedKingGO;       // shown on reveal
-    public GameObject silhouetteGO;      // hidden on reveal
+    [SerializeField]
+    private GameObject _nakedKingGO; 
+    [SerializeField]
+    private GameObject _silhouetteGO;
     
     [Header("Drag & Drop")]
     [SerializeField]
@@ -31,10 +38,16 @@ public class UIManager : MonoBehaviour
     private GameObject _mainMenuPanel;
     [SerializeField]
     private GameObject _introPanel;
-    public GameObject loadingPanel;
-    public GameObject revealPanel;
-    public GameObject finalJudgmentPanel;
-    public GameObject deathPanel;
+    [SerializeField]
+    private GameObject _loadingPanel;
+    [SerializeField]
+    private GameObject _revealPanel;
+    [SerializeField]
+    private GameObject _finalJudgmentPanel;
+    [SerializeField]
+    private GameObject _deathPanel;
+    [SerializeField]
+    private GameObject _creditsPanel;
     
     [SerializeField]
     private DialogueContainer _dialogueContainer;
@@ -42,6 +55,12 @@ public class UIManager : MonoBehaviour
     [Header("Main Menu")]
     [SerializeField]
     private Button _mainMenuStartButton;
+	[SerializeField]
+	private Button _creditsButton;
+	
+	[Header("Credits")]
+	[SerializeField]
+	private Button _backButton;
 
     [Header("Intro")]
     [SerializeField]
@@ -50,29 +69,26 @@ public class UIManager : MonoBehaviour
     private Button _introNextSlideButton;
 
     [Header("Reveal")]
-    public TMP_Text revealText;
     public Button revealContinueButton;
 
     [Header("Judgment")]
-    public TMP_Text finalText;
     public Button flatterButton;
 
     [SerializeField]
     private TMP_Text _flatterButtonLabel;
-    public Button truthButton;
+    [SerializeField]
+    private Button _truthButton;
 
     [Header("Death")]
-    public Button _playAgainOnDeathButton;
+    [SerializeField]
+    private Button _playAgainOnDeathButton;
     
-    void SetKingSpeechText(TMP_Text label, string text, Action onDone = null)
+    void SetKingSpeechText(string text, Action onDone = null)
     {
-	    if (label == null) return;
-	    if (!label.TryGetComponent<TypewriterEffect>(out var tw))
-	    {
-		    tw = label.gameObject.AddComponent<TypewriterEffect>();
-	    }
-	    tw.charsPerSecond = 22f;
-	    tw.TypeWrite(text, () =>
+	    _speechBubble.SetActive(true);
+	    AudioManager.Instance?.PlayKingTalk();
+	    _speechBubbleTypewriterEffect.charsPerSecond = 22f;
+	    _speechBubbleTypewriterEffect.TypeWrite(text, () =>
 	    {
 		    AudioManager.Instance?.StopKingTalk();
 		    onDone?.Invoke();
@@ -83,10 +99,11 @@ public class UIManager : MonoBehaviour
     {
         _mainMenuPanel?.SetActive(false);
         _introPanel?.SetActive(false);
-        loadingPanel?.SetActive(false);
-        revealPanel?.SetActive(false);
-        finalJudgmentPanel?.SetActive(false);
-        deathPanel?.SetActive(false);
+        _loadingPanel?.SetActive(false);
+        _revealPanel?.SetActive(false);
+        _finalJudgmentPanel?.SetActive(false);
+        _deathPanel?.SetActive(false);
+        _creditsPanel?.SetActive(false);
     }
 
     void ClearOptions()
@@ -109,8 +126,6 @@ public class UIManager : MonoBehaviour
     {
         HideAllOverlays();
         ResetDropZones();
-        if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(true);
-        stagePanel?.SetActive(false);
         curtainAnimator?.CloseCurtains();
 
         // Show title screen — START button switches to tutorial slides
@@ -140,6 +155,20 @@ public class UIManager : MonoBehaviour
 		        GameManager.Instance.GoToPhase(GamePhase.GuessClothing);
 	        }
         });
+        
+        _creditsButton.onClick.RemoveAllListeners();
+        _creditsButton.onClick.AddListener(() =>
+        {
+	        AudioManager.Instance?.PlayButtonClick();
+	        _creditsPanel.SetActive(true);
+        });
+        
+        _backButton.onClick.RemoveAllListeners();
+        _backButton.onClick.AddListener(() =>
+        {
+	        AudioManager.Instance?.PlayButtonClick();
+	        _creditsPanel.SetActive(false);
+        });
     }
 
     void ShowSlide(int index)
@@ -152,21 +181,22 @@ public class UIManager : MonoBehaviour
     {
         HideAllOverlays();
         stagePanel?.SetActive(true);
-        if (silhouetteGO != null) silhouetteGO.SetActive(true);
-        if (nakedKingGO  != null) nakedKingGO.SetActive(false);
-        ClearOptions();
-        if (riddleText != null)
+        if (_silhouetteGO != null)
         {
-            riddleText.transform.parent.gameObject.SetActive(true);
-            riddleText.text = "...";
+	        _silhouetteGO.SetActive(true);
         }
+
+        if (_nakedKingGO != null)
+        {
+	        _nakedKingGO.SetActive(false);
+        }
+        ClearOptions();
     }
     
     public void ShowGuessPanel(RiddleKind riddleKind, string riddle, List<string> options, Action<string> onChosen)
     {
         HideAllOverlays();
         stagePanel?.SetActive(true);
-        if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(true);
 
         // Activate the correct drop zone, dim the others
         ActivateDropZone(riddleKind, onChosen);
@@ -193,8 +223,7 @@ public class UIManager : MonoBehaviour
         }
         
         // Type riddle, reveal tags after.
-        AudioManager.Instance?.PlayKingTalk();
-        SetKingSpeechText(riddleText, riddle, () =>
+        SetKingSpeechText(riddle, () =>
         {
 	        foreach (var tag in tags)
 	        {
@@ -241,12 +270,11 @@ public class UIManager : MonoBehaviour
         HideAllOverlays();
         stagePanel?.SetActive(true);
         ClearOptions();
-        riddleText.text = "...";
         
         var allCorrect = riddleData.AreAllAnswersCorrect();
 
         // Hide speech bubble during drumroll — clean stage for the reveal
-        riddleText.transform.parent.gameObject.SetActive(false);
+        _speechBubble.SetActive(false);
 
         // Phase 1: Drumroll → tadaaa → curtains open
         AudioManager.Instance?.PlayDrumrollThenReveal(() =>
@@ -255,28 +283,28 @@ public class UIManager : MonoBehaviour
             curtainAnimator?.OpenCurtains(() =>
             {
                 // Swap silhouette for naked king instantly
-                if (silhouetteGO != null)
+                if (_silhouetteGO != null)
                 {
-	                silhouetteGO.SetActive(false);
+	                _silhouetteGO.SetActive(false);
                 }
 
-                if (nakedKingGO != null)
+                if (_nakedKingGO != null)
                 {
-	                nakedKingGO.SetActive(true);
+	                _nakedKingGO.SetActive(true);
                 }
                 AudioManager.Instance?.PlayKingLaugh();
                 
                 // Phase 2: Reveal panel shows — king says something short
                 revealContinueButton.gameObject.SetActive(false);
-                revealPanel.SetActive(true);
-
-                AudioManager.Instance?.PlayKingTalk();
+                _revealPanel.SetActive(true);
+                _speechBubble.SetActive(true);
+                
                 var kingQuote = _dialogueContainer.GetKingRevealText(allCorrect);
-                SetKingSpeechText(revealText, kingQuote, () =>
+                SetKingSpeechText(kingQuote, () =>
                 {
                     // King speech stops — now silently append narrator text
-                    revealText.text += _dialogueContainer.NarratorLine;
-                    revealText.maxVisibleCharacters = int.MaxValue;
+                    _speechBubbleText.text += _dialogueContainer.NarratorLine;
+                    _speechBubbleText.maxVisibleCharacters = int.MaxValue;
                     StartCoroutine(ShowScoreThenJudgment(riddleData, allCorrect));
                 });
             });
@@ -302,16 +330,14 @@ public class UIManager : MonoBehaviour
 
         // Show score in speech bubble
         var scoreMessage = _dialogueContainer.GetScoreMessage(score);
-        
-        AudioManager.Instance?.PlayKingTalk();
-        SetKingSpeechText(revealText, scoreMessage, () =>
-        {
-            revealContinueButton.gameObject.SetActive(true);
-        });
-
         revealContinueButton.gameObject.SetActive(false);
         revealContinueButton.onClick.RemoveAllListeners();
         revealContinueButton.onClick.AddListener(() => GameManager.Instance.GoToFinalQuestion(allCorrect));
+        
+        SetKingSpeechText(scoreMessage, () =>
+        {
+            revealContinueButton.gameObject.SetActive(true);
+        });
     }
     
     void RevealTrackerResult(RiddleKind riddleKind, RiddleData riddleData)
@@ -339,36 +365,32 @@ public class UIManager : MonoBehaviour
     {
         HideAllOverlays();
         stagePanel?.SetActive(true);
-        finalJudgmentPanel.SetActive(true);
-        AudioManager.Instance?.PlayKingTalk();
+        _finalJudgmentPanel.SetActive(true);
         
-        if (finalText != null) finalText.transform.parent.gameObject.SetActive(true);
-
         // Hide buttons until text is done
         flatterButton.gameObject.SetActive(false);
-        truthButton.gameObject.SetActive(false);
+        _truthButton.gameObject.SetActive(false);
         
         _flatterButtonLabel.text = _dialogueContainer.GetFlatterLabelText(allCorrect);
         var finalQuestion = _dialogueContainer.GetFinalQuestion(allCorrect);
         
-        SetKingSpeechText(finalText, finalQuestion, () =>
+        SetKingSpeechText(finalQuestion, () =>
         {
             flatterButton.gameObject.SetActive(true);
-            truthButton.gameObject.SetActive(true);
+            _truthButton.gameObject.SetActive(true);
         });
 
         flatterButton.onClick.RemoveAllListeners();
-        truthButton.onClick.RemoveAllListeners();
+        _truthButton.onClick.RemoveAllListeners();
         flatterButton.onClick.AddListener(() =>
         {
-	        if (finalText != null) finalText.transform.parent.gameObject.SetActive(false);
-	        if (riddleText != null) riddleText.transform.parent.gameObject.SetActive(false);
+	        _speechBubble.SetActive(false);
 	        flatterButton.gameObject.SetActive(false);
-	        truthButton.gameObject.SetActive(false);
-	        loadingPanel?.SetActive(true);
+	        _truthButton.gameObject.SetActive(false);
+	        _loadingPanel?.SetActive(true);
 	        GameManager.Instance.OnPlayAgainSkipIntro();
         });
-        truthButton.onClick.AddListener(() => GameManager.Instance.OnPlayerTruth());
+        _truthButton.onClick.AddListener(() => GameManager.Instance.OnPlayerTruth());
     }
 
     public void ShowFinalJudgment() => ShowFinalQuestion(true);
@@ -377,7 +399,7 @@ public class UIManager : MonoBehaviour
     {
         HideAllOverlays();
         stagePanel?.SetActive(false);
-        deathPanel.SetActive(true);
+        _deathPanel.SetActive(true);
         AudioManager.Instance?.PlayDeath();
         
         _playAgainOnDeathButton.onClick.RemoveAllListeners();
