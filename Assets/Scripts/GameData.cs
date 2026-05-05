@@ -25,7 +25,7 @@ public static class GameData
         "Leather", "Feathers", "Polyester", "Vegan Leather", "Faux Fur"
     };
     
-    private const int NumberOfOptionsForRiddle = 5;
+    private const int NumberOfOptionsForRiddle = 4;
     
     public static string GetRandomAnswer(RiddleKind riddleKind)
     {
