@@ -7,32 +7,59 @@ using UnityEngine;
 /// </summary>
 public static class GameData
 {
-    public static readonly List<string> Clothing = new List<string>
+    private static readonly List<string> Clothing = new List<string>
     {
         "Pants", "Mankini", "Armor", "Maid's Dress", "Cape",
         "Crocs", "Bath Robe", "Fingerless Gloves"
     };
 
-    public static readonly List<string> Colors = new List<string>
+    private static readonly List<string> Colors = new List<string>
     {
         "Blue", "Red", "Yellow", "Orange", "Purple",
         "Gold", "White", "Green", "Pink", "Silver", "Brown", "Black"
     };
 
-    public static readonly List<string> Materials = new List<string>
+    private static readonly List<string> Materials = new List<string>
     {
         "Gold", "Iron", "Silk", "Cotton", "Fur",
         "Leather", "Feathers", "Polyester", "Vegan Leather", "Faux Fur"
     };
+    
+    private const int NumberOfOptionsForRiddle = 4;
+    
+    public static string GetRandomAnswer(RiddleKind riddleKind)
+    {
+	    return riddleKind switch
+	    {
+		    RiddleKind.Garment => Clothing[Random.Range(0, Clothing.Count)],
+		    RiddleKind.Color => Colors[Random.Range(0, Colors.Count)],
+		    RiddleKind.Material => Materials[Random.Range(0, Materials.Count)],
+		    _ => string.Empty,
+	    };
+    }
 
-    public static string RandomClothing() => Clothing[Random.Range(0, Clothing.Count)];
-    public static string RandomColor()    => Colors[Random.Range(0, Colors.Count)];
-    public static string RandomMaterial() => Materials[Random.Range(0, Materials.Count)];
+    public static List<string> GetRiddleAnswerOptions(RiddleKind riddleKind, RiddleData state)
+    {
+	    var allAnswers = GetAllAnswersForRiddle(riddleKind);
+	    var correctAnswer = state.GetCorrectAnswer(riddleKind);
+	    return GetOptions(allAnswers, correctAnswer, NumberOfOptionsForRiddle);
+    }
+
+    private static List<string> GetAllAnswersForRiddle(RiddleKind riddleKind)
+    {
+	    return riddleKind switch
+	    {
+		    RiddleKind.Garment => Clothing,
+		    RiddleKind.Color => Colors,
+		    RiddleKind.Material => Materials,
+		    _ => new List<string>(),
+	    };
+    }
 
     /// <summary>
     /// Returns 5 options from the list, always including the correct answer, shuffled.
     /// </summary>
-    public static List<string> GetOptions(List<string> pool, string correctAnswer, int count = 5)
+    private static List<string> GetOptions(List<string> pool, string correctAnswer, int count)
     {
         // Build a copy without the correct answer
         var others = new List<string>(pool);

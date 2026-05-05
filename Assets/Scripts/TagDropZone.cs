@@ -1,43 +1,74 @@
+using System;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using TMPro;
 
 /// <summary>
 /// Drop target for DraggableTag. Accepts one tag, locks it in, fires callback.
 /// </summary>
 public class TagDropZone : MonoBehaviour, IDropHandler
 {
-    [HideInInspector] public bool isActive;   // only accepts drops when active
-    [HideInInspector] public string category;
-    [HideInInspector] public System.Action<string> onAnswered;
+	public RiddleKind RiddleKind => _riddleKind;
+	
+    public Action<string> onAnswered;
 
-    private bool filled;
-    private Image bgImage;
-    public TMP_Text answerLabel;  // text label shown inside the holder once filled
+    [SerializeField]
+    private RiddleKind _riddleKind;
+    
+    private bool _isActive;   // only accepts drops when active
+    private bool _filled;
+    private Image _backgroundImage;
+
+    private readonly Color CorrectColor = new Color(0.15f, 0.75f, 0.25f, 1f); 
+    private readonly Color WrongColor = new Color(0.85f, 0.15f, 0.15f, 1f);
+    private readonly Color ActiveColor = new Color(1f, 1f, 1f, 1f);
+    private readonly Color InactiveColor = new Color(1f, 1f, 1f, 0.35f);  
 
     void Awake()
     {
-        bgImage = GetComponent<Image>();
+        _backgroundImage = GetComponent<Image>();
     }
-
-    public void SetActive(bool active)
+    
+    public void ActivateForCurrentRiddle(RiddleKind  currentRiddle)
     {
-        isActive = active;
-        // Highlight active zone, dim inactive
-        if (bgImage) bgImage.color = active
-            ? new Color(1f, 1f, 1f, 1f)       // full opacity when active
-            : new Color(1f, 1f, 1f, 0.35f);   // dimmed when not yet active
+	    if (currentRiddle != _riddleKind)
+	    {
+		    return;
+	    }
+	    
+	    SetActive(true);
+    }
+    
+    public void Reset()
+    {
+	    _filled = false;
+	    foreach (Transform child in transform)
+	    {
+		    if (child.GetComponent<DraggableTag>() != null)
+		    {
+			    Destroy(child.gameObject);
+		    }
+	    }
+
+	    SetActive(false);
+    }
+    
+    public void SetAnswerColor(bool isCorrect)
+    {
+	    if (_backgroundImage)
+	    {
+		    _backgroundImage.color = isCorrect ? CorrectColor : WrongColor;
+	    }
     }
 
     public void OnDrop(PointerEventData e)
     {
-        if (!isActive || filled) return;
+        if (!_isActive || _filled) return;
 
         var tag = e.pointerDrag?.GetComponent<DraggableTag>();
         if (tag == null) return;
 
-        filled = true;
+        _filled = true;
         tag.Lock();
 
         // Snap tag into this zone and resize to fill it
@@ -50,14 +81,18 @@ public class TagDropZone : MonoBehaviour, IDropHandler
         tagRT.offsetMin = new Vector2(32, 28);
         tagRT.offsetMax = new Vector2(-32, 0);
 
-        // Hide the placeholder label — the tag itself shows the answer
-        if (answerLabel != null)
-            answerLabel.gameObject.SetActive(false);
-
         AudioManager.Instance?.PlayButtonClick();
-        if (UnityEngine.Random.value > 0.5f) AudioManager.Instance?.PlayCrowdCheerGood();
-        else AudioManager.Instance?.PlayCrowdCheerBad();
+        onAnswered?.Invoke(tag.TagValue);
+        
+        SetActive(false);
+    }
 
-        onAnswered?.Invoke(tag.value);
+    private void SetActive(bool active)
+    {
+	    _isActive = active;
+	    if (_backgroundImage)
+	    {
+		    _backgroundImage.color = _isActive ? ActiveColor : InactiveColor;
+	    }
     }
 }
