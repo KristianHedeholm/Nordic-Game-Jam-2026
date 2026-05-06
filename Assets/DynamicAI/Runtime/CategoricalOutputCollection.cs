@@ -8,7 +8,7 @@ namespace RawPowerLabs.DynamicAI
     
     public enum CategoricalOutput
     {
-		TypeRiddle = 0,
+		GarmentRiddle = 0,
 		ColorRiddle = 1,
 		MaterialRiddle = 2,
     }
@@ -18,9 +18,9 @@ namespace RawPowerLabs.DynamicAI
         public static IReadOnlyDictionary<CategoricalOutput, string> StringOutputValues =
         new Dictionary<CategoricalOutput, string>()
         {
-			{ CategoricalOutput.TypeRiddle, "Type_Riddle" },
-			{ CategoricalOutput.ColorRiddle, "Color_Riddle" },
-			{ CategoricalOutput.MaterialRiddle, "Material_Riddle" },
+			{ CategoricalOutput.GarmentRiddle, "garment_riddle" },
+			{ CategoricalOutput.ColorRiddle, "color_riddle" },
+			{ CategoricalOutput.MaterialRiddle, "material_riddle" },
         };
 	}
 }

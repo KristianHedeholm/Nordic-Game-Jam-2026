@@ -1,9 +1,6 @@
 using System.Collections.Generic;
 using RawPowerLabs.DynamicAI;
 using UnityEngine;
-using Type = RawPowerLabs.DynamicAI.Type; 
-using Color = RawPowerLabs.DynamicAI.Color;
-using Material = RawPowerLabs.DynamicAI.Material;
 
 public struct AnswersCollection
 {
@@ -57,9 +54,9 @@ public static class GameData
     {
 	    return riddleKind switch
 	    {
-		    RiddleKind.Garment => typeof(Type),
-		    RiddleKind.Color => typeof(Color),
-		    RiddleKind.Material => typeof(Material),
+		    RiddleKind.Garment => typeof(GarmentAnswer),
+		    RiddleKind.Color => typeof(ColorAnswer),
+		    RiddleKind.Material => typeof(MaterialAnswer),
 		    _ => null,
 	    };
     }

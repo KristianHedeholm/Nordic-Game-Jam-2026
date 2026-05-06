@@ -4,9 +4,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using RawPowerLabs.DynamicAI;
 using RawPowerLabs.DynamicAI.Utility;
-using Color = RawPowerLabs.DynamicAI.Color;
-using Material  = RawPowerLabs.DynamicAI.Material;
-using Type = RawPowerLabs.DynamicAI.Type;
 
 public class Diamond : MonoBehaviour
 {
@@ -71,15 +68,15 @@ public class Diamond : MonoBehaviour
 		using var textModuleInput = _textModule.CreateInput();
 		
 		var typeAnswer = riddleData.GetCorrectAnswer(RiddleKind.Garment);
-		var typeCategory = CategoricalInputCollection.TypeNames[typeof(Type)];
+		var typeCategory = CategoricalInputCollection.TypeNames[typeof(GarmentAnswer)];
 		textModuleInput.Set(typeCategory, typeAnswer);
 		
 		var colorAnswer = riddleData.GetCorrectAnswer(RiddleKind.Color);
-		var colorCategory = CategoricalInputCollection.TypeNames[typeof(Color)];
+		var colorCategory = CategoricalInputCollection.TypeNames[typeof(ColorAnswer)];
 		textModuleInput.Set(colorCategory, colorAnswer);
 		
 		var materialAnswer = riddleData.GetCorrectAnswer(RiddleKind.Color);
-		var materialCategory = CategoricalInputCollection.TypeNames[typeof(Material)];
+		var materialCategory = CategoricalInputCollection.TypeNames[typeof(MaterialAnswer)];
 		textModuleInput.Set(materialCategory, materialAnswer);
 		
 		var invokeParameters = TextModuleInvokeParameters.GetDefault();

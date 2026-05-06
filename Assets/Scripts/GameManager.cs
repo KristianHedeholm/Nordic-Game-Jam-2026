@@ -99,10 +99,10 @@ public class GameManager : MonoBehaviour
     {
 	    return riddleKind switch
 	    {
-		    RiddleKind.Garment => CategoricalOutput.TypeRiddle,
+		    RiddleKind.Garment => CategoricalOutput.GarmentRiddle,
 		    RiddleKind.Color => CategoricalOutput.ColorRiddle,
 		    RiddleKind.Material => CategoricalOutput.MaterialRiddle,
-		    _ => CategoricalOutput.TypeRiddle,
+		    _ => CategoricalOutput.GarmentRiddle,
 	    };
     }
 
