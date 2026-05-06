@@ -17,47 +17,54 @@ public enum GamePhase
 
 public struct RiddleAnswer
 {
-	public string CorrectAnswer;
+	public AnswersCollection Answers;
 	public string GuessedAnswer;
 
 	public bool IsCorrect()
 	{
-		return CorrectAnswer == GuessedAnswer;
+		return Answers.CorrectAnswer == GuessedAnswer;
 	}
 }
 
 public class RiddleData
 {
-    private Dictionary<RiddleKind, RiddleAnswer> _answers = new();
+    private readonly Dictionary<RiddleKind, RiddleAnswer> _riddleAnswers = new();
 
     public void CreateNewRiddleAnswers()
     {
         var riddleKinds = Enum.GetValues(typeof(RiddleKind)) as  RiddleKind[];
         foreach (var riddleKind in riddleKinds)
         {
-	        var newAnswer = new RiddleAnswer();
-	        newAnswer.CorrectAnswer = GameData.GetRandomAnswer(riddleKind);
-	        newAnswer.GuessedAnswer = string.Empty;
-	        _answers[riddleKind] = newAnswer;
+	        var riddleAnswer = new RiddleAnswer
+	        {
+		        Answers = GameData.GetAnswerCollection(riddleKind),
+		        GuessedAnswer = string.Empty
+	        };
+	        _riddleAnswers[riddleKind] = riddleAnswer;
         }
     }
 
     public string GetCorrectAnswer(RiddleKind riddleKind)
     {
-	    return _answers[riddleKind].CorrectAnswer;
+	    return _riddleAnswers[riddleKind].Answers.CorrectAnswer;
+    }
+
+    public string[] GetAvailableAnswers(RiddleKind riddleKind)
+    {
+	    return _riddleAnswers[riddleKind].Answers.AvailableAnswers;
     }
 
     public void SetGuessedAnswer(RiddleKind riddleKind, string guess)
     {
-	    var answer = _answers[riddleKind];
+	    var answer = _riddleAnswers[riddleKind];
 	    answer.GuessedAnswer = guess;
-	    _answers[riddleKind] = answer;
+	    _riddleAnswers[riddleKind] = answer;
     }
     
     public int GetNumberOfCorrectAnswers()
     {
 	    var count = 0;
-	    foreach (var answer in _answers)
+	    foreach (var answer in _riddleAnswers)
 	    {
 		    if (answer.Value.IsCorrect())
 		    {
@@ -69,12 +76,12 @@ public class RiddleData
     
     public bool IsAnswerCorrect(RiddleKind riddleKind)
     {
-	    return _answers[riddleKind].IsCorrect();
+	    return _riddleAnswers[riddleKind].IsCorrect();
     }
 
     public bool AreAllAnswersCorrect()
     {
-	    foreach (var answer in _answers)
+	    foreach (var answer in _riddleAnswers)
 	    {
 		    if (!answer.Value.IsCorrect())
 		    {

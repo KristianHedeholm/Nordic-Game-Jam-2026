@@ -1,88 +1,66 @@
 using System.Collections.Generic;
+using RawPowerLabs.DynamicAI;
 using UnityEngine;
+using Type = RawPowerLabs.DynamicAI.Type; 
+using Color = RawPowerLabs.DynamicAI.Color;
+using Material = RawPowerLabs.DynamicAI.Material;
 
-/// <summary>
-/// All predefined game data — clothing, colors, materials.
-/// Each round shows 5 random options (always including the correct answer).
-/// </summary>
+public struct AnswersCollection
+{
+	public string[] AvailableAnswers;
+	public string CorrectAnswer;
+}
+
 public static class GameData
 {
-    private static readonly List<string> Clothing = new List<string>
-    {
-        "Pants", "Mankini", "Armor", "Maid's Dress", "Cape",
-        "Crocs", "Bath Robe", "Fingerless Gloves"
-    };
-
-    private static readonly List<string> Colors = new List<string>
-    {
-        "Blue", "Red", "Yellow", "Orange", "Purple",
-        "Gold", "White", "Green", "Pink", "Silver", "Brown", "Black"
-    };
-
-    private static readonly List<string> Materials = new List<string>
-    {
-        "Gold", "Iron", "Silk", "Cotton", "Fur",
-        "Leather", "Feathers", "Polyester", "Vegan Leather", "Faux Fur"
-    };
-    
     private const int NumberOfOptionsForRiddle = 4;
     
-    public static string GetRandomAnswer(RiddleKind riddleKind)
+    public static AnswersCollection GetAnswerCollection(RiddleKind riddleKind, int numberOfOptions = NumberOfOptionsForRiddle)
+    {
+	    var enumType = GetInputCategorical(riddleKind);
+	    var allAnswers = new List<string>();
+	    var enumValues = CategoricalInputCollection.AllCollections[enumType];
+	    foreach (var enumValue in enumValues)
+	    {
+		    var name = enumValue.Value;
+		    allAnswers.Add(name);
+	    }
+	    
+	    // Shuffle all answers.
+	    for (int i = allAnswers.Count - 1; i > 0; i--)
+	    {
+		    int j = Random.Range(0, i + 1);
+		    (allAnswers[i], allAnswers[j]) = (allAnswers[j], allAnswers[i]);
+	    }
+	    
+	    // populate with number of selected answers.
+	    var selectedAnswers = new string[numberOfOptions];
+	    for (int i = 0; i < numberOfOptions; i++)
+	    {
+		    selectedAnswers[i] = allAnswers[i];
+	    }
+	    
+	    // select correct answer at random.
+	    var randomIndex = Random.Range(0, numberOfOptions);
+	    var correctAnswer = selectedAnswers[randomIndex];
+
+	    var answerCollection = new AnswersCollection()
+	    {
+		    AvailableAnswers = selectedAnswers,
+		    CorrectAnswer = correctAnswer,
+	    };
+
+	    return answerCollection;
+    }
+
+    private static System.Type GetInputCategorical(RiddleKind riddleKind)
     {
 	    return riddleKind switch
 	    {
-		    RiddleKind.Garment => Clothing[Random.Range(0, Clothing.Count)],
-		    RiddleKind.Color => Colors[Random.Range(0, Colors.Count)],
-		    RiddleKind.Material => Materials[Random.Range(0, Materials.Count)],
-		    _ => string.Empty,
+		    RiddleKind.Garment => typeof(Type),
+		    RiddleKind.Color => typeof(Color),
+		    RiddleKind.Material => typeof(Material),
+		    _ => null,
 	    };
-    }
-
-    public static List<string> GetRiddleAnswerOptions(RiddleKind riddleKind, RiddleData state)
-    {
-	    var allAnswers = GetAllAnswersForRiddle(riddleKind);
-	    var correctAnswer = state.GetCorrectAnswer(riddleKind);
-	    return GetOptions(allAnswers, correctAnswer, NumberOfOptionsForRiddle);
-    }
-
-    private static List<string> GetAllAnswersForRiddle(RiddleKind riddleKind)
-    {
-	    return riddleKind switch
-	    {
-		    RiddleKind.Garment => Clothing,
-		    RiddleKind.Color => Colors,
-		    RiddleKind.Material => Materials,
-		    _ => new List<string>(),
-	    };
-    }
-
-    /// <summary>
-    /// Returns 5 options from the list, always including the correct answer, shuffled.
-    /// </summary>
-    private static List<string> GetOptions(List<string> pool, string correctAnswer, int count)
-    {
-        // Build a copy without the correct answer
-        var others = new List<string>(pool);
-        others.Remove(correctAnswer);
-
-        // Shuffle
-        for (int i = others.Count - 1; i > 0; i--)
-        {
-            int j = Random.Range(0, i + 1);
-            var tmp = others[i]; others[i] = others[j]; others[j] = tmp;
-        }
-
-        // Take count-1 random others + correct answer
-        var result = others.GetRange(0, Mathf.Min(count - 1, others.Count));
-        result.Add(correctAnswer);
-
-        // Shuffle result
-        for (int i = result.Count - 1; i > 0; i--)
-        {
-            int j = Random.Range(0, i + 1);
-            var tmp = result[i]; result[i] = result[j]; result[j] = tmp;
-        }
-
-        return result;
     }
 }

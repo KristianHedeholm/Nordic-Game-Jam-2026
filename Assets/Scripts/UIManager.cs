@@ -200,7 +200,7 @@ public class UIManager : MonoBehaviour
         ClearOptions();
     }
     
-    public void ShowGuessPanel(RiddleKind riddleKind, string riddle, List<string> options, Action<string> onChosen)
+    public void ShowGuessPanel(RiddleKind riddleKind, string riddle, string[] options, Action<string> onChosen)
     {
         HideAllOverlays();
         stagePanel?.SetActive(true);
@@ -219,7 +219,7 @@ public class UIManager : MonoBehaviour
         }
         
         var tags = new List<GameObject>();
-        for (int idx = 0; idx < options.Count; idx++)
+        for (int idx = 0; idx < options.Length; idx++)
         {
 	        var tagGO = Instantiate(_draggableTagPrefab, optionsContainer);
 	        tagGO.SetActive(false);
