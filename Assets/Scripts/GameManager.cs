@@ -1,5 +1,4 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using System;
 using RawPowerLabs.DynamicAI;
 using UnityEngine;
 
@@ -31,12 +30,19 @@ public class GameManager : MonoBehaviour
         StartGame();
     }
 
-    private void StartGame()
+    private async void StartGame()
     {
         RiddleData.CreateNewRiddleAnswers();
         GoToPhase(GamePhase.Intro);
         diamond.Init();
-        diamond.GenerateRiddles(RiddleData);
+        try
+        {
+	        await diamond.GenerateRiddles(RiddleData);
+        }
+        catch (Exception e)
+        {
+	        UnityEngine.Debug.LogException(e);
+        }
     }
 
     public void GoToPhase(GamePhase phase)
@@ -121,10 +127,10 @@ public class GameManager : MonoBehaviour
     public async void OnPlayAgainSkipIntro()
     {
         RiddleData.CreateNewRiddleAnswers();
-        diamond.GenerateRiddles(RiddleData);
         uiManager.ResetDropZones();
         uiManager.curtainAnimator?.CloseCurtains();
-        await Task.Delay(1000);
+        await diamond.GenerateRiddles(RiddleData);
+        
         GoToPhase(GamePhase.GuessClothing);
     }
 }
