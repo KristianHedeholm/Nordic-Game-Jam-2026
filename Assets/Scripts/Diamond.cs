@@ -28,7 +28,7 @@ public class Diamond : MonoBehaviour
 	    }
     }
     
-    public async void GenerateRiddles(RiddleData riddleData)
+    public async Task GenerateRiddles(RiddleData riddleData)
     {
 	    var riddleKinds = Enum.GetValues(typeof(RiddleKind)) as  RiddleKind[];
 	    foreach (var riddleKind in riddleKinds)
