@@ -103,4 +103,9 @@ public class RiddleDataCollection
 	    }
 	    return true;
     }
+
+    public RiddleData GetRiddleData(RiddleKind riddleKind)
+    {
+	    return _riddleData[riddleKind];
+    }
 }
