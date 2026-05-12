@@ -272,13 +272,13 @@ public class UIManager : MonoBehaviour
 	    return null;
     }
 
-    public void ShowReveal(RiddleData riddleData)
+    public void ShowReveal(RiddleDataCollection riddleDataCollection)
     {
         HideAllOverlays();
         stagePanel?.SetActive(true);
         ClearOptions();
         
-        var allCorrect = riddleData.AreAllAnswersCorrect();
+        var allCorrect = riddleDataCollection.AreAllAnswersCorrect();
 
         // Hide speech bubble during drumroll — clean stage for the reveal
         _speechBubble.SetActive(false);
@@ -312,28 +312,28 @@ public class UIManager : MonoBehaviour
                     // King speech stops — now silently append narrator text
                     _speechBubbleText.text += _dialogueContainer.NarratorLine;
                     _speechBubbleText.maxVisibleCharacters = int.MaxValue;
-                    StartCoroutine(ShowScoreThenJudgment(riddleData, allCorrect));
+                    StartCoroutine(ShowScoreThenJudgment(riddleDataCollection, allCorrect));
                 });
             });
         });
     }
 
-    IEnumerator ShowScoreThenJudgment(RiddleData riddleData, bool allCorrect)
+    IEnumerator ShowScoreThenJudgment(RiddleDataCollection riddleDataCollection, bool allCorrect)
     {
         // Brief pause after king speech
         yield return new WaitForSeconds(0.8f);
 
         // Reveal tracker results one by one with sound
-        RevealTrackerResult(RiddleKind.Garment, riddleData);
+        RevealTrackerResult(RiddleKind.Garment, riddleDataCollection);
         yield return new WaitForSeconds(0.6f);
         
-        RevealTrackerResult(RiddleKind.Color, riddleData);
+        RevealTrackerResult(RiddleKind.Color, riddleDataCollection);
         yield return new WaitForSeconds(0.6f);
         
-        RevealTrackerResult(RiddleKind.Material, riddleData);
+        RevealTrackerResult(RiddleKind.Material, riddleDataCollection);
         yield return new WaitForSeconds(0.5f);
         
-        var score = riddleData.GetNumberOfCorrectAnswers();
+        var score = riddleDataCollection.GetNumberOfCorrectAnswers();
 
         // Show score in speech bubble
         var scoreMessage = _dialogueContainer.GetScoreMessage(score);
@@ -347,9 +347,9 @@ public class UIManager : MonoBehaviour
         });
     }
     
-    void RevealTrackerResult(RiddleKind riddleKind, RiddleData riddleData)
+    void RevealTrackerResult(RiddleKind riddleKind, RiddleDataCollection riddleDataCollection)
     {
-	    var isCorrect = riddleData.IsAnswerCorrect(riddleKind);
+	    var isCorrect = riddleDataCollection.IsAnswerCorrect(riddleKind);
 	    var zone = GetTagDropZone(riddleKind);
 	    if (zone == null)
 	    {
