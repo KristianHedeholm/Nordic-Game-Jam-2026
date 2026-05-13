@@ -33,16 +33,19 @@ MonoBehaviour:
     hands!"'
   _narratorLine: \n<size=30><i>...says the King, obviously wearing <b>absolutely
     nothing.</b></i></size>
-  _topScoreMessage: '<b>{0}/3</b> Correct!
-
-    "Extraordinary! You truly understand
-    fashion!"'
-  _mediocreScoreMessage: '<b>{0}/3</b> Correct.
-
-    "Hmm. Some potential, perhaps."'
-  _noScoreMessage: '<b>{0}/3</b> correct...
-
-    "...I expected more from you."'
+  _topScoreMessages:
+  - '"Extraordinary! You truly understand fashion!"'
+  - "\u201CMagnificent! Join my boogie court at once!\u201D"
+  - "\u201CDivine instinct! Sit beside me before your talent is wasted!\u201D"
+  - "\u201CGlorious! I must keep you near my greatness!\u201D"
+  - "\u201CExquisite mind! Enter my court, you are almost as tasteful as I am!\u201D"
+  - "\u201CAstonishing! You may stand in my presence\u2026 permanently!\u201D"
+  _mediocreScoreMessages:
+  - "\u201CHorrifying! Join my court immediately, I must correct this tragedy!\u201D"
+  - "\u201CUnforgivable taste! Stay, and I shall attempt to civilize you!\u201D"
+  - "\u201CAbsurdly wrong! Enter my court, I refuse to let this continue unchecked!\u201D"
+  - "\u201CA fashion catastrophe! Come closer, I will fix you!\u201D"
+  - "\u201CDisaster! You may remain\u2026 I cannot risk you worsening elsewhere!\u201D"
   _topScoreValue: 3
   _finalQuestionAllCorrect: '"You have <b>magnificent</b> taste!"
 
