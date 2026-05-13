@@ -113,7 +113,7 @@ public class GameManager : MonoBehaviour
     private static void LogRiddles(RiddleDataCollection riddleDataCollection)
     {
 	    var dataPath = Application.persistentDataPath;
-	    var fileName = "riddleLog.txt";
+	    var fileName = $"riddleLog{Application.version}.txt";
 	    var fullPath = Path.Combine(dataPath, fileName);
 
 	    if (!File.Exists(fullPath))
