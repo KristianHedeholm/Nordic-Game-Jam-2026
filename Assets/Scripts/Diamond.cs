@@ -77,7 +77,7 @@ public class Diamond : MonoBehaviour
 		var colorCategory = CategoricalInputCollection.TypeNames[typeof(Color)];
 		textModuleInput.Set(colorCategory, colorAnswer);
 		
-		var materialAnswer = riddleDataCollection.GetCorrectAnswer(RiddleKind.Color);
+		var materialAnswer = riddleDataCollection.GetCorrectAnswer(RiddleKind.Material);
 		var materialCategory = CategoricalInputCollection.TypeNames[typeof(Material)];
 		textModuleInput.Set(materialCategory, materialAnswer);
 		
