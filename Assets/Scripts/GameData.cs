@@ -10,7 +10,7 @@ public struct AnswersCollection
 
 public static class GameData
 {
-    private const int NumberOfOptionsForRiddle = 4;
+    private const int NumberOfOptionsForRiddle = 3;
     
     public static AnswersCollection GetAnswerCollection(RiddleKind riddleKind, int numberOfOptions = NumberOfOptionsForRiddle)
     {

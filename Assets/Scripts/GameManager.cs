@@ -1,4 +1,6 @@
 using System;
+using System.IO;
+using System.Text;
 using RawPowerLabs.DynamicAI;
 using UnityEngine;
 
@@ -20,7 +22,7 @@ public class GameManager : MonoBehaviour
     public UIManager uiManager;
     public Diamond diamond;
 
-    public RiddleData RiddleData { get; private set; } = new RiddleData();
+    private RiddleDataCollection RiddleDataCollection = new RiddleDataCollection();
     
     void Awake()
     {
@@ -32,12 +34,12 @@ public class GameManager : MonoBehaviour
 
     private async void StartGame()
     {
-        RiddleData.CreateNewRiddleAnswers();
+        RiddleDataCollection.CreateNewRiddleAnswers();
         GoToPhase(GamePhase.Intro);
         diamond.Init();
         try
         {
-	        await diamond.GenerateRiddles(RiddleData);
+	        await diamond.GenerateRiddles(RiddleDataCollection);
         }
         catch (Exception e)
         {
@@ -62,7 +64,8 @@ public class GameManager : MonoBehaviour
                 FetchRiddleAndShow(RiddleKind.Material, GamePhase.Reveal);
                 break;
             case GamePhase.Reveal:
-                uiManager.ShowReveal(RiddleData);
+                LogRiddles(RiddleDataCollection);
+                uiManager.ShowReveal(RiddleDataCollection);
                 break;
             case GamePhase.FinalJudgment:
                 uiManager.ShowFinalJudgment();
@@ -76,42 +79,15 @@ public class GameManager : MonoBehaviour
     private void FetchRiddleAndShow(RiddleKind riddleKind, GamePhase nextPhase)
     {
         uiManager.ShowLoading();
-        var riddle = FetchRiddle(riddleKind);
-        var options = RiddleData.GetAvailableAnswers(riddleKind);
+        var riddle = RiddleDataCollection.GetRiddle(riddleKind);
+        var options = RiddleDataCollection.GetAvailableAnswers(riddleKind);
         uiManager.ShowGuessPanel(riddleKind, riddle, options, chosen =>
         {
-	        RiddleData.SetGuessedAnswer(riddleKind, chosen);
+	        RiddleDataCollection.SetGuessedAnswer(riddleKind, chosen);
 	        GoToPhase(nextPhase);
         });
     }
     
-    private string FetchRiddle(RiddleKind riddleKind)
-    {
-	    if (diamond == null)
-	    {
-		    return string.Empty;
-	    }
-
-	    var categorialcal = GetCategoricalOutputFromRiddle(riddleKind);
-	    if (!diamond.Riddles.TryGetValue(categorialcal, out var riddle))
-	    {
-		    return string.Empty;
-	    }
-
-	    return riddle;
-    }
-    
-    private CategoricalOutput GetCategoricalOutputFromRiddle(RiddleKind riddleKind)
-    {
-	    return riddleKind switch
-	    {
-		    RiddleKind.Garment => CategoricalOutput.GarmentRiddle,
-		    RiddleKind.Color => CategoricalOutput.ColorRiddle,
-		    RiddleKind.Material => CategoricalOutput.MaterialRiddle,
-		    _ => CategoricalOutput.GarmentRiddle,
-	    };
-    }
-
     public void GoToFinalQuestion(bool allCorrect)
     {
         uiManager.ShowFinalQuestion(allCorrect);
@@ -126,11 +102,41 @@ public class GameManager : MonoBehaviour
     /// <summary>Skip intro — close curtains and start a new round of guessing.</summary>
     public async void OnPlayAgainSkipIntro()
     {
-        RiddleData.CreateNewRiddleAnswers();
+        RiddleDataCollection.CreateNewRiddleAnswers();
         uiManager.ResetDropZones();
         uiManager.curtainAnimator?.CloseCurtains();
-        await diamond.GenerateRiddles(RiddleData);
+        await diamond.GenerateRiddles(RiddleDataCollection);
         
         GoToPhase(GamePhase.GuessClothing);
+    }
+
+    private static void LogRiddles(RiddleDataCollection riddleDataCollection)
+    {
+	    var dataPath = Application.persistentDataPath;
+	    var fileName = $"riddleLog{Application.version}.txt";
+	    var fullPath = Path.Combine(dataPath, fileName);
+
+	    if (!File.Exists(fullPath))
+	    {
+		    File.WriteAllText(fullPath, string.Empty);
+	    }
+	    
+	    var currentLog = File.ReadAllText(fullPath);
+	    var stringBuilder = new StringBuilder(currentLog);
+	    var enumValues = Enum.GetValues(typeof(RiddleKind)) as  RiddleKind[];
+	    
+	    stringBuilder.AppendLine("New Game of Riddles");
+	    foreach (var enumValue in enumValues)
+	    {
+		    var riddleData = riddleDataCollection.GetRiddleData(enumValue);
+		    var riddleDataLog = $"Kind: {enumValue}," +
+		                        $" Riddle: '{riddleData.Riddle}'," +
+		                        $" Answers: {string.Join(", ", riddleData.Answers.AvailableAnswers)}," +
+		                        $" Correct Answer: '{riddleData.Answers.CorrectAnswer}'," +
+		                        $" Guessed Answer: '{riddleData.GuessedAnswer}',";
+		    stringBuilder.AppendLine(riddleDataLog);
+	    }
+	    
+	    File.WriteAllText(fullPath, stringBuilder.ToString());
     }
 }

@@ -7,14 +7,11 @@ using RawPowerLabs.DynamicAI.Utility;
 
 public class Diamond : MonoBehaviour
 {
-	public Dictionary<CategoricalOutput, string>  Riddles => _riddles;
-	
 	[HideInInspector]
     [SerializeField]
     private string _diamondName;
     
     private TextModule  _textModule;
-    private Dictionary<CategoricalOutput, string> _riddles = new Dictionary<CategoricalOutput, string>();
     
     public void Init()
     {
@@ -28,36 +25,38 @@ public class Diamond : MonoBehaviour
 	    }
     }
     
-    public async Task GenerateRiddles(RiddleData riddleData)
+    public async Task GenerateRiddles(RiddleDataCollection riddleDataCollection)
     {
 	    var riddleKinds = Enum.GetValues(typeof(RiddleKind)) as  RiddleKind[];
 	    foreach (var riddleKind in riddleKinds)
 	    {
-		    var answer = riddleData.GetCorrectAnswer(riddleKind);
+		    var answer = riddleDataCollection.GetCorrectAnswer(riddleKind);
 		    UnityEngine.Debug.Log($"RiddleKind: {riddleKind.ToString()} Answer: {answer}");
 	    }
 	    
+	    var riddles = new Dictionary<RiddleKind, string>();
 	    try
 	    {
-		    _riddles = await InvokeReplyAsync(riddleData);
+		    riddles = await InvokeReplyAsync(riddleDataCollection);
 	    }
 	    catch (Exception e)
 	    {
 		    UnityEngine.Debug.LogException(e);
 	    }
 
-	    foreach (var reply in _riddles)
+	    foreach (var riddle in riddles)
 	    {
-		    UnityEngine.Debug.Log($"Key: {reply.Key}, Value: {reply.Value}");
+		    UnityEngine.Debug.Log(riddle.Key + " " + riddle.Value);
+		    riddleDataCollection.SetRiddle(riddle.Key, riddle.Value);
 	    }
     }
     
-	private async Task<Dictionary<CategoricalOutput, string>> InvokeReplyAsync(RiddleData riddleData)
+	private async Task<Dictionary<RiddleKind, string>> InvokeReplyAsync(RiddleDataCollection riddleDataCollection)
 	{
-		return await Task.Run(() => InvokeReply(riddleData));
+		return await Task.Run(() => InvokeReply(riddleDataCollection));
 	}
 	
-	private Dictionary<CategoricalOutput, string> InvokeReply(RiddleData riddleData)
+	private Dictionary<RiddleKind, string> InvokeReply(RiddleDataCollection riddleDataCollection)
 	{
 		if (_textModule == null)
 		{
@@ -67,32 +66,45 @@ public class Diamond : MonoBehaviour
 		
 		using var textModuleInput = _textModule.CreateInput();
 		
-		var typeAnswer = riddleData.GetCorrectAnswer(RiddleKind.Garment);
-		var typeCategory = CategoricalInputCollection.TypeNames[typeof(GarmentAnswer)];
+		var typeAnswer = riddleDataCollection.GetCorrectAnswer(RiddleKind.Garment);
+		var typeCategory = CategoricalInputCollection.TypeNames[typeof(Type)];
 		textModuleInput.Set(typeCategory, typeAnswer);
 		
-		var colorAnswer = riddleData.GetCorrectAnswer(RiddleKind.Color);
-		var colorCategory = CategoricalInputCollection.TypeNames[typeof(ColorAnswer)];
+		var colorAnswer = riddleDataCollection.GetCorrectAnswer(RiddleKind.Color);
+		var colorCategory = CategoricalInputCollection.TypeNames[typeof(Color)];
 		textModuleInput.Set(colorCategory, colorAnswer);
 		
-		var materialAnswer = riddleData.GetCorrectAnswer(RiddleKind.Color);
-		var materialCategory = CategoricalInputCollection.TypeNames[typeof(MaterialAnswer)];
+		var materialAnswer = riddleDataCollection.GetCorrectAnswer(RiddleKind.Material);
+		var materialCategory = CategoricalInputCollection.TypeNames[typeof(Material)];
 		textModuleInput.Set(materialCategory, materialAnswer);
 		
 		var invokeParameters = TextModuleInvokeParameters.GetDefault();
-		invokeParameters.PredictCount = 4048;
+		invokeParameters.PredictCount = 4096;
 
 		var random = new System.Random();
 		invokeParameters.Seed = (uint) random.Next(0, int.MaxValue);
 		using var textResult = _textModule.Invoke(invokeParameters, textModuleInput);
 		
-		var replies = new Dictionary<CategoricalOutput, string>();
+		var riddles = new Dictionary<RiddleKind, string>();
 		foreach (var outputValues in CategoricalOutputCollection.StringOutputValues)
 		{
 			var result = textResult.GetString(outputValues.Value);
-			replies.Add(outputValues.Key, result);
+			var riddleKey = ConvertFromCategoricalOutput(outputValues.Key);
+			riddles.Add(riddleKey, result);
 		}
 	    
-		return replies;
+		return riddles;
 	}
+
+	private RiddleKind ConvertFromCategoricalOutput(CategoricalOutput categoricalOutput)
+	{
+		return categoricalOutput switch
+		{
+			CategoricalOutput.TypeRiddle =>  RiddleKind.Garment,
+			CategoricalOutput.ColorRiddle => RiddleKind.Color,
+			CategoricalOutput.MaterialRiddle => RiddleKind.Material,
+			_ => RiddleKind.Garment,
+		};
+	}
+	
 }
