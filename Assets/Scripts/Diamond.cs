@@ -66,16 +66,16 @@ public class Diamond : MonoBehaviour
 		
 		using var textModuleInput = _textModule.CreateInput();
 		
-		var typeAnswer = riddleDataCollection.GetCorrectAnswer(RiddleKind.Garment);
-		var typeCategory = CategoricalInputCollection.TypeNames[typeof(Type)];
-		textModuleInput.Set(typeCategory, typeAnswer);
+		var garmentAnswer = riddleDataCollection.GetCorrectAnswer(RiddleKind.Garment);
+		var garmentCategory = CategoricalInputCollection.TypeNames[typeof(GarmentAnswer)];
+		textModuleInput.Set(garmentCategory, garmentAnswer);
 		
 		var colorAnswer = riddleDataCollection.GetCorrectAnswer(RiddleKind.Color);
-		var colorCategory = CategoricalInputCollection.TypeNames[typeof(Color)];
+		var colorCategory = CategoricalInputCollection.TypeNames[typeof(ColorAnswer)];
 		textModuleInput.Set(colorCategory, colorAnswer);
 		
 		var materialAnswer = riddleDataCollection.GetCorrectAnswer(RiddleKind.Material);
-		var materialCategory = CategoricalInputCollection.TypeNames[typeof(Material)];
+		var materialCategory = CategoricalInputCollection.TypeNames[typeof(MaterialAnswer)];
 		textModuleInput.Set(materialCategory, materialAnswer);
 		
 		var invokeParameters = TextModuleInvokeParameters.GetDefault();
@@ -100,7 +100,7 @@ public class Diamond : MonoBehaviour
 	{
 		return categoricalOutput switch
 		{
-			CategoricalOutput.TypeRiddle =>  RiddleKind.Garment,
+			CategoricalOutput.GarmentRiddle =>  RiddleKind.Garment,
 			CategoricalOutput.ColorRiddle => RiddleKind.Color,
 			CategoricalOutput.MaterialRiddle => RiddleKind.Material,
 			_ => RiddleKind.Garment,
