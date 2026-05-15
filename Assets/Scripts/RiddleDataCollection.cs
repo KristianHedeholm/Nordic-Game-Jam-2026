@@ -15,10 +15,11 @@ public enum GamePhase
     DeathScreen     // Player told the truth — off with their head
 }
 
-public struct RiddleAnswer
+public struct RiddleData
 {
 	public AnswersCollection Answers;
 	public string GuessedAnswer;
+	public string Riddle;
 
 	public bool IsCorrect()
 	{
@@ -26,45 +27,57 @@ public struct RiddleAnswer
 	}
 }
 
-public class RiddleData
+public class RiddleDataCollection
 {
-    private readonly Dictionary<RiddleKind, RiddleAnswer> _riddleAnswers = new();
+    private readonly Dictionary<RiddleKind, RiddleData> _riddleData = new();
 
     public void CreateNewRiddleAnswers()
     {
         var riddleKinds = Enum.GetValues(typeof(RiddleKind)) as  RiddleKind[];
         foreach (var riddleKind in riddleKinds)
         {
-	        var riddleAnswer = new RiddleAnswer
+	        var riddleAnswer = new RiddleData
 	        {
 		        Answers = GameData.GetAnswerCollection(riddleKind),
 		        GuessedAnswer = string.Empty
 	        };
-	        _riddleAnswers[riddleKind] = riddleAnswer;
+	        _riddleData[riddleKind] = riddleAnswer;
         }
     }
 
     public string GetCorrectAnswer(RiddleKind riddleKind)
     {
-	    return _riddleAnswers[riddleKind].Answers.CorrectAnswer;
+	    return _riddleData[riddleKind].Answers.CorrectAnswer;
     }
 
     public string[] GetAvailableAnswers(RiddleKind riddleKind)
     {
-	    return _riddleAnswers[riddleKind].Answers.AvailableAnswers;
+	    return _riddleData[riddleKind].Answers.AvailableAnswers;
     }
 
     public void SetGuessedAnswer(RiddleKind riddleKind, string guess)
     {
-	    var answer = _riddleAnswers[riddleKind];
-	    answer.GuessedAnswer = guess;
-	    _riddleAnswers[riddleKind] = answer;
+	    var riddleData = _riddleData[riddleKind];
+	    riddleData.GuessedAnswer = guess;
+	    _riddleData[riddleKind] = riddleData;
+    }
+
+    public void SetRiddle(RiddleKind riddleKind, string riddle)
+    {
+	    var riddleData = _riddleData[riddleKind];
+	    riddleData.Riddle = riddle;
+	    _riddleData[riddleKind] = riddleData;
+    }
+
+    public string GetRiddle(RiddleKind riddleKind)
+    {
+	    return _riddleData[riddleKind].Riddle;
     }
     
     public int GetNumberOfCorrectAnswers()
     {
 	    var count = 0;
-	    foreach (var answer in _riddleAnswers)
+	    foreach (var answer in _riddleData)
 	    {
 		    if (answer.Value.IsCorrect())
 		    {
@@ -76,12 +89,12 @@ public class RiddleData
     
     public bool IsAnswerCorrect(RiddleKind riddleKind)
     {
-	    return _riddleAnswers[riddleKind].IsCorrect();
+	    return _riddleData[riddleKind].IsCorrect();
     }
 
     public bool AreAllAnswersCorrect()
     {
-	    foreach (var answer in _riddleAnswers)
+	    foreach (var answer in _riddleData)
 	    {
 		    if (!answer.Value.IsCorrect())
 		    {
@@ -89,5 +102,10 @@ public class RiddleData
 		    }
 	    }
 	    return true;
+    }
+
+    public RiddleData GetRiddleData(RiddleKind riddleKind)
+    {
+	    return _riddleData[riddleKind];
     }
 }

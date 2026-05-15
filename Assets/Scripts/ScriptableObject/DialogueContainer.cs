@@ -21,15 +21,13 @@ public class DialogueContainer : ScriptableObject
     [SerializeField]
     private string _narratorLine;
     
+    [Header(("Judgement"))]
     [SerializeField]
     [Multiline]
-    private string _topScoreMessage;
+    private string[] _topScoreMessages;
     [SerializeField]
     [Multiline]
-    private string _mediocreScoreMessage;
-    [SerializeField]
-    [Multiline]
-    private string _noScoreMessage;
+    private string[] _mediocreScoreMessages;
     [SerializeField]
     private int _topScoreValue;
     
@@ -71,15 +69,10 @@ public class DialogueContainer : ScriptableObject
     {
 	    if (score >= _topScoreValue)
 	    {
-		    return _topScoreMessage;
-	    }
-
-	    if (score > 0)
-	    {
-		    return _mediocreScoreMessage;
+		    return GetRandomMessage(_topScoreMessages);
 	    }
 	    
-	    return _noScoreMessage;
+	    return GetRandomMessage(_mediocreScoreMessages);
     }
 
     public string GetFinalQuestion(bool allCorrect)
@@ -90,6 +83,12 @@ public class DialogueContainer : ScriptableObject
     public string GetFlatterLabelText(bool allCorrect)
     {
 	    return (allCorrect) ? _flatterTextAllCorrect : _flatterText;
+    }
+
+    private string GetRandomMessage(string[] message)
+    {
+	    var randomindex = Random.Range(0, message.Length);
+	    return message[randomindex];
     }
     
     
