@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
+        InactivityResetController.OnResetInactivity += ResetOnInactivity;
         
         StartGame();
     }
@@ -35,7 +36,7 @@ public class GameManager : MonoBehaviour
     private async void StartGame()
     {
         RiddleDataCollection.CreateNewRiddleAnswers();
-        GoToPhase(GamePhase.Intro);
+        GoToPhase(GamePhase.MainMenu);
         diamond.Init();
         try
         {
@@ -51,8 +52,8 @@ public class GameManager : MonoBehaviour
     {
         switch (phase)
         {
-            case GamePhase.Intro:
-                uiManager.ShowIntro();
+            case GamePhase.MainMenu:
+                uiManager.ShowMainMenu();
                 break;
             case GamePhase.GuessClothing:
                 FetchRiddleAndShow(RiddleKind.Garment, GamePhase.GuessColor);
@@ -110,6 +111,11 @@ public class GameManager : MonoBehaviour
         GoToPhase(GamePhase.GuessClothing);
     }
 
+    private void ResetOnInactivity()
+    {
+	    OnPlayAgain();
+    }
+
     private static void LogRiddles(RiddleDataCollection riddleDataCollection)
     {
 	    var dataPath = Application.persistentDataPath;
@@ -138,5 +144,10 @@ public class GameManager : MonoBehaviour
 	    }
 	    
 	    File.WriteAllText(fullPath, stringBuilder.ToString());
+    }
+
+    private void OnDestroy()
+    {
+	    InactivityResetController.OnResetInactivity -= ResetOnInactivity;
     }
 }

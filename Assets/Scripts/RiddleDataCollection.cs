@@ -6,7 +6,7 @@ using System.Collections.Generic;
 /// </summary>
 public enum GamePhase
 {
-    Intro,          // King introduces himself
+    MainMenu,          // King introduces himself
     GuessClothing,  // Player guesses the clothing type
     GuessColor,     // Player guesses the color
     GuessMaterial,  // Player guesses the material
