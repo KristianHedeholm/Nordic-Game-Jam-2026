@@ -28,6 +28,7 @@ public class GameManager : MonoBehaviour
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
+        InactivityResetController.OnResetInactivity += ResetOnInactivity;
         
         StartGame();
     }
@@ -110,6 +111,11 @@ public class GameManager : MonoBehaviour
         GoToPhase(GamePhase.GuessClothing);
     }
 
+    private void ResetOnInactivity()
+    {
+	    OnPlayAgain();
+    }
+
     private static void LogRiddles(RiddleDataCollection riddleDataCollection)
     {
 	    var dataPath = Application.persistentDataPath;
@@ -138,5 +144,10 @@ public class GameManager : MonoBehaviour
 	    }
 	    
 	    File.WriteAllText(fullPath, stringBuilder.ToString());
+    }
+
+    private void OnDestroy()
+    {
+	    InactivityResetController.OnResetInactivity -= ResetOnInactivity;
     }
 }
