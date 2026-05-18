@@ -129,7 +129,7 @@ public class UIManager : MonoBehaviour
     
     private int _currentSlideIndex = 0;
 
-    public void ShowIntro()
+    public void ShowMainMenu()
     {
         HideAllOverlays();
         ResetDropZones();
