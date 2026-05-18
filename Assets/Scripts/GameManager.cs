@@ -35,7 +35,7 @@ public class GameManager : MonoBehaviour
     private async void StartGame()
     {
         RiddleDataCollection.CreateNewRiddleAnswers();
-        GoToPhase(GamePhase.Intro);
+        GoToPhase(GamePhase.MainMenu);
         diamond.Init();
         try
         {
@@ -51,8 +51,8 @@ public class GameManager : MonoBehaviour
     {
         switch (phase)
         {
-            case GamePhase.Intro:
-                uiManager.ShowIntro();
+            case GamePhase.MainMenu:
+                uiManager.ShowMainMenu();
                 break;
             case GamePhase.GuessClothing:
                 FetchRiddleAndShow(RiddleKind.Garment, GamePhase.GuessColor);
