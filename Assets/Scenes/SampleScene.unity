@@ -317,7 +317,7 @@ MonoBehaviour:
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
   m_Version: 2
---- !u!1001 &493342062
+--- !u!1001 &366302660
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -367,7 +367,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6378150866576493640, guid: 1e050f4ff6b2241419c9f8d7a1b99cff, type: 3}
       propertyPath: m_Name
-      value: ResetOnInactivity
+      value: ResetController
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -449,4 +449,4 @@ SceneRoots:
   - {fileID: 330585546}
   - {fileID: 1027461699}
   - {fileID: 139584477}
-  - {fileID: 493342062}
+  - {fileID: 366302660}
