@@ -9,9 +9,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 930341749875552943}
-  - component: {fileID: 3763225895667230400}
+  - component: {fileID: 1200938474723983309}
   m_Layer: 0
-  m_Name: ResetOnInactivity
+  m_Name: ResetController
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32,7 +32,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3763225895667230400
+--- !u!114 &1200938474723983309
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -41,7 +41,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 6378150866576493640}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46cd520a959bbfd499ff4cfcb6f27c64, type: 3}
+  m_Script: {fileID: 11500000, guid: bdcf44f766bfe97459068328d12a34f4, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::ResetOnInactivity
-  _secondsBeforeReset: 300
+  m_EditorClassIdentifier: Assembly-CSharp::ResetController

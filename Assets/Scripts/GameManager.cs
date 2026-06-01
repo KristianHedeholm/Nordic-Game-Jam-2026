@@ -28,7 +28,7 @@ public class GameManager : MonoBehaviour
     {
         if (Instance != null && Instance != this) { Destroy(gameObject); return; }
         Instance = this;
-        InactivityResetController.OnResetInactivity += ResetOnInactivity;
+        ResetController.OnReset += ResetGame;
         
         StartGame();
     }
@@ -111,7 +111,7 @@ public class GameManager : MonoBehaviour
         GoToPhase(GamePhase.GuessClothing);
     }
 
-    private void ResetOnInactivity()
+    private void ResetGame()
     {
 	    OnPlayAgain();
     }
@@ -148,6 +148,6 @@ public class GameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-	    InactivityResetController.OnResetInactivity -= ResetOnInactivity;
+	    ResetController.OnReset -= ResetGame;
     }
 }
